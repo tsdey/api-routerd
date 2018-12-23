@@ -4,6 +4,7 @@ package network
 
 import (
 	"encoding/json"
+	"errors"
 	"github.com/vishvananda/netlink"
 	log "github.com/sirupsen/logrus"
 //	"net"
@@ -34,11 +35,13 @@ func (req *Link) LinkSetMasterBridge() (error) {
 	bridge, r := netlink.LinkByName(req.Link)
 	if r != nil {
 		log.Errorf("Failed to find bridge link %s: %s", req.Link, r)
+		return r
 	}
 
 	br, b := bridge.(*netlink.Bridge)
 	if !b {
 		log.Errorf("Link is not a bridge %s: %s", req.Link, r)
+		return errors.New("Link is not a bridge")
 	}
 
 	for _, n := range req.Enslave {
