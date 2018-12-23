@@ -3,8 +3,8 @@
 package networkd
 
 import (
+	"api-routerd/cmd/share"
 	log "github.com/sirupsen/logrus"
-	"restgateway/api-router/share"
 )
 
 const NetworkdUnitPath = "/var/run/systemd/network"

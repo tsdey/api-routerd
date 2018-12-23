@@ -3,9 +3,9 @@
 package hostname
 
 import (
+	"api-routerd/cmd/share"
 	"encoding/json"
 	log "github.com/sirupsen/logrus"
-	"restgateway/api-router/share"
 	"strings"
 	"net/http"
 )

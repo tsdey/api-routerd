@@ -1,12 +1,13 @@
+// SPDX-License-Identifier: Apache-2.0
+
 package network
 
 import (
+	"api-routerd/cmd/share"
 	"encoding/json"
 	"github.com/safchain/ethtool"
 	log "github.com/sirupsen/logrus"
 	"net/http"
-	"os"
-	"path"
 )
 
 type Ethtool struct {
@@ -16,9 +17,9 @@ type Ethtool struct {
 }
 
 func (req *Ethtool) GetEthTool(rw http.ResponseWriter) {
-	_, r := os.Stat(path.Join("/sys/class/net", req.Link))
-	if os.IsNotExist(r) {
-		log.Errorf("Failed to get link %s: %s", r, req.Link)
+	l := share.LinkExists(req.Link)
+	if !l  {
+		log.Errorf("Failed to get link: %s", req.Link)
 		return
 	}
 

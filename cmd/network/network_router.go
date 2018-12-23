@@ -3,12 +3,11 @@
 package network
 
 import (
+	"api-routerd/cmd/network/networkd"
 	"encoding/json"
 	"github.com/gorilla/mux"
 	log "github.com/sirupsen/logrus"
-	"restgateway/api-router/network/networkd"
 	"net/http"
-	"fmt"
 )
 
 func NetworkLinkGet(rw http.ResponseWriter, req *http.Request) {
@@ -151,8 +150,6 @@ func NetworkDeleteAddres(rw http.ResponseWriter, req *http.Request) {
 func NetworkAddRoute(rw http.ResponseWriter, req *http.Request) {
 	route := new(Route)
 
-	fmt.Println(req)
-
 	r := json.NewDecoder(req.Body).Decode(&route);
 	if r != nil {
 		log.Error("Failed to find decode json: ", r)
@@ -172,8 +169,6 @@ func NetworkAddRoute(rw http.ResponseWriter, req *http.Request) {
 
 func NetworkDeleteRoute(rw http.ResponseWriter, req *http.Request) {
 	route := new(Route)
-
-	fmt.Println(req)
 
 	r := json.NewDecoder(req.Body).Decode(&route);
 	if r != nil {
@@ -210,8 +205,6 @@ func NetworkdConfigureNetDev(rw http.ResponseWriter, req *http.Request) {
 
 func NetworkConfigureEthtool(rw http.ResponseWriter, req *http.Request) {
 	ethtool := new(Ethtool)
-
-	fmt.Println(req)
 
 	r := json.NewDecoder(req.Body).Decode(&ethtool);
 	if r != nil {

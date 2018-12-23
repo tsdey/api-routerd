@@ -3,10 +3,10 @@
 package proc
 
 import (
+	"api-routerd/cmd/share"
 	"encoding/json"
 	"net/http"
 	"path"
-	"restgateway/api-router/share"
 )
 
 const VMPath = "/proc/sys/vm"

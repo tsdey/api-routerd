@@ -3,15 +3,12 @@
 package network
 
 import (
-	//	"encoding/json"
+	"api-routerd/cmd/share"
 	"net"
-	"restgateway/api-router/share"
 	"strings"
 	"syscall"
-
 	log "github.com/sirupsen/logrus"
 	"github.com/vishvananda/netlink"
-	//	"net/http"
 )
 
 type Route struct {

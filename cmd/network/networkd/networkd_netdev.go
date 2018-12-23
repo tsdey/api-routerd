@@ -3,15 +3,14 @@
 package networkd
 
 import (
+	"api-routerd/cmd/share"
 	"encoding/json"
 	"fmt"
+	log "github.com/sirupsen/logrus"
 	"io/ioutil"
 	"net/http"
 	"path/filepath"
-	"restgateway/api-router/share"
 	"strings"
-
-	log "github.com/sirupsen/logrus"
 )
 
 // NetDev

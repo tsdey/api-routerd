@@ -3,13 +3,13 @@
 package router
 
 import (
+	"api-routerd/cmd/hostname"
+	"api-routerd/cmd/network"
+	"api-routerd/cmd/proc"
+	"api-routerd/cmd/systemd"
 	"github.com/gorilla/mux"
 	log "github.com/sirupsen/logrus"
 	"net/http"
-	"restgateway/api-router/hostname"
-	"restgateway/api-router/network"
-	"restgateway/api-router/proc"
-	"restgateway/api-router/systemd"
 )
 
 func StartRouter() {

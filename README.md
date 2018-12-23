@@ -1,47 +1,45 @@
-# api-routerd
-A REST API Microservice Gateway for Linux
+![Logo](https://scontent.fbho1-1.fna.fbcdn.net/v/t1.0-9/49060511_10157027608598552_9022222281543254016_n.jpg?_nc_cat=103&_nc_ht=scontent.fbho1-1.fna&oh=397c782b52b4cf49edffd9ed6a1132d7&oe=5C8CDD90)
 
-A remote management tool which uses REST API for distributed and real time configuration and performance as well as health monitoring for systems (containers) and applications. It has an unparalleled speed in capturing everything happening on the system it runs on, without affecting it's core functions .
+#### A RestAPI GateWay For Lnux
+
+A super light weight remote management tool which uses REST API for real time configuration and performance as well as health monitoring for systems (containers) and applications.
 
 
-#### The Aim of the project:
-1. No client installation required. curl is enough.
-2. No GUI
-3. Minimal data transfer using JSON
+#### Objectives:
+- No client installation required. curl is enough.
+- No GUI
+- Minimal data transfer using JSON
 
-Just store the commands in a bash script and run it.
 
-***Allows you to configure***
-1. systemd
+##### Allows you to configure
+- systemd
     - services (start, stop, restart, status)
     - service properties for example CPUShares
     - See service logs.
-
-2. networkd config
+- networkd config
     - .network
     - .netdev
     - .link
-
-3. Set/Get hostname
+- set and get hostname
    - hostnamed
 
-4. configure network (netlink)
+- configure network (netlink)
    - Link: mtu, up, down
-     - Create bridge and enslave links
+   - Create bridge and enslave links
    - Adddress: Set, Get, Delete
    - Gateway: Default Gateway Add and Delete
 
-5. see information from /proc such as netstat, netdev, memory
+- see information from /proc such as netstat, netdev, memory
+- See ethtool information
 
-6. see ethtool information
-### Basic Setup and Use of api-routerd
+##### Basic Setup and Use of api-routerd
 
-First, configure a GOPATH
-
+First configure your GOPATH. If you have already done this skip this step.
+```
+# keep in ~/.bashrc
 ```
 
-# keep in ~/.bashrc
-
+```
 export GOPATH=$HOME/go
 export PATH=$PATH:$GOPATH/bin
 export OS_OUTPUT_GOPATH=1
@@ -53,12 +51,6 @@ export OS_OUTPUT_GOPATH=1
 ```
 [sus@Zeus src]$ pwd
 /home/sus/go/src
-
-[sus@Zeus src]$ git clone https://github.com/ssahani/restgateway/
-[sus@Zeus src]$ cd restgateway
-[sus@Zeus restgateway]$ pwd
-/home/sus/go/src/restgateway
-
 ```
 
 Install libs
@@ -69,11 +61,16 @@ $ go get github.com/vishvananda/netlink
 $ go get github.com/shirou/gopsutil
 $ go get github.com/coreos/go-systemd/dbus
 $ go get github.com/godbus/dbus
+$ go get github.com/safchain/ethtool
+```
 
-
-[sus@Zeus api-router]$ pwd
-/home/sus/go/src/restgateway/api-router
-[sus@Zeus api-router]$ go build -o api-routerd
+Now build it
+```
+[sus@Zeus src]$ git clone https://github.com/RestGW/api-routerd
+[sus@Zeus src]$ cd api-routerd/cmd
+[sus@Zeus cmd]$ pwd
+/home/sus/go/src/api-routerd/cmd
+[sus@Zeus cmd]$ go build -o api-routerd
 
 ```
 
@@ -117,7 +114,7 @@ sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request G
 [{"cpu":"cpu0","user":231.77,"system":103.54,"idle":11580.69,"nice":1.44,"iowait":6.68,"irq":30.09,"softirq":16.67,"steal":0,"guest":0,"guestNice":0,"stolen":0},{"cpu":"cpu1","user":233.47,"system":108.38,"idle":11577.43,"nice":2.39,"iowait":5.17,"irq":32.93,"softirq":10.67,"steal":0,"guest":0,"guestNice":0,"stolen":0},{"cpu":"cpu2","user":233.11,"system":106.65,"idle":11519.95,"nice":1.72,"iowait":5.52,"irq":82.22,"softirq":10.52,"steal":0,"guest":0,"guestNice":0,"stolen":0},{"cpu":"cpu3","user":235.06,"system":109.29,"idle":11585.23,"nice":1.98,"iowait":6.6,"irq":24.98,"softirq":8.36,"steal":0,"guest":0,"guestNice":0,"stolen":0},{"cpu":"cpu4","user":233.62,"system":100.02,"idle":11600.14,"nice":2.53,"iowait":6.13,"irq":21.95,"softirq":7.41,"steal":0,"guest":0,"guestNice":0,"stolen":0},{"cpu":"cpu5","user":225.02,"system":101.52,"idle":11602.33,"nice":7.97,"iowait":7.27,"irq":21.61,"softirq":7.47,"steal":0,"guest":0,"guestNice":0,"stolen":0},{"cpu":"cpu6","user":238.34,"system":98.43,"idle":11590.73,"nice":1.79,"iowait":6.45,"irq":26.88,"softirq":8.7,"steal":0,"guest":0,"guestNice":0,"stolen":0},{"cpu":"cpu7","user":238.54,"system":97.5,"idle":11601.67,"nice":1.28,"iowait":6.34,"irq":21.17,"softirq":7.11,"steal":0,"guest":0,"guestNice":0,"stolen":0}]
 ```
 
-With output
+More example
 ```
 [sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --data '{"path":"netdev"}' http://localhost:8080/proc/
 [{"name":"wlan0","bytesSent":21729026,"bytesRecv":222301420,"packetsSent":127279,"packetsRecv":210421,"errin":0,"errout":0,"dropin":0,"dropout":0,"fifoin":0,"fifoout":0},{"name":"tunl0","bytesSent":0,"bytesRecv":0,"packetsSent":0,"packetsRecv":0,"errin":0,"errout":0,"dropin":0,"dropout":0,"fifoin":0,"fifoout":0},{"name":"lo","bytesSent":87414,"bytesRecv":87414,"packetsSent":927,"packetsRecv":927,"errin":0,"errout":0,"dropin":0,"dropout":0,"fifoin":0,"fifoout":0},{"name":"eth0","bytesSent":0,"bytesRecv":0,"packetsSent":0,"packetsRecv":0,"errin":0,"errout":0,"dropin":0,"dropout":0,"fifoin":0,"fifoout":0},{"name":"sit0","bytesSent":0,"bytesRecv":0,"packetsSent":0,"packetsRecv":0,"errin":0,"errout":0,"dropin":0,"dropout":0,"fifoin":0,"fifoout":0},{"name":"my-macvlan","bytesSent":0,"bytesRecv":0,"packetsSent":0,"packetsRecv":0,"errin":0,"errout":0,"dropin":0,"dropout":0,"fifoin":0,"fifoout":0},{"name":"vmnet1","bytesSent":0,"bytesRecv":0,"packetsSent":701,"packetsRecv":0,"errin":0,"errout":0,"dropin":0,"dropout":0,"fifoin":0,"fifoout":0},{"name":"vmnet8","bytesSent":0,"bytesRecv":0,"packetsSent":701,"packetsRecv":0,"errin":0,"errout":0,"dropin":0,"dropout":0,"fifoin":0,"fifoout":0}]

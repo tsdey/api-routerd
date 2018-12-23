@@ -3,8 +3,8 @@
 package main
 
 import (
-	"restgateway/api-router/router"
-	"restgateway/api-router/share"
+	"api-routerd/cmd/router"
+	"api-routerd/cmd/share"
 )
 
 func main() {
