@@ -93,26 +93,26 @@ Use Case:
                        "swap-memory", "virtual-memory", "cpuinfo","cputimestat","avgstat":
 
 ```
-curl --header "Content-Type: application/json" --request GET --data '{"path":"netdev"}' http://localhost:8080/proc/
-curl --header "Content-Type: application/json" --request GET --data '{"path":"version"}' http://localhost:8080/proc/
-curl --header "Content-Type: application/json" --request GET --data '{"path":"vm"}' http://localhost:8080/proc/
-curl --header "Content-Type: application/json" --request GET --data '{"path":"netstat", "property":"udp"}' http://localhost:8080/proc/
-curl --header "Content-Type: application/json" --request GET --data '{"path":"cpuinfo"}' http://localhost:8080/proc/
-curl --header "Content-Type: application/json" --request GET --data '{"path":"cputimestat"}' http://localhost:8080/proc/
-curl --header "Content-Type: application/json" --request GET --data '{"path":"avgstat"}' http://localhost:8080/proc/
-curl --header "Content-Type: application/json" --request GET --data '{"path":"virtual-memory"}' http://localhost:8080/proc/
-curl --header "Content-Type: application/json" --request GET --data '{"path":"swap-memory"}' http://localhost:8080/proc/
+sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --data '{"path":"netdev"}' http://localhost:8080/proc/
+sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --data '{"path":"version"}' http://localhost:8080/proc/
+sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --data '{"path":"vm"}' http://localhost:8080/proc/
+sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --data '{"path":"netstat", "property":"udp"}' http://localhost:8080/proc/
+sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --data '{"path":"cpuinfo"}' http://localhost:8080/proc/
+sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --data '{"path":"cputimestat"}' http://localhost:8080/proc/
+sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --data '{"path":"avgstat"}' http://localhost:8080/proc/
+sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --data '{"path":"virtual-memory"}' http://localhost:8080/proc/
+sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --data '{"path":"swap-memory"}' http://localhost:8080/proc/
 ```
 
 
 proc vm: property any file name in /proc/sys/vm/
 ```
-curl --header "Content-Type: application/json" --request GET --data '{"path":"vm", "property":"swappiness"}' http://localhost:8080/proc/
+sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --data '{"path":"vm", "property":"swappiness"}' http://localhost:8080/proc/
 {"path":"","property":"swappiness","value":"60"}
 ```
 
 ```
-curl --header "Content-Type: application/json" --request GET --data '{"path":"cputimestat"}' http://localhost:8080/proc/
+sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --data '{"path":"cputimestat"}' http://localhost:8080/proc/
 [{"cpu":"cpu0","user":231.77,"system":103.54,"idle":11580.69,"nice":1.44,"iowait":6.68,"irq":30.09,"softirq":16.67,"steal":0,"guest":0,"guestNice":0,"stolen":0},{"cpu":"cpu1","user":233.47,"system":108.38,"idle":11577.43,"nice":2.39,"iowait":5.17,"irq":32.93,"softirq":10.67,"steal":0,"guest":0,"guestNice":0,"stolen":0},{"cpu":"cpu2","user":233.11,"system":106.65,"idle":11519.95,"nice":1.72,"iowait":5.52,"irq":82.22,"softirq":10.52,"steal":0,"guest":0,"guestNice":0,"stolen":0},{"cpu":"cpu3","user":235.06,"system":109.29,"idle":11585.23,"nice":1.98,"iowait":6.6,"irq":24.98,"softirq":8.36,"steal":0,"guest":0,"guestNice":0,"stolen":0},{"cpu":"cpu4","user":233.62,"system":100.02,"idle":11600.14,"nice":2.53,"iowait":6.13,"irq":21.95,"softirq":7.41,"steal":0,"guest":0,"guestNice":0,"stolen":0},{"cpu":"cpu5","user":225.02,"system":101.52,"idle":11602.33,"nice":7.97,"iowait":7.27,"irq":21.61,"softirq":7.47,"steal":0,"guest":0,"guestNice":0,"stolen":0},{"cpu":"cpu6","user":238.34,"system":98.43,"idle":11590.73,"nice":1.79,"iowait":6.45,"irq":26.88,"softirq":8.7,"steal":0,"guest":0,"guestNice":0,"stolen":0},{"cpu":"cpu7","user":238.54,"system":97.5,"idle":11601.67,"nice":1.28,"iowait":6.34,"irq":21.17,"softirq":7.11,"steal":0,"guest":0,"guestNice":0,"stolen":0}]
 ```
 
@@ -174,7 +174,7 @@ default via 192.168.1.1 dev dummy onlink
 
 Create a bridge and enslave two links
 ```
-curl --header "Content-Type: application/json" --request PUT --data '{"action":"add-link-bridge", "link":"test-br", "enslave":["dummy","dummy1"]}' http://localhost:8080/network/link/add
+sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request PUT --data '{"action":"add-link-bridge", "link":"test-br", "enslave":["dummy","dummy1"]}' http://localhost:8080/network/link/add
 
 [root@Zeus log]# ip link
 9: dummy: <BROADCAST,NOARP> mtu 12801 qdisc noop master test-br state DOWN mode DEFAULT group default qlen 1000
@@ -185,6 +185,11 @@ curl --header "Content-Type: application/json" --request PUT --data '{"action":"
     link/ether 12:00:9a:65:36:6d brd ff:ff:ff:ff:ff:ff
 [root@Zeus log]#
 
+```
+
+delete a link
+```
+sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request DELETE --data '{"action":"delete-link", "link":"test-br"}' http://localhost:8080/network/link/delete
 ```
 
 Use Case: networkd
@@ -268,12 +273,12 @@ Examples:
 [sus@Zeus hostname]$ curl --header "Content-Type: application/json" --request GET --data '{"action":"get-hostname", "property":"static"}' http://localhost:8080/hostname/
 {"action":"get-hostname","method":"","property":"StaticHostname","value":"zeus1"}
 
-curl --header "Content-Type: application/json" --request GET --data '{"path":"version"}' http://localhost:8080/proc/
-curl --header "Content-Type: application/json" --request GET --data '{"link":"wlan0"}' http://192.168.225.23:8080/network/link/get
-curl --header "Content-Type: application/json" --request GET --data '{"link":"wlan0"}' http://localhost:8080/network/link/get
-curl --header "Content-Type: application/json" --request GET --data '{"action":"get-hostname"}' http://localhost:8080/hostname/get
+sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --data '{"path":"version"}' http://localhost:8080/proc/
+sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --data '{"link":"wlan0"}' http://192.168.225.23:8080/network/link/get
+sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --data '{"link":"wlan0"}' http://localhost:8080/network/link/get
+sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --data '{"action":"get-hostname"}' http://localhost:8080/hostname/get
 http://localhost:8080/hostname
-curl --header "Content-Type: application/json" --request GET --data '{"path":"version"}' http://localhost:8080/proc/
+sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --data '{"path":"version"}' http://localhost:8080/proc/
 ```
 
 proc: netstat protocol tcp

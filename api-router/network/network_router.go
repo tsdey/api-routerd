@@ -50,6 +50,28 @@ func NetworkLinkAdd(rw http.ResponseWriter, req *http.Request) {
 	}
 }
 
+func NetworkLinkDelete(rw http.ResponseWriter, req *http.Request) {
+	link := new(Link)
+
+	r := json.NewDecoder(req.Body).Decode(&link);
+	if r != nil {
+		log.Error("Failed to find decode json: ", r)
+		rw.Write([]byte("500: " + r.Error()))
+		return
+	}
+
+	switch req.Method {
+	case "DELETE":
+		switch link.Action {
+		case "delete-link":
+			r := link.LinkDelete()
+			if r != nil {
+				rw.Write([]byte("500: " + r.Error()))
+			}
+		}
+	}
+}
+
 func NetworkLinkSet(rw http.ResponseWriter, req *http.Request) {
 	link := new(Link)
 
@@ -190,6 +212,7 @@ func RegisterRouterNetwork(router *mux.Router) {
 	n := router.PathPrefix("/network").Subrouter()
 	n.HandleFunc("/link/set", NetworkLinkSet)
 	n.HandleFunc("/link/add", NetworkLinkAdd)
+	n.HandleFunc("/link/delete", NetworkLinkDelete)
 	n.HandleFunc("/link/get", NetworkLinkGet)
 
 	n.HandleFunc("/address/get", NetworkGetAddress)

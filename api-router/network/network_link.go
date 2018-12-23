@@ -75,6 +75,22 @@ func (req *Link) LinkCreateBridge() (error) {
 	return req.LinkSetMasterBridge()
 }
 
+func (req *Link)LinkDelete()(error) {
+	l, r := netlink.LinkByName(req.Link)
+	if r != nil {
+		log.Errorf("Failed to find link %s: %s", req.Link, r)
+		return r
+	}
+
+	r = netlink.LinkDel(l)
+	if (r != nil) {
+		log.Errorf("Failed to delete link %s up: %s", l, r)
+		return r
+	}
+
+	return nil
+}
+
 func LinkSetUp(link string)(error) {
 	l, r := netlink.LinkByName(link)
 	if r != nil {
@@ -91,7 +107,7 @@ func LinkSetUp(link string)(error) {
 	return nil
 }
 
-func LinkSetDown(link string)(error) {
+func LinkSetDown(link string) (error) {
 	l, r := netlink.LinkByName(link)
 	if r != nil {
 		log.Errorf("Failed to find link %s: %s", link, r)
@@ -107,7 +123,7 @@ func LinkSetDown(link string)(error) {
 	return nil
 }
 
-func LinkSetMTU(link string, mtu int)(error) {
+func LinkSetMTU(link string, mtu int) (error) {
 	l, r := netlink.LinkByName(link)
 	if r != nil {
 		log.Errorf("Failed to find link %s: %s", link, r)
