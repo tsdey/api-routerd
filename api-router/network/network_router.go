@@ -208,7 +208,7 @@ func NetworkdConfigureNetDev(rw http.ResponseWriter, req *http.Request) {
 	}
 }
 
-func NetworkdConfigureEthtool(rw http.ResponseWriter, req *http.Request) {
+func NetworkConfigureEthtool(rw http.ResponseWriter, req *http.Request) {
 	ethtool := new(Ethtool)
 
 	fmt.Println(req)
@@ -246,5 +246,5 @@ func RegisterRouterNetwork(router *mux.Router) {
 	n.HandleFunc("/networkd/netdev", NetworkdConfigureNetDev)
 
 	// ethtool
-	n.HandleFunc("/ethtool/get", NetworkdConfigureEthtool)
+	n.HandleFunc("/ethtool/get", NetworkConfigureEthtool)
 }

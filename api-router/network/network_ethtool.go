@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"github.com/safchain/ethtool"
 	log "github.com/sirupsen/logrus"
+	"net/http"
 	"os"
 	"path"
-	"net/http"
 )
 
 type Ethtool struct {

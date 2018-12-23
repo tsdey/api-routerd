@@ -4,6 +4,7 @@ package router
 
 import (
 	"github.com/gorilla/mux"
+	log "github.com/sirupsen/logrus"
 	"net/http"
 	"restgateway/api-router/hostname"
 	"restgateway/api-router/network"
@@ -20,5 +21,5 @@ func StartRouter() {
 	proc.RegisterRouterProc(router)
 	systemd.RegisterRouterSystemd(router)
 
-	http.ListenAndServe(":8080", router)
+	log.Fatal(http.ListenAndServe(":8080", router))
 }
