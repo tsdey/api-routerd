@@ -3,21 +3,22 @@
 package network
 
 import (
-//	"encoding/json"
-	"github.com/vishvananda/netlink"
-	log "github.com/sirupsen/logrus"
+	//	"encoding/json"
 	"net"
 	"restgateway/api-router/share"
 	"strings"
 	"syscall"
-//	"net/http"
+
+	log "github.com/sirupsen/logrus"
+	"github.com/vishvananda/netlink"
+	//	"net/http"
 )
 
 type Route struct {
-	Action string  `json:"action"`
-	Link string    `json:"link"`
+	Action  string `json:"action"`
+	Link    string `json:"link"`
 	Gateway string `json:"gateway"`
-	OnLink string  `json:"onlink"`
+	OnLink  string `json:"onlink"`
 }
 
 func AddDefaultGateWay(route *Route) {
@@ -44,11 +45,11 @@ func AddDefaultGateWay(route *Route) {
 	}
 
 	// add a gateway route
-	rt := &netlink.Route {
-		Scope: netlink.SCOPE_UNIVERSE,
+	rt := &netlink.Route{
+		Scope:     netlink.SCOPE_UNIVERSE,
 		LinkIndex: link.Attrs().Index,
-		Gw: ipAddr,
-		Flags: onlink,
+		Gw:        ipAddr,
+		Flags:     onlink,
 	}
 
 	r = netlink.RouteAdd(rt)
@@ -71,10 +72,10 @@ func DelDefaultGateWay(route *Route) {
 	}
 
 	// del a gateway route
-	r := &netlink.Route {
-		Scope: netlink.SCOPE_UNIVERSE,
+	r := &netlink.Route{
+		Scope:     netlink.SCOPE_UNIVERSE,
 		LinkIndex: link.Attrs().Index,
-		Gw: ipAddr,
+		Gw:        ipAddr,
 	}
 
 	err = netlink.RouteDel(r)

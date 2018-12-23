@@ -5,32 +5,34 @@ package networkd
 import (
 	"encoding/json"
 	"fmt"
-	log "github.com/sirupsen/logrus"
 	"io/ioutil"
 	"net/http"
 	"path/filepath"
 	"restgateway/api-router/share"
 	"strings"
+
+	log "github.com/sirupsen/logrus"
 )
 
+// NetDev
 type NetDev struct {
 	Description string
-	MACAddress string
-	MTUBytes string
-	Name string
-	Kind string
+	MACAddress  string
+	MTUBytes    string
+	Name        string
+	Kind        string
 
 	// Bond
-	Mode string
+	Mode               string
 	TransmitHashPolicy string
 
 	// Vlan
 	VlanId string
 
 	//Bridge
-	HelloTimeSec string
+	HelloTimeSec    string
 	ForwardDelaySec string
-	AgeingTimeSec string
+	AgeingTimeSec   string
 }
 
 func (netdev *NetDev) CreateNetDevSectionConfig() string {
@@ -146,7 +148,7 @@ func NetdevdParseJsonFromHttpReq(req *http.Request) error {
 	}
 
 	netdevConfig := netdev.CreateNetDevSectionConfig()
-	config := [] string{ netdevConfig }
+	config := []string{netdevConfig}
 
 	fmt.Println(config)
 

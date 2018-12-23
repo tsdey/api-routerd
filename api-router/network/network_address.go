@@ -4,16 +4,17 @@ package network
 
 import (
 	"encoding/json"
-	"github.com/vishvananda/netlink"
-	log "github.com/sirupsen/logrus"
 	"net/http"
+
+	log "github.com/sirupsen/logrus"
+	"github.com/vishvananda/netlink"
 )
 
 type Address struct {
-	Action string  `json:"action"`
-	Link string    `json:"link"`
+	Action  string `json:"action"`
+	Link    string `json:"link"`
 	Address string `json:"address"`
-	Label string   `json:"label"`
+	Label   string `json:"label"`
 }
 
 func AddAddress(address *Address) {
@@ -31,7 +32,7 @@ func AddAddress(address *Address) {
 
 	r = netlink.AddrAdd(link, addr)
 	if r != nil {
-		log.Errorf("Failed to add Address %s: %s", r, addr, link)
+		log.Errorf("Failed to add Address %s to link %s: %s", r, addr, link)
 		return
 	}
 }

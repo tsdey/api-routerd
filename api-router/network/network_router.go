@@ -208,6 +208,25 @@ func NetworkdConfigureNetDev(rw http.ResponseWriter, req *http.Request) {
 	}
 }
 
+func NetworkdConfigureEthtool(rw http.ResponseWriter, req *http.Request) {
+	ethtool := new(Ethtool)
+
+	fmt.Println(req)
+
+	r := json.NewDecoder(req.Body).Decode(&ethtool);
+	if r != nil {
+		log.Error("Failed to decode json for ethtool: ", r)
+		rw.Write([]byte("500:" + r.Error()))
+		return
+	}
+
+	switch req.Method {
+	case "GET":
+		ethtool.GetEthTool(rw)
+		break
+	}
+}
+
 func RegisterRouterNetwork(router *mux.Router) {
 	n := router.PathPrefix("/network").Subrouter()
 	n.HandleFunc("/link/set", NetworkLinkSet)
@@ -221,7 +240,11 @@ func RegisterRouterNetwork(router *mux.Router) {
 	n.HandleFunc("/route/add", NetworkAddRoute)
 	n.HandleFunc("/route/del", NetworkDeleteRoute)
 
+	// systemd-networkd
 	networkd.InitNetworkd()
 	n.HandleFunc("/networkd/network", NetworkdConfigureNetwork)
 	n.HandleFunc("/networkd/netdev", NetworkdConfigureNetDev)
+
+	// ethtool
+	n.HandleFunc("/ethtool/get", NetworkdConfigureEthtool)
 }

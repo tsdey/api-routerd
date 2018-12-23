@@ -5,56 +5,57 @@ package networkd
 import (
 	"encoding/json"
 	"fmt"
-	log "github.com/sirupsen/logrus"
 	"io/ioutil"
+	"net"
+	"net/http"
 	"path/filepath"
 	"restgateway/api-router/share"
-	"net"
 	"strings"
-	"net/http"
+
+	log "github.com/sirupsen/logrus"
 )
 
 type Address struct {
 	Address string
-	Peer string
-	Label string
-	Scope string
+	Peer    string
+	Label   string
+	Scope   string
 }
 
 type Route struct {
-	Gateway string
-	GatewayOnlink string
-	Destination string
-	Source string
+	Gateway         string
+	GatewayOnlink   string
+	Destination     string
+	Source          string
 	PreferredSource string
-	Table string
+	Table           string
 }
 
 type Network struct {
-	MAC string
-	Name string
+	MAC    string
+	Name   string
 	Driver string
 
 	Addresses interface{}
-	Routes interface{}
+	Routes    interface{}
 
-	Gateway string
-	DHCP string
-	DNS string
-	Domains string
-	NTP string
-	IPv6AcceptRA string
+	Gateway             string
+	DHCP                string
+	DNS                 string
+	Domains             string
+	NTP                 string
+	IPv6AcceptRA        string
 	LinkLocalAddressing string
-	LLDP string
-	EmitLLDP string
+	LLDP                string
+	EmitLLDP            string
 
-	Bridge string
-	Bond string
-	VRF string
-	VLAN string
+	Bridge  string
+	Bond    string
+	VRF     string
+	VLAN    string
 	MACVLAN string
-	VXLAN string
-	Tunnel string
+	VXLAN   string
+	Tunnel  string
 }
 
 func (network *Network) CreateMatchSectionConfig() string {
@@ -445,7 +446,7 @@ func NetworkdParseJsonFromHttpReq(req *http.Request) error {
 	addressConfig := network.CreateAddressSectionConfig()
 	routeConfig := network.CreateRouteSectionConfig()
 
-	config := [] string{ matchConfig, networkConfig, addressConfig, routeConfig }
+	config := []string{matchConfig, networkConfig, addressConfig, routeConfig}
 
 	fmt.Println(config)
 

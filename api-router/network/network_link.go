@@ -5,20 +5,18 @@ package network
 import (
 	"encoding/json"
 	"errors"
-	"github.com/vishvananda/netlink"
 	log "github.com/sirupsen/logrus"
-//	"net"
-	//"restgateway/cmd/share"
+	"github.com/vishvananda/netlink"
+	"net/http"
 	"strconv"
 	"strings"
-	"net/http"
 )
 
 type Link struct {
-	Action string    `json:"action"`
-	Link   string    `json:"link"`
-	MTU    string    `json:"mtu"`
-	Kind   string    `json:"kind"`
+	Action  string   `json:"action"`
+	Link    string   `json:"link"`
+	MTU     string   `json:"mtu"`
+	Kind    string   `json:"kind"`
 	Enslave []string `json:"enslave"`
 }
 
@@ -31,7 +29,7 @@ type LinkInfo struct {
 	OperState    string `json:"LinkOperState"`
 }
 
-func (req *Link) LinkSetMasterBridge() (error) {
+func (req *Link) LinkSetMasterBridge() error {
 	bridge, r := netlink.LinkByName(req.Link)
 	if r != nil {
 		log.Errorf("Failed to find bridge link %s: %s", req.Link, r)
@@ -47,7 +45,7 @@ func (req *Link) LinkSetMasterBridge() (error) {
 	for _, n := range req.Enslave {
 		link, r := netlink.LinkByName(n)
 		if r != nil {
-			log.Errorf("Failed to find slave link %s: %s", r)
+			log.Errorf("Failed to find slave link %s: %s", n, r)
 			continue
 		}
 
@@ -60,7 +58,7 @@ func (req *Link) LinkSetMasterBridge() (error) {
 	return nil
 }
 
-func (req *Link) LinkCreateBridge() (error) {
+func (req *Link) LinkCreateBridge() error {
 	_, r := netlink.LinkByName(req.Link)
 	if r == nil {
 		log.Infof("Bridge link %s exists. Using the bridge", req.Link)
@@ -78,7 +76,7 @@ func (req *Link) LinkCreateBridge() (error) {
 	return req.LinkSetMasterBridge()
 }
 
-func (req *Link)LinkDelete()(error) {
+func (req *Link) LinkDelete() error {
 	l, r := netlink.LinkByName(req.Link)
 	if r != nil {
 		log.Errorf("Failed to find link %s: %s", req.Link, r)
@@ -86,7 +84,7 @@ func (req *Link)LinkDelete()(error) {
 	}
 
 	r = netlink.LinkDel(l)
-	if (r != nil) {
+	if r != nil {
 		log.Errorf("Failed to delete link %s up: %s", l, r)
 		return r
 	}
@@ -94,7 +92,7 @@ func (req *Link)LinkDelete()(error) {
 	return nil
 }
 
-func LinkSetUp(link string)(error) {
+func LinkSetUp(link string) error {
 	l, r := netlink.LinkByName(link)
 	if r != nil {
 		log.Errorf("Failed to find link %s: %s", link, r)
@@ -102,7 +100,7 @@ func LinkSetUp(link string)(error) {
 	}
 
 	r = netlink.LinkSetUp(l)
-	if (r != nil) {
+	if r != nil {
 		log.Errorf("Failed to set link %s up: %s", l, r)
 		return r
 	}
@@ -110,7 +108,7 @@ func LinkSetUp(link string)(error) {
 	return nil
 }
 
-func LinkSetDown(link string) (error) {
+func LinkSetDown(link string) error {
 	l, r := netlink.LinkByName(link)
 	if r != nil {
 		log.Errorf("Failed to find link %s: %s", link, r)
@@ -118,7 +116,7 @@ func LinkSetDown(link string) (error) {
 	}
 
 	r = netlink.LinkSetDown(l)
-	if (r != nil) {
+	if r != nil {
 		log.Errorf("Failed to set link down %s: %s", l, r)
 		return r
 	}
@@ -126,7 +124,7 @@ func LinkSetDown(link string) (error) {
 	return nil
 }
 
-func LinkSetMTU(link string, mtu int) (error) {
+func LinkSetMTU(link string, mtu int) error {
 	l, r := netlink.LinkByName(link)
 	if r != nil {
 		log.Errorf("Failed to find link %s: %s", link, r)
@@ -134,7 +132,7 @@ func LinkSetMTU(link string, mtu int) (error) {
 	}
 
 	r = netlink.LinkSetMTU(l, mtu)
-	if (r != nil) {
+	if r != nil {
 		log.Errorf("Failed to set link %s MTU %d: %s", link, mtu, r)
 		return r
 	}
@@ -142,7 +140,7 @@ func LinkSetMTU(link string, mtu int) (error) {
 	return nil
 }
 
-func (req *Link) SetLink() (error){
+func (req *Link) SetLink() error {
 
 	link := strings.TrimSpace(req.Link)
 
@@ -154,7 +152,7 @@ func (req *Link) SetLink() (error){
 	case "set-link-mtu":
 
 		mtu, r := strconv.ParseInt(strings.TrimSpace(req.MTU), 10, 64)
-		if (r != nil) {
+		if r != nil {
 			log.Errorf("Failed to parse received link %s MTU %s: %s", req.Link, req.MTU, r)
 			return r
 		}
@@ -168,14 +166,14 @@ func (req *Link) SetLink() (error){
 func (req *Link) GetLink(rw http.ResponseWriter) {
 	link, r := netlink.LinkByName(strings.TrimSpace(req.Link))
 	if r != nil {
-		log.Errorf("Failed to find link %s: ", req.Link, r)
+		log.Errorf("Failed to find link %s: %s", req.Link, r)
 		return
 	}
 
-	linkInfo := LinkInfo {
-		Index: link.Attrs().Index,
-		MTU: link.Attrs().MTU,
-		Name: link.Attrs().Name,
+	linkInfo := LinkInfo{
+		Index:        link.Attrs().Index,
+		MTU:          link.Attrs().MTU,
+		Name:         link.Attrs().Name,
 		HardwareAddr: link.Attrs().HardwareAddr.String(),
 	}
 
