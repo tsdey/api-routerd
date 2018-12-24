@@ -53,7 +53,7 @@ export OS_OUTPUT_GOPATH=1
 /home/sus/go/src
 ```
 
-Install libs
+#### Install libs
 ```
 $ go get github.com/sirupsen/logrus
 $ go get github.com/gorilla/mux
@@ -65,7 +65,7 @@ $ go get github.com/safchain/ethtool
 $ go get github.com/go-ini/ini
 ```
 
-Now build it
+#### Now build it
 ```
 [sus@Zeus src]$ git clone https://github.com/RestGW/api-routerd
 [sus@Zeus src]$ cd api-routerd/cmd
@@ -75,7 +75,7 @@ Now build it
 
 ```
 
-How to configure IP and Port ?
+#### How to configure IP and Port ?
 
 Conf dir: ```/etc/api-routerd/```
 Conf File: ```api-routerd.conf```
@@ -87,7 +87,7 @@ IPAddress=0.0.0.0
 Port=8080
 ```
 
-Configure autorized user:
+#### How to configure users ?
 Add user name and authentication string in space separated lines
 
 ```
@@ -110,7 +110,7 @@ Use case: systemd
 
 [sus@Zeus]$ curl --header "Content-Type: application/json" --request GET --data '{"action":"status","unit":"sshd.service"}' --header "X-Session-Token: aaaaa" http://localhost:8080/service/systemd
 ```
-Use Case:
+Use case:
          command: "GET"
                        "netdev, version", "vm", "netstat", "interface-stat":
                        "swap-memory", "virtual-memory", "cpuinfo","cputimestat","avgstat":
@@ -152,9 +152,9 @@ More example
 
 ```
 
-use case configure link
+Use case configure link
 
-set address
+Set address
 ```
 [sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request PUT --data '{"action":"add-address", "address":"192.168.1.131/24", "link":"dummy"}' --header "X-Session-Token: aaaaa" http://localhost:8080/network/address/add
 [sus@Zeus api-router]$ ip addr show dummy
@@ -165,7 +165,7 @@ set address
 
 
 ```
-set link up/down
+Set link up/down
 ```
 [sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request POST --data '{"action":"set-link-up", "link":"dummy"}' --header "X-Session-Token: aaaaa" http://localhost:8080/network/link/set
 
@@ -177,7 +177,7 @@ set link up/down
        valid_lft forever preferred_lft forever
 ```
 
-set MTU
+Set MTU
  ```
 [sus@Zeus api-router]$curl --header "Content-Type: application/json" --request POST --data '{"action":"set-link-mtu", "link":"dummy", "mtu":"1280"}' http://localhost:8080/network/link/set
 [sus@Zeus api-router]$ ip addr show dummy
@@ -187,7 +187,7 @@ set MTU
        valid_lft forever preferred_lft forever
 ```
 
-Set GateWay
+Set Default GateWay
 ```
  sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request PUT --data '{"action":"add-default-gw", "link":"dummy", "gateway":"192.168.1.1/24", "onlink":"true"}' --header "X-Session-Token: aaaaa" http://localhost:8080/network/route/add
 [sus@Zeus api-router]$ ip route
@@ -210,7 +210,7 @@ sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request P
 
 ```
 
-delete a link
+Delete a link
 ```
 sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request DELETE --data '{"action":"delete-link", "link":"test-br"}' --header "X-Session-Token: aaaaa" http://localhost:8080/network/link/delete
 ```
@@ -312,7 +312,7 @@ proc: netstat protocol tcp
 ```
 
 
-ethtool
+#### ethtool
 ```
 curl --header "Content-Type: application/json" --request GET --data '{"action":"get-link-features", "link":"eth0"}' --header "X-Session-Token: aaaaa" http://localhost:8080/network/ethtool/get
 curl --header "Content-Type: application/json" --request GET --data '{"action":"get-link-bus", "link":"eth0"}' --header "X-Session-Token: aaaaa" http://localhost:8080/network/ethtool/get
