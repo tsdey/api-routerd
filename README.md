@@ -1,8 +1,8 @@
 ![Logo](https://ibin.co/4R6Hzr2H7l4A.png)
 
-#### A RestAPI GateWay For Lnux
+#### A RestAPI GateWay For Linux
 
-A super light weight remote management tool which uses REST API for real time configuration and performance as well as health monitoring for systems (containers) and applications.
+A super light weight remote management tool which uses REST API for real time configuration and performance as well as health monitoring for systems (containers) and applications. It provides fast API based monitoring without affecting the system it's running on.
 
 
 #### Objectives:
