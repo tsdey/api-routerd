@@ -1,0 +1,13 @@
+# SPDX-License-Identifier: Apache-2.0
+
+[Unit]
+Description=A REST API Microservice Gateway for Linux
+Documentation=man:api-routerd.conf(5)
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/api-routerd
+WatchdogSec=20min
+
+[Install]
+WantedBy=multi-user.target
