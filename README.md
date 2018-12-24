@@ -53,7 +53,7 @@ export OS_OUTPUT_GOPATH=1
 /home/sus/go/src
 ```
 
-#### Install libs
+##### Install libs
 ```
 $ go get github.com/sirupsen/logrus
 $ go get github.com/gorilla/mux
@@ -65,7 +65,7 @@ $ go get github.com/safchain/ethtool
 $ go get github.com/go-ini/ini
 ```
 
-#### Now build it
+##### Now build it
 ```
 [sus@Zeus src]$ git clone https://github.com/RestGW/api-routerd
 [sus@Zeus src]$ cd api-routerd/cmd
@@ -75,7 +75,7 @@ $ go get github.com/go-ini/ini
 
 ```
 
-#### How to configure IP and Port ?
+##### How to configure IP and Port ?
 
 Conf dir: ```/etc/api-routerd/```
 Conf File: ```api-routerd.conf```
@@ -87,7 +87,7 @@ IPAddress=0.0.0.0
 Port=8080
 ```
 
-#### How to configure users ?
+##### How to configure users ?
 Add user name and authentication string in space separated lines
 
 ```
@@ -152,7 +152,7 @@ More example
 
 ```
 
-Use case configure link
+##### Use case configure link
 
 Set address
 ```
@@ -215,7 +215,7 @@ Delete a link
 sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request DELETE --data '{"action":"delete-link", "link":"test-br"}' --header "X-Session-Token: aaaaa" http://localhost:8080/network/link/delete
 ```
 
-Use Case: networkd
+##### Use Case: networkd
 ```
 [sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request PUT --data '{"Name":"eth0", "DHCP":"yes", "LLDP":"yes","Addresses": [{"Address":"192.168.1.2", "Label":"test1"},{"Address":"192.168.1.4", "Label":"test3", "Peer":"192.168.1.5"}], "Routes": [{"Gateway":"192.168.1.1",  "GatewayOnlink":"true"},{"Destination":"192.168.1.10","Table":"10"}]}' --header "X-Session-Token: aaaaa" http://localhost:8080/network/networkd/network
 
@@ -312,11 +312,11 @@ proc: netstat protocol tcp
 ```
 
 
-#### ethtool
+##### ethtool
 ```
-curl --header "Content-Type: application/json" --request GET --data '{"action":"get-link-features", "link":"eth0"}' --header "X-Session-Token: aaaaa" http://localhost:8080/network/ethtool/get
-curl --header "Content-Type: application/json" --request GET --data '{"action":"get-link-bus", "link":"eth0"}' --header "X-Session-Token: aaaaa" http://localhost:8080/network/ethtool/get
-curl --header "Content-Type: application/json" --request GET --data '{"action":"get-link-stat", "link":"eth0"}' --header "X-Session-Token: aaaaa" http://localhost:8080/network/ethtool/get
+[sus@Zeus src]$ curl --header "Content-Type: application/json" --request GET --data '{"action":"get-link-features", "link":"eth0"}' --header "X-Session-Token: aaaaa" http://localhost:8080/network/ethtool/get
+[sus@Zeus src]$ curl --header "Content-Type: application/json" --request GET --data '{"action":"get-link-bus", "link":"eth0"}' --header "X-Session-Token: aaaaa" http://localhost:8080/network/ethtool/get
+[sus@Zeus src]$ curl --header "Content-Type: application/json" --request GET --data '{"action":"get-link-stat", "link":"eth0"}' --header "X-Session-Token: aaaaa" http://localhost:8080/network/ethtool/get
 ```
 
 example:
