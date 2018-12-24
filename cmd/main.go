@@ -6,15 +6,17 @@ import (
 	"api-routerd/cmd/router"
 	"api-routerd/cmd/share"
 	log "github.com/sirupsen/logrus"
+	"github.com/go-ini/ini"
 	"flag"
 	"runtime"
 )
 
 // Version app version
 const Version = "0.1"
+const ConfPath = "/etc/api-routerd.conf"
 
-var portFlag string
 var ipFlag string
+var portFlag string
 var tokenFlag string
 
 func init() {
@@ -29,8 +31,30 @@ func init() {
 	flag.StringVar(&tokenFlag, "token", defaultToken, "The token file for authentication.")
 }
 
+func InitConf() {
+	cfg, r := ini.Load(ConfPath)
+	if r != nil {
+		log.Errorf("Fail to read conf file '%s': %v", ConfPath, r)
+		return
+	}
+
+	ip := cfg.Section("Network").Key("IPAddress").String()
+	port := cfg.Section("Network").Key("Port").String()
+
+	log.Infof("Conf file IPAddress=%s, Port=%s", ip, port)
+
+	if ip != "" {
+		ipFlag = ip
+	}
+
+	if port != "" {
+		portFlag = port
+	}
+}
+
 func main() {
 	share.InitLog()
+	InitConf()
 	flag.Parse()
 
 	log.Infof("api-routerd: v%s (built %s)", Version, runtime.Version())

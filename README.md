@@ -62,6 +62,7 @@ $ go get github.com/shirou/gopsutil
 $ go get github.com/coreos/go-systemd/dbus
 $ go get github.com/godbus/dbus
 $ go get github.com/safchain/ethtool
+$ go get github.com/go-ini/ini
 ```
 
 Now build it
@@ -71,6 +72,15 @@ Now build it
 [sus@Zeus cmd]$ pwd
 /home/sus/go/src/api-routerd/cmd
 [sus@Zeus cmd]$ go build -o api-routerd
+
+```
+
+Conf file
+```
+$ cat /etc/api-routerd.conf
+[Network]
+IPAddress=0.0.0.0
+Port=8080
 
 ```
 
