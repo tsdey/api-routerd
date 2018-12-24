@@ -18,18 +18,15 @@ const ConfPath = "/etc/api-routerd/api-routerd.conf"
 
 var ipFlag string
 var portFlag string
-var tokenFlag string
 
 func init() {
 	const (
 		defaultIP  = "0.0.0.0"
 		defaultPort  = "8080"
-		defaultToken = "token.txt"
 	)
 
 	flag.StringVar(&ipFlag, "ip", defaultIP, "The server IP address.")
 	flag.StringVar(&portFlag, "port", defaultPort, "The server port.")
-	flag.StringVar(&tokenFlag, "token", defaultToken, "The token file for authentication.")
 }
 
 func InitConf() {
