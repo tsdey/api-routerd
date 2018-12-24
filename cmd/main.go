@@ -9,11 +9,12 @@ import (
 	"github.com/go-ini/ini"
 	"flag"
 	"runtime"
+	"os"
 )
 
 // Version app version
 const Version = "0.1"
-const ConfPath = "/etc/api-routerd.conf"
+const ConfPath = "/etc/api-routerd/api-routerd.conf"
 
 var ipFlag string
 var portFlag string
@@ -43,11 +44,8 @@ func InitConf() {
 
 	log.Infof("Conf file IPAddress=%s, Port=%s", ip, port)
 
-	if ip != "" {
+	if ip != "" && port != ""{
 		ipFlag = ip
-	}
-
-	if port != "" {
 		portFlag = port
 	}
 }
@@ -60,5 +58,9 @@ func main() {
 	log.Infof("api-routerd: v%s (built %s)", Version, runtime.Version())
 	log.Infof("Start Server at %s:%s", ipFlag, portFlag)
 
-	router.StartRouter(ipFlag, portFlag)
+	r := router.StartRouter(ipFlag, portFlag)
+	if r != nil {
+		log.Fatal("Failed to init router: %s", r)
+		os.Exit(1)
+	}
 }
