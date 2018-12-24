@@ -12,7 +12,7 @@ import (
 	"net/http"
 )
 
-func StartRouter() {
+func StartRouter(ip string, port string) {
 	router := mux.NewRouter()
 
 	// Register services
@@ -21,5 +21,5 @@ func StartRouter() {
 	proc.RegisterRouterProc(router)
 	systemd.RegisterRouterSystemd(router)
 
-	log.Fatal(http.ListenAndServe(":8080", router))
+	log.Fatal(http.ListenAndServe(ip + ":" + port, router))
 }
