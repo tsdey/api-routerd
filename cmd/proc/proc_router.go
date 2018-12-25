@@ -16,78 +16,114 @@ type ProcInfo struct {
 func GetProc(rw http.ResponseWriter, req *http.Request) {
 	proc := new(ProcInfo)
 
-	_= json.NewDecoder(req.Body).Decode(&proc);
+	err := json.NewDecoder(req.Body).Decode(&proc);
+	if err != nil {
+		http.Error(rw, "Failed to decode JSON", http.StatusInternalServerError)
+		return
+	}
 
 	switch req.Method {
 	case "GET":
 		switch proc.Path {
 		case "netdev":
-			GetNetDev(rw)
+			err = GetNetDev(rw)
 			break
 		case "version":
-			GetVersion(rw)
+			err = GetVersion(rw)
 			break
 		case "netstat":
-			GetNetStat(rw, proc.Property)
+			err = GetNetStat(rw, proc.Property)
 			break
 		case "interface-stat":
-			GetInterfaceStat(rw)
+			err = GetInterfaceStat(rw)
 			break
 		case "swap-memory":
-			GetSwapMemoryStat(rw)
+			err = GetSwapMemoryStat(rw)
 			break
 		case "virtual-memory":
-			GetVirtualMemoryStat(rw)
+			err = GetVirtualMemoryStat(rw)
 			break
 		case "cpuinfo":
-			GetCPUInfo(rw)
+			err = GetCPUInfo(rw)
 			break
 		case "cputimestat":
-			GetCPUTimeStat(rw)
+			err = GetCPUTimeStat(rw)
 			break
 		case "avgstat":
-			GetAvgStat(rw)
+			err = GetAvgStat(rw)
 			break
 		}
+	}
+
+	if err != nil {
+		http.Error(rw, err.Error(), http.StatusInternalServerError)
 	}
 }
 
 func ConfigureProcSysVM(rw http.ResponseWriter, req *http.Request) {
 	proc := new(ProcVM)
 
-	_= json.NewDecoder(req.Body).Decode(&proc);
+	err := json.NewDecoder(req.Body).Decode(&proc);
+	if err != nil {
+		http.Error(rw, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
 	switch req.Method {
 	case "GET":
-		proc.GetVM(rw)
+		err = proc.GetVM(rw)
 		break
 	case "PUT":
-		proc.SetVM(rw)
+		err = proc.SetVM(rw)
 		break
 	}
-}
 
-func GetProcMisc(rw http.ResponseWriter, req *http.Request) {
-	_= json.NewDecoder(req.Body);
-
-	switch req.Method {
-	case "GET":
-		GetMisc(rw)
-		break
+	if err != nil {
+		http.Error(rw, "Failed to configure VM", http.StatusInternalServerError)
 	}
 }
 
 func ConfigureProcSysNet(rw http.ResponseWriter, req *http.Request) {
 	proc := new(ProcSysNet)
 
-	_= json.NewDecoder(req.Body).Decode(&proc);
+	err := json.NewDecoder(req.Body).Decode(&proc);
+	if err != nil {
+		http.Error(rw, "Failed to decode JSON", http.StatusInternalServerError)
+		return
+	}
 
 	switch req.Method {
 	case "GET":
-		proc.GetProcSysNet(rw)
+		err = proc.GetProcSysNet(rw)
 		break
 	case "PUT":
-		proc.SetProcSysNet(rw)
+		err = proc.SetProcSysNet(rw)
+		break
+	}
+
+	if err != nil {
+		http.Error(rw, "Failed to configure /proc/sys/net", http.StatusInternalServerError)
+	}
+}
+
+func GetProcMisc(rw http.ResponseWriter, req *http.Request) {
+	switch req.Method {
+	case "GET":
+		err := GetMisc(rw)
+		if err != nil {
+			http.Error(rw, "Failed to get /proc/misc", http.StatusInternalServerError)
+		}
+		break
+	}
+}
+
+func GetProcNetArp(rw http.ResponseWriter, req *http.Request) {
+	switch req.Method {
+	case "GET":
+		err := GetNetArp(rw)
+		if err != nil {
+			http.Error(rw, "Failed to get /proc/net/arp", http.StatusInternalServerError)
+		}
 		break
 	}
 }
@@ -96,6 +132,7 @@ func RegisterRouterProc(router *mux.Router) {
 	n := router.PathPrefix("/proc").Subrouter()
 	n.HandleFunc("/", GetProc)
 	n.HandleFunc("/misc", GetProcMisc)
+	n.HandleFunc("/net/arp", GetProcNetArp)
 	n.HandleFunc("/sys/vm", ConfigureProcSysVM)
 	n.HandleFunc("/sys/net", ConfigureProcSysNet)
 }

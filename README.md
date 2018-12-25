@@ -136,11 +136,19 @@ server.crt  server.key
 
 ```
 
-Now start curl
+Now start curl using ***https***
 ```
-[sus@Zeus tls]$ curl -k --header "X-Session-Token: aaaaa" --header "Content-Type: application/json" --request GET --data '{"action":"get-link-features", "link":"vmnet8"}' h80/network/ethtool/get --tlsv1.2
+[sus@Zeus tls]$ curl -k --header "X-Session-Token: aaaaa" --header "Content-Type: application/json" --request GET --data '{"action":"get-link-features", "link":"vmnet8"}' https://localhost:8080/network/ethtool/get --tlsv1.2
 
 {"esp-hw-offload":false,"esp-tx-csum-hw-offload":false,"fcoe-mtu":false,"highdma":false,"hw-tc-offload":false,"l2-fwd-offload":false,"loopback":false,"netns-local":false,"rx-all":false,"rx-checksum":false,"rx-fcs":false,"rx-gro":true,"rx-gro-hw":false,"rx-hashing":false,"rx-lro":false,"rx-ntuple-filter":false,"rx-udp_tunnel-port-offload":false,"rx-vlan-filter":false,"rx-vlan-hw-parse":false,"rx-vlan-stag-filter":false,"rx-vlan-stag-hw-parse":false,"tls-hw-record":false,"tls-hw-rx-offload":false,"tls-hw-tx-offload":false,"tx-checksum-fcoe-crc":false,"tx-checksum-ip-generic":false,"tx-checksum-ipv4":false,"tx-checksum-ipv6":false,"tx-checksum-sctp":false,"tx-esp-segmentation":false,"tx-fcoe-segmentation":false,"tx-generic-segmentation":false,"tx-gre-csum-segmentation":false,"tx-gre-segmentation":false,"tx-gso-partial":false,"tx-gso-robust":false,"tx-ipxip4-segmentation":false,"tx-ipxip6-segmentation":false,"tx-lockless":false,"tx-nocache-copy":false,"tx-scatter-gather":false,"tx-scatter-gather-fraglist":false,"tx-sctp-segmentation":false,"tx-tcp-ecn-segmentation":false,"tx-tcp-mangleid-segmentation":false,"tx-tcp-segmentation":false,"tx-tcp6-segmentation":false,"tx-udp-segmentation":false,"tx-udp_tnl-csum-segmentation":false,"tx-udp_tnl-segmentation":false,"tx-vlan-hw-insert":false,"tx-vlan-stag-hw-insert":false,"vlan-challenged":false}
+```
+
+```
+[sus@Zeus cmd]$ curl --header "Content-Type: application/json" --request GET --header "X-Session-Token: aaaaa" https://localhost:8080/proc/misc --tlsv1.2 -k
+{"130":"watchdog","144":"nvram","165":"vmmon","183":"hw_random","184":"microcode","227":"mcelog","228":"hpet","229":"fuse","231":"snapshot","232":"kvm","235":"autofs","236":"device-mapper","53":"vboxnetctl","54":"vsock","55":"vmci","56":"vboxdrvu","57":"vboxdrv","58":"rfkill","59":"memory_bandwidth","60":"network_throughput","61":"network_latency","62":"cpu_dma_latency","63":"vga_arbiter"}
+
+[sus@Zeurl --header "Content-Type: application/json" --request GET --header "X-Session-Token: aaaaa" https://localhost:8080/proc/net/arp --tlsv1.2 -k
+[{"ip_address":"192.168.225.1","hw_type":"0x1","flags":"0x2","hw_address":"1a:89:20:38:68:8f","mask":"*","device":"wlp4s0"}]
 ```
 Use case: systemd
 ```

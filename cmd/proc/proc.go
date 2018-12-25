@@ -18,169 +18,180 @@ import (
 )
 
 const ProcMiscPath = "/proc/misc"
+const ProcNetArpPath = "/proc/net/arp"
 
-func GetVersion(rw http.ResponseWriter) error {
-	infostat, r := host.Info()
-	if r != nil {
-		return r
+type NetArp struct {
+	IPAddress string `json:"ip_address"`
+	HWType    string `json:"hw_type"`
+	Flags     string `json:"flags"`
+	HWAddress string `json:"hw_address"`
+	Mask      string `json:"mask"`
+	Device    string `json:"device"`
+}
+
+func GetVersion(rw http.ResponseWriter) (error) {
+	infostat, err := host.Info()
+	if err != nil {
+		return err
 	}
 
-	b, err := json.Marshal(infostat,)
+	j, err := json.Marshal(infostat)
 	if err != nil {
 		http.Error(rw, err.Error(), http.StatusInternalServerError)
 		return errors.New("Json encoding: Version")
 	}
 
 	rw.WriteHeader(http.StatusOK)
-	rw.Write(b)
+	rw.Write(j)
 
 	return nil
 }
 
-func GetNetStat(rw http.ResponseWriter, protocol string) error {
-	conn, r := net.Connections(protocol)
-	if r != nil {
-		return r
+func GetNetStat(rw http.ResponseWriter, protocol string) (error) {
+	conn, err := net.Connections(protocol)
+	if err != nil {
+		return err
 	}
 
-	b, err := json.Marshal(conn)
+	j, err := json.Marshal(conn)
 	if err != nil {
 		http.Error(rw, err.Error(), http.StatusInternalServerError)
 		return errors.New("Json encoding netstat")
 	}
 
 	rw.WriteHeader(http.StatusOK)
-	rw.Write(b)
+	rw.Write(j)
 
 	return nil
 }
 
-func GetNetDev(rw http.ResponseWriter) error {
-	netdev, r := net.IOCounters(true)
-	if r != nil {
-		return r
+func GetNetDev(rw http.ResponseWriter) (error) {
+	netdev, err := net.IOCounters(true)
+	if err != nil {
+		return err
 	}
 
-	b, err := json.Marshal(netdev)
+	j, err := json.Marshal(netdev)
 	if err != nil {
 		http.Error(rw, err.Error(), http.StatusInternalServerError)
 		return errors.New("Json encoding NetDev")
 	}
 
 	rw.WriteHeader(http.StatusOK)
-	rw.Write(b)
+	rw.Write(j)
 
 	return nil
 }
 
-func GetInterfaceStat(rw http.ResponseWriter) error {
-	interfaces, r := net.Interfaces()
-	if r != nil {
-		return r
+func GetInterfaceStat(rw http.ResponseWriter) (error) {
+	interfaces, err := net.Interfaces()
+	if err != nil {
+		return err
 	}
 
-	b, err := json.Marshal(interfaces)
+	j, err := json.Marshal(interfaces)
 	if err != nil {
 		http.Error(rw, err.Error(), http.StatusInternalServerError)
 		return errors.New("Json encoding interface stat")
 	}
 
 	rw.WriteHeader(http.StatusOK)
-	rw.Write(b)
+	rw.Write(j)
 
 	return nil
 }
 
-func GetSwapMemoryStat(rw http.ResponseWriter) error {
-	swap, r := mem.SwapMemory()
-	if r != nil {
-		return r
+func GetSwapMemoryStat(rw http.ResponseWriter) (error) {
+	swap, err := mem.SwapMemory()
+	if err != nil {
+		return err
 	}
 
-	b, err := json.Marshal(swap)
+	j, err := json.Marshal(swap)
 	if err != nil {
 		http.Error(rw, err.Error(), http.StatusInternalServerError)
 		return errors.New("Json encoding memory stat")
 	}
 
 	rw.WriteHeader(http.StatusOK)
-	rw.Write(b)
+	rw.Write(j)
 
 	return nil
 }
 
-func GetVirtualMemoryStat(rw http.ResponseWriter) error {
-	virt, r := mem.VirtualMemory()
-	if r != nil {
-		return r
+func GetVirtualMemoryStat(rw http.ResponseWriter) (error) {
+	virt, err := mem.VirtualMemory()
+	if err != nil {
+		return err
 	}
 
-	b, err := json.Marshal(virt)
+	j, err := json.Marshal(virt)
 	if err != nil {
 		http.Error(rw, err.Error(), http.StatusInternalServerError)
 		return errors.New("Json encoding VM stat")
 	}
+
 	rw.WriteHeader(http.StatusOK)
-	rw.Write(b)
+	rw.Write(j)
 
 	return nil
 }
 
-func GetCPUInfo(rw http.ResponseWriter) error {
-	cpus, r := cpu.Info()
-	if r != nil {
-		return r
+func GetCPUInfo(rw http.ResponseWriter) (error) {
+	cpus, err := cpu.Info()
+	if err != nil {
+		return err
 	}
 
-	b, err := json.Marshal(cpus)
+	j, err := json.Marshal(cpus)
 	if err != nil {
 		http.Error(rw, err.Error(), http.StatusInternalServerError)
 		return errors.New("Json encoding CPU Info")
 	}
 
 	rw.WriteHeader(http.StatusOK)
-	rw.Write(b)
+	rw.Write(j)
 
 	return nil
 }
 
-func GetCPUTimeStat(rw http.ResponseWriter) error {
-	cpus, r := cpu.Times(true)
-	if r != nil {
-		return r
+func GetCPUTimeStat(rw http.ResponseWriter) (error) {
+	cpus, err := cpu.Times(true)
+	if err != nil {
+		return err
 	}
 
-	b, err := json.Marshal(cpus)
+	j, err := json.Marshal(cpus)
 	if err != nil {
 		http.Error(rw, err.Error(), http.StatusInternalServerError)
 		return errors.New("Json encoding CPU stat")
 	}
 
 	rw.WriteHeader(http.StatusOK)
-	rw.Write(b)
+	rw.Write(j)
 
 	return nil
 }
 
-func GetAvgStat(rw http.ResponseWriter) error {
+func GetAvgStat(rw http.ResponseWriter) (error) {
 	avgstat, r := load.Avg()
 	if r != nil {
 		return r
 	}
 
-	b, err := json.Marshal(avgstat)
+	j, err := json.Marshal(avgstat)
 	if err != nil {
 		http.Error(rw, err.Error(), http.StatusInternalServerError)
 		return errors.New("Json encoding avg stat")
 	}
 
 	rw.WriteHeader(http.StatusOK)
-	rw.Write(b)
+	rw.Write(j)
 
 	return nil
 }
 
-func GetMisc(rw http.ResponseWriter) error {
+func GetMisc(rw http.ResponseWriter) (error) {
 	lines, err := share.ReadFullFile(ProcMiscPath)
 	if err != nil {
 		log.Fatal("Failed to read: %s", ProcMiscPath)
@@ -198,14 +209,65 @@ func GetMisc(rw http.ResponseWriter) error {
 		miscMap[deviceNum] = fields[1]
 	}
 
-	b, err := json.Marshal(miscMap)
+	j, err := json.Marshal(miscMap)
 	if err != nil {
 		http.Error(rw, err.Error(), http.StatusInternalServerError)
 		return errors.New("Json encoding")
 	}
 
 	rw.WriteHeader(http.StatusOK)
-	rw.Write(b)
+	rw.Write(j)
+
+	return nil
+}
+
+func GetNetArp(rw http.ResponseWriter) (error) {
+	lines, err := share.ReadFullFile(ProcNetArpPath)
+	if err != nil {
+		log.Fatal("Failed to read: %s", ProcNetArpPath)
+		return errors.New("Failed to read ProcNetArpPath")
+	}
+
+	netarp := make([]NetArp, len(lines)-1)
+	for i, line := range lines {
+		if i == 0 {
+			continue
+		}
+
+		fields := strings.Fields(line)
+
+		if len(fields) < 6 {
+			continue
+		}
+
+		arp := NetArp{}
+		for i, f := range fields {
+			switch i {
+			case 0:
+				arp.IPAddress = f
+			case 1:
+				arp.HWType = f
+			case 2:
+				arp.Flags = f
+			case 3:
+				arp.HWAddress = f
+			case 4:
+				arp.Mask = f
+			case 5:
+				arp.Device = f
+			}
+		}
+		netarp[i-1] = arp
+	}
+
+	j, err := json.Marshal(netarp)
+	if err != nil {
+		http.Error(rw, err.Error(), http.StatusInternalServerError)
+		return errors.New("Json encoding ARP")
+	}
+
+	rw.WriteHeader(http.StatusOK)
+	rw.Write(j)
 
 	return nil
 }
