@@ -104,15 +104,30 @@ $ curl --header "Content-Type: application/json" --request GET --data '{"path":"
 Generate private key (.key)
 ```
 # Key considerations for algorithm "RSA" ≥ 2048-bit
+$ openssl genrsa -out server.key 2048
+Generating RSA private key, 2048 bit long modulus (2 primes)
+.......................+++++
+.+++++
+e is 65537 (0x010001)
+
 openssl genrsa -out server.key 2048
 
-# Key considerations for algorithm "ECDSA" ≥ secp384r1
-# List ECDSA the supported curves (openssl ecparam -list_curves)
-openssl ecparam -genkey -name secp384r1 -out server.key
+# openssl ecparam -genkey -name secp384r1 -out server.key
 Generation of self-signed(x509) public key (PEM-encodings .pem|.crt) based on the private (.key)
-openssl req -new -x509 -sha256 -key server.key -out server.crt -days 3650
+
+$ openssl req -new -x509 -sha256 -key server.key -out server.crt -days 3650
+You are about to be asked to enter information that will be incorporated
+into your certificate request.
+What you are about to enter is what is called a Distinguished Name or a DN.
+There are quite a few fields but you can leave some blank
+For some fields there will be a default value,
+If you enter '.', the field will be left blank.
+-----
+Country Name (2 letter code) [XX]:
+
+
 ```
-Place server.crt and server.key /etc/api-routerd/tls
+Place ```server.crt``` and ```server.key``` in the dir /etc/api-routerd/tls
 
 ```
 [root@Zeus tls]# ls
@@ -140,10 +155,18 @@ Use case: systemd
 
 [sus@Zeus]$ curl --header "Content-Type: application/json" --request GET --data '{"action":"status","unit":"sshd.service"}' --header "X-Session-Token: aaaaa" http://localhost:8080/service/systemd
 ```
-Use case:
-         command: "GET"
-                       "netdev, version", "vm", "netstat", "interface-stat":
-                       "swap-memory", "virtual-memory", "cpuinfo","cputimestat","avgstat":
+Use case: 
+* command: "GET"
+  * netdev 
+  * version 
+  * vm
+  * netstat
+  * interface-stat
+  * swap-memory
+  * virtual-memory 
+  * cpuinfo
+  * cputimestat
+  * avgstat
 
 ```
 sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --data '{"path":"netdev"}' --header "X-Session-Token: aaaaa" http://localhost:8080/proc/
