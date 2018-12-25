@@ -13,14 +13,10 @@ import (
 	"github.com/gorilla/mux"
 	log "github.com/sirupsen/logrus"
 	"net/http"
-	"fmt"
 )
 
 func StartRouter(ip string, port string, tlsCertPath string, tlsKeyPath string) error {
 	router := mux.NewRouter()
-
-	fmt.Println(tlsCertPath)
-	fmt.Println(tlsKeyPath)
 
 	// Register services
 	hostname.RegisterRouterHostname(router)
@@ -50,7 +46,7 @@ func StartRouter(ip string, port string, tlsCertPath string, tlsKeyPath string) 
 			TLSNextProto: make(map[string]func(*http.Server, *tls.Conn, http.Handler), 0),
 		}
 
-		log.Info("Starting api-routerd in tls mode")
+		log.Info("Starting api-routerd in TLS mode")
 
 		log.Fatal(srv.ListenAndServeTLS(tlsCertPath, tlsKeyPath))
 
