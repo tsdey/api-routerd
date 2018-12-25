@@ -99,7 +99,7 @@ Joy ccccc
 $ curl --header "Content-Type: application/json" --request GET --data '{"path":"netdev"}' --header "X-Session-Token: aaaaa" http://localhost:8080/proc/
 ```
 
-##### How to configure tls ?
+##### How to configure TLS ?
 
 Generate private key (.key)
 ```
@@ -111,10 +111,10 @@ Generating RSA private key, 2048 bit long modulus (2 primes)
 e is 65537 (0x010001)
 
 openssl genrsa -out server.key 2048
+```
 
-# openssl ecparam -genkey -name secp384r1 -out server.key
 Generation of self-signed(x509) public key (PEM-encodings .pem|.crt) based on the private (.key)
-
+```
 $ openssl req -new -x509 -sha256 -key server.key -out server.crt -days 3650
 You are about to be asked to enter information that will be incorporated
 into your certificate request.
@@ -155,15 +155,15 @@ Use case: systemd
 
 [sus@Zeus]$ curl --header "Content-Type: application/json" --request GET --data '{"action":"status","unit":"sshd.service"}' --header "X-Session-Token: aaaaa" http://localhost:8080/service/systemd
 ```
-Use case: 
+Use case:
 * command: "GET"
-  * netdev 
-  * version 
+  * netdev
+  * version
   * vm
   * netstat
   * interface-stat
   * swap-memory
-  * virtual-memory 
+  * virtual-memory
   * cpuinfo
   * cputimestat
   * avgstat

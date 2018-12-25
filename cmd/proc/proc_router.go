@@ -54,7 +54,7 @@ func ConfigureProc(rw http.ResponseWriter, req *http.Request) {
 			break
 		}
 
-	case "SET":
+	case "PUT":
 		switch proc.Path {
 		case "vm":
 			SetVM(rw, proc.Property, proc.Value)
