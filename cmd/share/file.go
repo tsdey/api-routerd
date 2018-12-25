@@ -8,6 +8,15 @@ import (
 	"fmt"
 )
 
+func PathExists(path string) bool {
+	_, r := os.Stat(path)
+	if os.IsNotExist(r) {
+		return false
+	}
+
+	return true
+}
+
 func ReadFullFile(path string) (lines []string, err error) {
 	f, err := os.Open(path)
 	if err != nil {
@@ -24,7 +33,7 @@ func ReadFullFile(path string) (lines []string, err error) {
 	return lines, nil
 }
 
-func WriteFullFile(path string, lines[] string) (err error) {
+func WriteFullFile(path string, lines[] string) (error) {
 	file, err := os.Create(path)
 	if err != nil {
 		return err
@@ -36,10 +45,12 @@ func WriteFullFile(path string, lines[] string) (err error) {
 		fmt.Fprintln(w, line)
 	}
 
-	return w.Flush()
+	w.Flush()
+
+	return nil
 }
 
-func ReadOneLineFile(path string) (line string, err error) {
+func ReadOneLineFile(path string) (string, error) {
 	f, err := os.Create(path)
 	if err != nil {
 		return "", err
@@ -49,7 +60,7 @@ func ReadOneLineFile(path string) (line string, err error) {
 	scanner := bufio.NewScanner(f)
 
 	scanner.Scan()
-	line = scanner.Text()
+	line := scanner.Text()
 
 	err = scanner.Err()
 
