@@ -345,15 +345,20 @@ Bridge=bridge-test
 
 ```
 
-Examples:
+Example: Get and Set Hostname
 ```
-[sus@Zeus hostname]$ curl --header "Content-Type: application/json" --request GET --data '{"action":"get-hostname", "property":"static"}' --header "X-Session-Token: aaaaa" http://localhost:8080/hostname/
-{"action":"get-hostname","method":"","property":"StaticHostname","value":"Zeus"}
+[sus@Zeus api-routerd]$  curl --header "Content-Type: application/json" --request GET --data '{"property":"static"}' --header "X-Session-Token: aaaaa" http://localhost:8080/hostname/
+{"method":"","property":"StaticHostname","value":"Zeus"}
 
-[sus@Zeus hostname]$ curl --header "Content-Type: application/json" --request PUT --data '{"action":"set-hostname", "method":"static", "value":"zeus1"}' --header "X-Session-Token: aaaaa" http://localhost:8080/hostname/
-[sus@Zeus hostname]$ curl --header "Content-Type: application/json" --request GET --data '{"action":"get-hostname", "property":"static"}' --header "X-Session-Token: aaaaa" http://localhost:8080/hostname/
-{"action":"get-hostname","method":"","property":"StaticHostname","value":"zeus1"}
+[sus@Zeus api-routerd]$ curl --header "Content-Type: application/json" --request PUT --data '{"method":"static", "value":"Zeus1"}' --header "X-Session-Token: aaaaa" http://localhost:8080/hostname/
 
+[sus@Zeus api-routerd]$ curl --header "Content-Type: application/json" --request GET --data '{"property":"static"}' --header "X-Session-Token: aaaaa" http://localhost:8080/hostname/
+{"method":"","property":"StaticHostname","value":"Zeus1"}
+```
+
+
+Example: Netlink
+```
 sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --data '{"path":"version"}' --header "X-Session-Token: aaaaa" http://localhost:8080/proc/
 sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --data '{"link":"wlan0"}' --header "X-Session-Token: aaaaa" http://192.168.225.23:8080/network/link/get
 sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --data '{"link":"wlan0"}' --header "X-Session-Token: aaaaa" http://localhost:8080/network/link/get

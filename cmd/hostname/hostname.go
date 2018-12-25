@@ -5,29 +5,29 @@ package hostname
 import (
 	"api-routerd/cmd/share"
 	"encoding/json"
+	"errors"
 	log "github.com/sirupsen/logrus"
 	"strings"
 	"net/http"
 )
 
 type Hostname struct {
-	Action string   `json:"action"`
 	Method string   `json:"method"`
 	Property string `json:"property"`
 	Value string    `json:"value"`
 }
 
-func SetHostname(hostname *Hostname) {
-	conn, r := share.GetSystemBusPrivateConn()
-	if r != nil {
-		log.Error("Failed to get systemd bus connection: ", r)
-		return
+func (hostname *Hostname) SetHostname() (error) {
+	conn, err := share.GetSystemBusPrivateConn()
+	if err != nil {
+		log.Error("Failed to get systemd bus connection: ", err)
+		return err
 	}
 	defer conn.Close()
 
 	if (len(strings.TrimSpace(hostname.Value)) == 0) {
-		log.Error("invalid parameter")
-		return
+		log.Error("Empty hostname received")
+		return errors.New("Empty hostname received")
 	}
 
 	method := "SetStaticHostname"
@@ -45,25 +45,27 @@ func SetHostname(hostname *Hostname) {
 	}
 
 	h := conn.Object("org.freedesktop.hostname1", "/org/freedesktop/hostname1")
-	err := h.Call("org.freedesktop.hostname1." + method, 0, hostname.Value, false)
-	if err != nil {
-		log.Error("failed to set hostname:")
-		return
+	errDbus := h.Call("org.freedesktop.hostname1." + method, 0, hostname.Value, false).Err
+	if errDbus != nil {
+		log.Errorf("Failed to set hostname: ", errDbus)
+		return errors.New("Failed to set hostname")
 	}
+
+	return nil
 }
 
-func GetHostname(rw http.ResponseWriter, hostname *Hostname) {
-	conn, r := share.GetSystemBusPrivateConn()
-	if r != nil {
-		log.Error("Failed to get dbus connection: ", r)
-		return
+func (hostname *Hostname) GetHostname(rw http.ResponseWriter) (error) {
+	conn, err := share.GetSystemBusPrivateConn()
+	if err != nil {
+		log.Error("Failed to get dbus connection: ", err)
+		return err
 	}
 	defer conn.Close()
 
 	prop := strings.TrimSpace(hostname.Property)
 	if (len(prop) == 0) {
-		log.Error("invalid parameter")
-		return
+		log.Error("Empty hostname received")
+		return errors.New("Empty hostname received")
 	}
 
 	property := "static"
@@ -81,23 +83,31 @@ func GetHostname(rw http.ResponseWriter, hostname *Hostname) {
 	}
 
 	h := conn.Object("org.freedesktop.hostname1", "/org/freedesktop/hostname1")
-	p, pe := h.GetProperty("org.freedesktop.hostname1." + property)
-	if pe != nil {
+	p, perr := h.GetProperty("org.freedesktop.hostname1." + property)
+	if perr != nil {
 		log.Error("Failed to get org.freedesktop.hostname1.%s", property)
-		return
+		return perr
 	}
 
 	if p.Value() == nil {
-		log.Error("empty value received when reading property : ", property)
-		return
+		log.Error("Empty value received when reading property : ", property)
+		return errors.New("Invalid Value")
 	}
 
 	v, be := p.Value().(string)
 	if !be {
 		log.Error("Received unexpected type as value, expected string got :", property , v)
-		return
+		return errors.New("Invalid value")
 	}
 
-	host := Hostname {Action: "get-hostname", Property: property, Value: v}
-	json.NewEncoder(rw).Encode(host)
+	host := Hostname {Property: property, Value: v}
+
+	b, err := json.Marshal(host)
+	if err != nil {
+		return err
+	}
+	rw.WriteHeader(http.StatusOK)
+	rw.Write(b)
+
+	return nil
 }

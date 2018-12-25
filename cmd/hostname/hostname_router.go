@@ -12,33 +12,29 @@ import (
 func ConfigureHostname(rw http.ResponseWriter, req *http.Request) {
 	hostname := new(Hostname)
 
-	r := json.NewDecoder(req.Body).Decode(&hostname);
-	if r != nil {
-		log.Error("Failed to find decode json: ", r)
-		rw.Write([]byte("500: " + r.Error()))
+	err := json.NewDecoder(req.Body).Decode(&hostname);
+	if err != nil {
+		log.Error("Failed to decode json: ", err)
+		http.Error(rw, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	switch req.Method {
 	case "GET":
-		switch hostname.Action {
-		case "get-hostname":
-			GetHostname(rw, hostname)
-			break
-		}
-
+		err = hostname.GetHostname(rw)
 		break
 
 	case "PUT":
-		switch hostname.Action {
-		case "set-hostname":
-			SetHostname(hostname)
-			break
-		}
+		err = hostname.SetHostname()
+		break
+	}
+
+	if err != nil {
+		http.Error(rw, err.Error(), http.StatusInternalServerError)
 	}
 }
 
 func RegisterRouterHostname(router *mux.Router) {
-	s := router.PathPrefix("/hostname").Subrouter()
+	s := router.PathPrefix("/hostname").Subrouter().StrictSlash(false)
 	s.HandleFunc("/", ConfigureHostname)
 }
