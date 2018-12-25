@@ -67,6 +67,16 @@ func ConfigureProcSysVM(rw http.ResponseWriter, req *http.Request) {
 	}
 }
 
+func GetProcMisc(rw http.ResponseWriter, req *http.Request) {
+	_= json.NewDecoder(req.Body);
+
+	switch req.Method {
+	case "GET":
+		GetMisc(rw)
+		break
+	}
+}
+
 func ConfigureProcSysNet(rw http.ResponseWriter, req *http.Request) {
 	proc := new(ProcSysNet)
 
@@ -85,6 +95,7 @@ func ConfigureProcSysNet(rw http.ResponseWriter, req *http.Request) {
 func RegisterRouterProc(router *mux.Router) {
 	n := router.PathPrefix("/proc").Subrouter()
 	n.HandleFunc("/", GetProc)
+	n.HandleFunc("/misc", GetProcMisc)
 	n.HandleFunc("/sys/vm", ConfigureProcSysVM)
 	n.HandleFunc("/sys/net", ConfigureProcSysNet)
 }

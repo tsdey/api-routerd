@@ -165,17 +165,23 @@ Use case:
   * cpuinfo
   * cputimestat
   * avgstat
+  * misc
 
 ```
 sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --data '{"path":"netdev"}' --header "X-Session-Token: aaaaa" http://localhost:8080/proc/
 sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --data '{"path":"version"}' --header "X-Session-Token: aaaaa" http://localhost:8080/proc/
-sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --data '{"path":"netstat", --header "X-Session-Token: aaaaa" "property":"udp"}' http://localhost:8080/proc/
+sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --data '{"path":"netstat", "property":"udp"}' --header "X-Session-Tokc/: aaaaa" http://localhost:8080/proc
 sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --data '{"path":"cpuinfo"}' --header "X-Session-Token: aaaaa" http://localhost:8080/proc/
 sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --data '{"path":"cputimestat"}' --header "X-Session-Token: aaaaa" http://localhost:8080/proc/
 sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --data '{"path":"avgstat"}' --header "X-Session-Token: aaaaa" http://localhost:8080/proc/
 sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --data '{"path":"virtual-memory"}' --header "X-Session-Token: aaaaa" http://localhost:8080/proc/
 sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --data '{"path":"swap-memory"}' --header "X-Session-Token: aaaaa" http://localhost:8080/proc/
+sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET  --header "X-Session-Token: aaaaa" http://localhost:8080/proc/misc
+```
 
+```
+[sus@Zeus api-routerd]# curl --header "Content-Type: application/json" --request GET  --header "X-Session-Token: aaaaa" http://localhost:8080/proc/misc
+{"130":"watchdog","144":"nvram","165":"vmmon","183":"hw_random","184":"microcode","227":"mcelog","228":"hpet","229":"fuse","231":"snapshot","232":"kvm","235":"autofs","236":"device-mapper","53":"vboxnetctl","54":"vsock","55":"vmci","56":"vboxdrvu","57":"vboxdrv","58":"rfkill","59":"memory_bandwidth","60":"network_throughput","61":"network_latency","62":"cpu_dma_latency","63":"vga_arbiter"}
 ```
 proc vm: property any file name in /proc/sys/vm/
 ```
