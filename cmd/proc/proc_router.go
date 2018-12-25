@@ -11,10 +11,9 @@ import (
 type ProcInfo struct {
 	Path string `json:"path"`
 	Property string `json:"property"`
-	Value string `json:"value"`
 }
 
-func ConfigureProc(rw http.ResponseWriter, req *http.Request) {
+func GetProc(rw http.ResponseWriter, req *http.Request) {
 	proc := new(ProcInfo)
 
 	_= json.NewDecoder(req.Body).Decode(&proc);
@@ -27,9 +26,6 @@ func ConfigureProc(rw http.ResponseWriter, req *http.Request) {
 			break
 		case "version":
 			GetVersion(rw)
-			break
-		case "vm":
-			GetVM(rw, proc.Property)
 			break
 		case "netstat":
 			GetNetStat(rw, proc.Property)
@@ -53,17 +49,42 @@ func ConfigureProc(rw http.ResponseWriter, req *http.Request) {
 			GetAvgStat(rw)
 			break
 		}
+	}
+}
 
+func ConfigureProcSysVM(rw http.ResponseWriter, req *http.Request) {
+	proc := new(ProcVM)
+
+	_= json.NewDecoder(req.Body).Decode(&proc);
+
+	switch req.Method {
+	case "GET":
+		proc.GetVM(rw)
+		break
 	case "PUT":
-		switch proc.Path {
-		case "vm":
-			SetVM(rw, proc.Property, proc.Value)
-			break
-		}
+		proc.SetVM(rw)
+		break
+	}
+}
+
+func ConfigureProcSysNet(rw http.ResponseWriter, req *http.Request) {
+	proc := new(ProcSysNet)
+
+	_= json.NewDecoder(req.Body).Decode(&proc);
+
+	switch req.Method {
+	case "GET":
+		proc.GetProcSysNet(rw)
+		break
+	case "PUT":
+		proc.SetProcSysNet(rw)
+		break
 	}
 }
 
 func RegisterRouterProc(router *mux.Router) {
 	n := router.PathPrefix("/proc").Subrouter()
-	n.HandleFunc("/", ConfigureProc)
+	n.HandleFunc("/", GetProc)
+	n.HandleFunc("/sys/vm", ConfigureProcSysVM)
+	n.HandleFunc("/sys/net", ConfigureProcSysNet)
 }

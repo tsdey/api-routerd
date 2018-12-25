@@ -12,36 +12,35 @@ import (
 const VMPath = "/proc/sys/vm"
 
 type ProcVM struct {
-	Path string `json:"path"`
 	Property string `json:"property"`
 	Value string `json:"value"`
 }
 
-func GetVM(rw http.ResponseWriter, property string) (error) {
-	line, r := share.ReadOneLineFile(path.Join(VMPath, property))
+func (req *ProcVM) GetVM(rw http.ResponseWriter) (error) {
+	line, r := share.ReadOneLineFile(path.Join(VMPath, req.Property))
 	if r != nil {
 		return r
 	}
 
-	vmproperty := ProcVM {Property: property, Value: line}
-	json.NewEncoder(rw).Encode(vmproperty)
+	vmProperty := ProcVM {Property: req.Property, Value: line}
+	json.NewEncoder(rw).Encode(vmProperty)
 
 	return nil
 }
 
-func SetVM(rw http.ResponseWriter, property string, value string) (error) {
-	r := share.WriteOneLineFile(path.Join(VMPath, property), value)
+func (req *ProcVM) SetVM(rw http.ResponseWriter) (error) {
+	r := share.WriteOneLineFile(path.Join(VMPath, req.Property), req.Value)
 	if r != nil {
 		return r
 	}
 
-	line, r := share.ReadOneLineFile(path.Join(VMPath, property))
+	line, r := share.ReadOneLineFile(path.Join(VMPath, req.Property))
 	if r != nil {
 		return r
 	}
 
-	vmproperty := ProcVM {Path: "vm", Property: property, Value: line}
-	json.NewEncoder(rw).Encode(vmproperty)
+	vmProperty := ProcVM {Property: req.Property, Value: line}
+	json.NewEncoder(rw).Encode(vmProperty)
 
 	return nil
 }

@@ -125,7 +125,6 @@ If you enter '.', the field will be left blank.
 -----
 Country Name (2 letter code) [XX]:
 
-
 ```
 Place ```server.crt``` and ```server.key``` in the dir /etc/api-routerd/tls
 
@@ -143,7 +142,6 @@ Now start curl
 
 {"esp-hw-offload":false,"esp-tx-csum-hw-offload":false,"fcoe-mtu":false,"highdma":false,"hw-tc-offload":false,"l2-fwd-offload":false,"loopback":false,"netns-local":false,"rx-all":false,"rx-checksum":false,"rx-fcs":false,"rx-gro":true,"rx-gro-hw":false,"rx-hashing":false,"rx-lro":false,"rx-ntuple-filter":false,"rx-udp_tunnel-port-offload":false,"rx-vlan-filter":false,"rx-vlan-hw-parse":false,"rx-vlan-stag-filter":false,"rx-vlan-stag-hw-parse":false,"tls-hw-record":false,"tls-hw-rx-offload":false,"tls-hw-tx-offload":false,"tx-checksum-fcoe-crc":false,"tx-checksum-ip-generic":false,"tx-checksum-ipv4":false,"tx-checksum-ipv6":false,"tx-checksum-sctp":false,"tx-esp-segmentation":false,"tx-fcoe-segmentation":false,"tx-generic-segmentation":false,"tx-gre-csum-segmentation":false,"tx-gre-segmentation":false,"tx-gso-partial":false,"tx-gso-robust":false,"tx-ipxip4-segmentation":false,"tx-ipxip6-segmentation":false,"tx-lockless":false,"tx-nocache-copy":false,"tx-scatter-gather":false,"tx-scatter-gather-fraglist":false,"tx-sctp-segmentation":false,"tx-tcp-ecn-segmentation":false,"tx-tcp-mangleid-segmentation":false,"tx-tcp-segmentation":false,"tx-tcp6-segmentation":false,"tx-udp-segmentation":false,"tx-udp_tnl-csum-segmentation":false,"tx-udp_tnl-segmentation":false,"tx-vlan-hw-insert":false,"tx-vlan-stag-hw-insert":false,"vlan-challenged":false}
 ```
-
 Use case: systemd
 ```
 [sus@Zeus] curl --header "Content-Type: application/json" --request PUT --data '{"action":"set-property", "unit":"sshd.service", "property":"CPUShares", "value":"1024"}' http://localhost:8080/service/systemd/property
@@ -171,20 +169,19 @@ Use case:
 ```
 sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --data '{"path":"netdev"}' --header "X-Session-Token: aaaaa" http://localhost:8080/proc/
 sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --data '{"path":"version"}' --header "X-Session-Token: aaaaa" http://localhost:8080/proc/
-sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --data '{"path":"vm"}' --header "X-Session-Token: aaaaa" http://localhost:8080/proc/
 sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --data '{"path":"netstat", --header "X-Session-Token: aaaaa" "property":"udp"}' http://localhost:8080/proc/
 sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --data '{"path":"cpuinfo"}' --header "X-Session-Token: aaaaa" http://localhost:8080/proc/
 sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --data '{"path":"cputimestat"}' --header "X-Session-Token: aaaaa" http://localhost:8080/proc/
 sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --data '{"path":"avgstat"}' --header "X-Session-Token: aaaaa" http://localhost:8080/proc/
 sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --data '{"path":"virtual-memory"}' --header "X-Session-Token: aaaaa" http://localhost:8080/proc/
 sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --data '{"path":"swap-memory"}' --header "X-Session-Token: aaaaa" http://localhost:8080/proc/
+
 ```
-
-
 proc vm: property any file name in /proc/sys/vm/
 ```
-sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --data '{"path":"vm", "property":"swappiness"}' --header "X-Session-Token: aaaaa" http://localhost:8080/proc/
-{"path":"","property":"swappiness","value":"60"}
+[sus@Zeus api-routerd]# curl --header "Content-Type: application/json" --request GET --data '{"property":"swappiness"}' --header "X-Session-Token: aaaaa" http://localhost:8080/proc/sys/vm
+{"property":"swappiness","value":"70"}
+
 ```
 
 ```
@@ -204,6 +201,15 @@ More example
 {"hostname":"Zeus","uptime":17747,"bootTime":1545381768,"procs":360,"os":"linux","platform":"fedora","platformFamily":"fedora","platformVersion":"29","kernelVersion":"4.19.2-300.fc29.x86_64","virtualizationSystem":"kvm","virtualizationRole":"host","hostid":"27f7c64c-3148-11b2-a85c-ec64a5733ce1"}
 
 ```
+set and get any value from ```/proc/sys/net```.
+supported: IPv4, IPv6 and core
+```
+[sus@Zeus api-routerd]# curl --header "Content-Type: application/json" --request GET --data '{"property":"forwarding", "link":"enp0s31f6", "path":"ipv4"}' --header "X-Session-Token: aaaaa" http://localhost:8080/proc/sys/net
+{"path":"ipv4","property":"forwarding","value":"0","link":"enp0s31f6"}
+[sus@Zeus api-routerd]# curl --header "Content-Type: application/json" --request PUT --data '{"property":"forwarding", "value":"1","link":"enp0s31f6", "path":"ipv4"}' --header "X-Session-Token: aaaaa" http://localhost:8080/proc/sys/net
+[sus@Zeus api-routerd]# curl --header "Content-Type: application/json" --request GET --data '{"property":"forwarding", "link":"enp0s31f6", "path":"ipv4"}' --header "X-Session-Token: aaaaa" http://localhost:8080/proc/sys/net
+{"path":"ipv4","property":"forwarding","value":"1","link":"enp0s31f6"}
+```
 
 ##### Use case configure link
 
@@ -215,7 +221,6 @@ Set address
     link/ether ea:d0:e3:be:ea:25 brd ff:ff:ff:ff:ff:ff
     inet 192.168.1.131/24 brd 192.168.1.255 scope global dummy
        valid_lft forever preferred_lft forever
-
 
 ```
 Set link up/down
@@ -252,14 +257,14 @@ Create a bridge and enslave two links
 ```
 sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request PUT --data '{"action":"add-link-bridge", "link":"test-br", "enslave":["dummy","dummy1"]}' --header "X-Session-Token: aaaaa" http://localhost:8080/network/link/add
 
-[root@Zeus log]# ip link
+[sus@Zeus log]# ip link
 9: dummy: <BROADCAST,NOARP> mtu 12801 qdisc noop master test-br state DOWN mode DEFAULT group default qlen 1000
     link/ether f2:58:ea:f3:83:1e brd ff:ff:ff:ff:ff:ff
 10: dummy1: <BROADCAST,NOARP> mtu 1500 qdisc noop master test-br state DOWN mode DEFAULT group default qlen 1000
     link/ether 12:00:9a:65:36:6d brd ff:ff:ff:ff:ff:ff
 11: test-br: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default
     link/ether 12:00:9a:65:36:6d brd ff:ff:ff:ff:ff:ff
-[root@Zeus log]#
+[sus@Zeus log]#
 
 ```
 
@@ -305,7 +310,7 @@ networkd NetDev
 ```
 sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request PUT --data '{"Name":"bond-test", "Description":"testing bond", "Kind":"bond", "Mode":"balance-rr"}' --header "X-Session-Token: aaaaa" http://localhost:8080/network/networkd/netdev
 
-[root@Zeus log]# cat /var/run/systemd/network/25-bond-test.netdev
+[sus@Zeus log]# cat /var/run/systemd/network/25-bond-test.netdev
 [NetDev]
 Name=bond-test
 Description=testing bond
@@ -359,11 +364,8 @@ sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request G
 
 proc: netstat protocol tcp
 ```
-[sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --data '{"path":"netstat", "property":"tcp"}' --header "X-Session-Token: aaaaa" http://localhost:8080/proc/
-
-[{"fd":11,"family":2,"type":1,"localaddr":{"ip":"0.0.0.0","port":902},"remoteaddr":{"ip":"0.0.0.0","port":0},"status":"LISTEN","uids":[0,0,0,0],"pid":1577},{"fd":21,"family":2,"type":1,"localaddr":{"ip":"127.0.0.1","port":8307},"remoteaddr":{"ip":"0.0.0.0","port":0},"status":"LISTEN","uids":[0,0,0,0],"pid":1639},{"fd":4,"family":2,"type":1,"localaddr":{"ip":"0.0.0.0","port":22},"remoteaddr":{"ip":"0.0.0.0","port":0},"status":"LISTEN","uids":[0,0,0,0],"pid":1030},{"fd":7,"family":2,"type":1,"localaddr":{"ip":"127.0.0.1","port":631},"remoteaddr":{"ip":"0.0.0.0","port":0},"status":"LISTEN","uids":[0,0,0,0],"pid":1027},{"fd":15,"family":2,"type":1,"localaddr":{"ip":"0.0.0.0","port":443},"remoteaddr":{"ip":"0.0.0.0","port":0},"status":"LISTEN","uids":[0,0,0,0],"pid":1639},{"fd":14,"family":2,"type":1,"localaddr":{"ip":"127.0.0.1","port":8125},"remoteaddr":{"ip":"0.0.0.0","port":0},"status":"LISTEN","uids":[970,970,970,970],"pid":1257},{"fd":3,"family":2,"type":1,"localaddr":{"ip":"0.0.0.0","port":19999},"remoteaddr":{"ip":"0.0.0.0","port":0},"status":"LISTEN","uids":[970,970,970,970],"pid":1257},{"fd":351,"family":2,"type":1,"localaddr":{"ip":"192.168.225.101","port":49868},"remoteaddr":{"ip":"151.101.152.133","port":443},"status":"ESTABLISHED","uids":[1000,1000,1000,1000],"pid":2783},{"fd":144,"family":2,"type":1,"localaddr":{"ip":"192.168.225.101","port":60314},"remoteaddr":{"ip":"172.217.166.67","port":443},"status":"ESTABLISHED","uids":[1000,1000,1000,1000],"pid":2783},{"fd":135,"family":2,"type":1,"localaddr":{"ip":"192.168.225.101","port":57972},"remoteaddr":{"ip":"192.30.253.125","port":443},"status":"ESTABLISHED","uids":[1000,1000,1000,1000],"pid":2783},{"fd":294,"family":2,"type":1,"localaddr":{"ip":"192.168.225.101","port":55414},"remoteaddr":{"ip":"172.217.167.170","port":443},"status":"ESTABLISHED","uids":[1000,1000,1000,1000],"pid":2783},{"fd":249,"family":2,"type":1,"localaddr":{"ip":"192.168.225.101","port":34938},"remoteaddr":{"ip":"216.58.203.174","port":443},"status":"ESTABLISHED","uids":[1000,1000,1000,1000],"pid":2783},{"fd":204,"family":2,"type":1,"localaddr":{"ip":"192.168.225.101","port":49846},"remoteaddr":{"ip":"151.101.152.133","port":443},"status":"ESTABLISHED","uids":[1000,1000,1000,1000],"pid":2783},{"fd":131,"family":2,"type":1,"localaddr":{"ip":"192.168.225.101","port":39134},"remoteaddr":{"ip":"192.30.253.124","port":443},"status":"ESTABLISHED","uids":[1000,1000,1000,1000],"pid":2783},{"fd":218,"family":2,"type":1,"localaddr":{"ip":"192.168.225.101","port":49848},"remoteaddr":{"ip":"151.101.152.133","port":443},"status":"ESTABLISHED","uids":[1000,1000,1000,1000],"pid":2783},{"fd":210,"family":2,"type":1,"localaddr":{"ip":"192.168.225.101","port":36848},"remoteaddr":{"ip":"172.217.194.188","port":5228},"status":"ESTABLISHED","uids":[1000,1000,1000,1000],"pid":2783},{"fd":176,"family":2,"type":1,"localaddr":{"ip":"192.168.225.101","port":41490},"remoteaddr":{"ip":"192.30.253.124","port":443},"status":"ESTABLISHED","uids":[1000,1000,1000,1000],"pid":2783},{"fd":170,"family":2,"type":1,"localaddr":{"ip":"192.168.225.101","port":49834},"remoteaddr":{"ip":"151.101.152.133","port":443},"status":"ESTABLISHED","uids":[1000,1000,1000,1000],"pid":2783},{"fd":363,"family":2,"type":1,"localaddr":{"ip":"192.168.225.101","port":49878},"remoteaddr":{"ip":"151.101.152.133","port":443},"status":"ESTABLISHED","uids":[1000,1000,1000,1000],"pid":2783},{"fd":223,"family":2,"type":1,"localaddr":{"ip":"192.168.225.101","port":49488},"remoteaddr":{"ip":"151.101.152.133","port":443},"status":"ESTABLISHED","uids":[1000,1000,1000,1000],"pid":2783},{"fd":362,"family":2,"type":1,"localaddr":{"ip":"192.168.225.101","port":49876},"remoteaddr":{"ip":"151.101.152.133","port":443},"status":"ESTABLISHED","uids":[1000,1000,1000,1000],"pid":2783},{"fd":302,"family":2,"type":1,"localaddr":{"ip":"192.168.225.101","port":33452},"remoteaddr":{"ip":"172.217.160.163","port":443},"status":"ESTABLISHED","uids":[1000,1000,1000,1000],"pid":2783},{"fd":186,"family":2,"type":1,"localaddr":{"ip":"192.168.225.101","port":48990},"remoteaddr":{"ip":"172.217.166.46","port":443},"status":"ESTABLISHED","uids":[1000,1000,1000,1000],"pid":2783},{"fd":361,"family":2,"type":1,"localaddr":{"ip":"192.168.225.101","port":49874},"remoteaddr":{"ip":"151.101.152.133","port":443},"status":"ESTABLISHED","uids":[1000,1000,1000,1000],"pid":2783},{"fd":229,"family":2,"type":1,"localaddr":{"ip":"192.168.225.101","port":37740},"remoteaddr":{"ip":"185.199.108.154","port":443},"status":"ESTABLISHED","uids":[1000,1000,1000,1000],"pid":2783},{"fd":356,"family":2,"type":1,"localaddr":{"ip":"192.168.225.101","port":49864},"remoteaddr":{"ip":"151.101.152.133","port":443},"status":"ESTABLISHED","uids":[1000,1000,1000,1000],"pid":2783},{"fd":352,"family":2,"type":1,"localaddr":{"ip":"192.168.225.101","port":49870},"remoteaddr":{"ip":"151.101.152.133","port":443},"status":"ESTABLISHED","uids":[1000,1000,1000,1000],"pid":2783},{"fd":360,"family":2,"type":1,"localaddr":{"ip":"192.168.225.101","port":49872},"remoteaddr":{"ip":"151.101.152.133","port":443},"status":"ESTABLISHED","uids":[1000,1000,1000,1000],"pid":2783},{"fd":10,"family":10,"type":1,"localaddr":{"ip":"::","port":902},"remoteaddr":{"ip":"::","port":0},"status":"LISTEN","uids":[0,0,0,0],"pid":1577},{"fd":5,"family":10,"type":1,"localaddr":{"ip":"::","port":8080},"remoteaddr":{"ip":"::","port":0},"status":"LISTEN","uids":[0,0,0,0],"pid":21553},{"fd":20,"family":10,"type":1,"localaddr":{"ip":"::1","port":8307},"remoteaddr":{"ip":"::","port":0},"status":"LISTEN","uids":[0,0,0,0],"pid":1639},{"fd":5,"family":10,"type":1,"localaddr":{"ip":"::","port":22},"remoteaddr":{"ip":"::","port":0},"status":"LISTEN","uids":[0,0,0,0],"pid":1030},{"fd":6,"family":10,"type":1,"localaddr":{"ip":"::1","port":631},"remoteaddr":{"ip":"::","port":0},"status":"LISTEN","uids":[0,0,0,0],"pid":1027},{"fd":17,"family":10,"type":1,"localaddr":{"ip":"::","port":443},"remoteaddr":{"ip":"::","port":0},"status":"LISTEN","uids":[0,0,0,0],"pid":1639},{"fd":11,"family":10,"type":1,"localaddr":{"ip":"::1","port":8125},"remoteaddr":{"ip":"::","port":0},"status":"LISTEN","uids":[970,970,970,970],"pid":1257},{"fd":4,"family":10,"type":1,"localaddr":{"ip":"::","port":19999},"remoteaddr":{"ip":"::","port":0},"status":"LISTEN","uids":[970,970,970,970],"pid":1257},{"fd":6,"family":10,"type":1,"localaddr":{"ip":"::1","port":8080},"remoteaddr":{"ip":"::1","port":45618},"status":"ESTABLISHED","uids":[0,0,0,0],"pid":21553},{"fd":3,"family":10,"type":1,"localaddr":{"ip":"::1","port":45618},"remoteaddr":{"ip":"::1","port":8080},"status":"ESTABLISHED","uids":[1000,1000,1000,1000],"pid":25067},{"fd":177,"family":10,"type":1,"localaddr":{"ip":"2409:4042:200b:c0ce:8556:56c3:7d23:6211","port":58948},"remoteaddr":{"ip":"2a03:2880:f02f:f:face:b00c:0:2","port":443},"status":"ESTABLISHED","uids":[1000,1000,1000,1000],"pid":2783},{"fd":212,"family":10,"type":1,"localaddr":{"ip":"2409:4042:200b:c0ce:8556:56c3:7d23:6211","port":48310},"remoteaddr":{"ip":"2a02:26f0:7b:89b::25ea","port":443},"status":"ESTABLISHED","uids":[1000,1000,1000,1000],"pid":2783},{"fd":197,"family":10,"type":1,"localaddr":{"ip":"2409:4042:200b:c0ce:8556:56c3:7d23:6211","port":58956},"remoteaddr":{"ip":"2a03:2880:f02f:f:face:b00c:0:2","port":443},"status":"ESTABLISHED","uids":[1000,1000,1000,1000],"pid":2783},{"fd":169,"family":10,"type":1,"localaddr":{"ip":"2409:4042:200b:c0ce:8556:56c3:7d23:6211","port":45970},"remoteaddr":{"ip":"2a00:1450:400c:c0b::5e","port":443},"status":"ESTABLISHED","uids":[1000,1000,1000,1000],"pid":2783},{"fd":262,"family":10,"type":1,"localaddr":{"ip":"2409:4042:200b:c0ce:8556:56c3:7d23:6211","port":34300},"remoteaddr":{"ip":"2600:1417:75:192::25ea","port":443},"status":"ESTABLISHED","uids":[1000,1000,1000,1000],"pid":2783},{"fd":171,"family":10,"type":1,"localaddr":{"ip":"2409:4042:200b:c0ce:8556:56c3:7d23:6211","port":36256},"remoteaddr":{"ip":"2a03:2880:f12f:83:face:b00c:0:25de","port":443},"status":"ESTABLISHED","uids":[1000,1000,1000,1000],"pid":2783}]
+[sus@Zeus api-router]$curl --header "Content-Type: application/json" --request GET --data '{"path":"netstat", "property":"tcp"}' --header "X-Session-Token: aaaaa" http://localhost:8080/proc/
 ```
-
 
 ##### ethtool
 ```
