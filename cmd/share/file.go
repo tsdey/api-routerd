@@ -81,9 +81,8 @@ func WriteOneLineFile(path string, line string) (error) {
 }
 
 func CreateDirectory(directoryPath string, perm os.FileMode) (error) {
-	_, err := os.Stat(directoryPath)
-	if os.IsNotExist(err) {
-		err = os.Mkdir(directoryPath, perm)
+	if !PathExists(directoryPath) {
+		err := os.Mkdir(directoryPath, perm)
 		if err != nil {
 			return err
 		}
@@ -93,9 +92,8 @@ func CreateDirectory(directoryPath string, perm os.FileMode) (error) {
 }
 
 func CreateDirectoryNested(directoryPath string, perm os.FileMode) (error) {
-	_, err := os.Stat(directoryPath)
-	if os.IsNotExist(err) {
-		err = os.MkdirAll(directoryPath, perm)
+	if !PathExists(directoryPath) {
+		err := os.MkdirAll(directoryPath, perm)
 		if err != nil {
 			return err
 		}
