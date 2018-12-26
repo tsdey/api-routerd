@@ -390,9 +390,18 @@ proc: netstat protocol tcp
 
 ##### ethtool
 ```
-[sus@Zeus src]$ curl --header "Content-Type: application/json" --request GET --data '{"action":"get-link-features", "link":"eth0"}' --header "X-Session-Token: aaaaa" http://localhost:8080/network/ethtool/get
-[sus@Zeus src]$ curl --header "Content-Type: application/json" --request GET --data '{"action":"get-link-bus", "link":"eth0"}' --header "X-Session-Token: aaaaa" http://localhost:8080/network/ethtool/get
-[sus@Zeus src]$ curl --header "Content-Type: application/json" --request GET --data '{"action":"get-link-stat", "link":"eth0"}' --header "X-Session-Token: aaaaa" http://localhost:8080/network/ethtool/get
+[sus@Zeus src]$ curl --header "X-Session-Token: aaaaa" --header "Content-Type: application/json" --request GET  http://localhost:8080/network/ethtool/vmnet8/get-link-features
+
+{"esp-hw-offload":false,"esp-tx-csum-hw-offload":false,"fcoe-mtu":false,"highdma":false,"hw-tc-offload":false,"l2-fwd-offload":false,"loopback":false,"netns-local":false,"rx-all":false,"rx-checksum":false,"rx-fcs":false,"rx-gro":true,"rx-gro-hw":false,"rx-hashing":false,"rx-lro":false,"rx-ntuple-filter":false,"rx-udp_tunnel-port-offload":false,"rx-vlan-filter":false,"rx-vlan-hw-parse":false,"rx-vlan-stag-filter":false,"rx-vlan-stag-hw-parse":false,"tls-hw-record":false,"tls-hw-rx-offload":false,"tls-hw-tx-offload":false,"tx-checksum-fcoe-crc":false,"tx-checksum-ip-generic":false,"tx-checksum-ipv4":false,"tx-checksum-ipv6":false,"tx-checksum-sctp":false,"tx-esp-segmentation":false,"tx-fcoe-segmentation":false,"tx-generic-segmentation":false,"tx-gre-csum-segmentation":false,"tx-gre-segmentation":false,"tx-gso-partial":false,"tx-gso-robust":false,"tx-ipxip4-segmentation":false,"tx-ipxip6-segmentation":false,"tx-lockless":false,"tx-nocache-copy":false,"tx-scatter-gather":false,"tx-scatter-gather-fraglist":false,"tx-sctp-segmentation":false,"tx-tcp-ecn-segmentation":false,"tx-tcp-mangleid-segmentation":false,"tx-tcp-segmentation":false,"tx-tcp6-segmentation":false,"tx-udp-segmentation":false,"tx-udp_tnl-csum-segmentation":false,"tx-udp_tnl-segmentation":false,"tx-vlan-hw-insert":false,"tx-vlan-stag-hw-insert":false,"vlan-challenged":false}
+
+[sus@Zeus src]$ curl --header "X-Session-Token: aaaaa" --header "Content-Type: application/json" --request GET http://localhost:8080/network/ethtool/wlp4s0/get-link-stat
+{"ch_time":18446744073709551615,"ch_time_busy":18446744073709551615,"ch_time_ext_busy":18446744073709551615,"ch_time_rx":18446744073709551615,"ch_time_tx":18446744073709551615,"channel":0,"noise":18446744073709551615,"rx_bytes":1387313,"rx_dropped":45,"rx_duplicates":0,"rx_fragments":3255,"rx_packets":3275,"rxrate":117000000,"signal":227,"sta_state":4,"tx_bytes":584843,"tx_filtered":0,"tx_packets":2949,"tx_retries":321,"tx_retry_failed":0,"txrate":144400000}
+
+[sus@Zeus cmd]$  curl --header "X-Session-Token: aaaaa" --header "Content-Type: application/json" --request GET http://localhost:8080/network/ethtool/wlp4s0/get-link-stat
+{"ch_time":18446744073709551615,"ch_time_busy":18446744073709551615,"ch_time_ext_busy":18446744073709551615,"ch_time_rx":18446744073709551615,"ch_time_tx":18446744073709551615,"channel":0,"noise":18446744073709551615,"rx_bytes":1387313,"rx_dropped":45,"rx_duplicates":0,"rx_fragments":3255,"rx_packets":3275,"rxrate":117000000,"signal":227,"sta_state":4,"tx_bytes":584843,"tx_filtered":0,"tx_packets":2949,"tx_retries":321,"tx_retry_failed":0,"txrate":144400000}
+
+[sus@Zeus cmd]$  curl --header "X-Session-Token: aaaaa" --header "Content-Type: application/json" --request GET http://localhost:8080/network/ethtool/wlp4s0/get-link-driver-name
+{"action":"get-link-driver-name","link":"wlp4s0","reply":"iwlwifi"}
 ```
 
 example:
@@ -403,4 +412,13 @@ example:
 [sus@Zeus ethtool]$ curl --header "Content-Type: application/json" --request GET --data '{"action":"get-link-driver-name", "link":"eth0"}' --header "X-Session-Token: aaaaa" http://localhost:8080/network/ethtool/get
 {"action":"get-link-driver-name","link":"eth0","reply":"e1000e"}
 
+```
+
+Get link netlink
+```
+[sus@Zeus ethtool]$ curl --header "X-Session-Token: aaaaa" --header "Content-Type: application/json" --request GET http://localhost:8080/network/link/get/wlp4s0
+{"index":5,"MTU":1500,"TxQLen":0,"Name":"wlp4s0","HardwareAdd":"7c:76:35:ea:89:90","LinkOperState":""}
+
+[sus@Zeus cmd]$  curl --header "X-Session-Token: aaaaa" --header "Content-Type: application/json" --request GET http://localhost:8080/network/address/get/wlp4s0
+[{"action":"","link":"wlp4s0","address":"192.168.43.105/24","label":""},{"action":"","link":"wlp4s0","address":"2409:4042:239c:7f9d:e45f:27a9:c6de:c39e/64","label":""},{"action":"","link":"wlp4s0","address":"fe80::c912:39ce:e9a3:aaca/64","label":""}]
 ```

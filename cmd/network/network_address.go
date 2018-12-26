@@ -57,7 +57,7 @@ func DelAddress(address *Address) {
 	}
 }
 
-func GetAddress(rw http.ResponseWriter, address *Address) {
+func (address *Address) GetAddress(rw http.ResponseWriter) {
 	link, r := netlink.LinkByName(address.Link)
 	if r != nil {
 		log.Errorf("Failed to get link %s: %s", r, address.Link)

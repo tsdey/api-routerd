@@ -6,121 +6,108 @@ import (
 	"api-routerd/cmd/network/networkd"
 	"encoding/json"
 	"github.com/gorilla/mux"
-	log "github.com/sirupsen/logrus"
 	"net/http"
 )
 
-func NetworkLinkGet(rw http.ResponseWriter, req *http.Request) {
-	link := new(Link)
+func NetworkLinkGet(rw http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	link := vars["link"]
 
-	r := json.NewDecoder(req.Body).Decode(&link);
-	if r != nil {
-		log.Error("Failed to find decode json: ", r)
-		rw.Write([]byte("500: " + r.Error()))
-		return
-	}
+	l := Link {Link: link}
 
-	switch req.Method {
+	switch r.Method {
 	case "GET":
-		link.GetLink(rw)
+		l.GetLink(rw)
 		break
 	}
 }
 
-func NetworkLinkAdd(rw http.ResponseWriter, req *http.Request) {
+func NetworkLinkAdd(rw http.ResponseWriter, r *http.Request) {
 	link := new(Link)
 
-	r := json.NewDecoder(req.Body).Decode(&link);
-	if r != nil {
-		log.Error("Failed to find decode json: ", r)
-		rw.Write([]byte("500: " + r.Error()))
+	err := json.NewDecoder(r.Body).Decode(&link);
+	if err != nil {
+		http.Error(rw, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	switch req.Method {
+	switch r.Method {
 	case "PUT":
 		switch link.Action {
 		case "add-link-bridge":
-			r := link.LinkCreateBridge()
-			if r != nil {
-				rw.Write([]byte("500: " + r.Error()))
+			err := link.LinkCreateBridge()
+			if err != nil {
+				http.Error(rw, err.Error(), http.StatusInternalServerError)
 			}
 		}
 	}
 }
 
-func NetworkLinkDelete(rw http.ResponseWriter, req *http.Request) {
+func NetworkLinkDelete(rw http.ResponseWriter, r *http.Request) {
 	link := new(Link)
 
-	r := json.NewDecoder(req.Body).Decode(&link);
-	if r != nil {
-		log.Error("Failed to find decode json: ", r)
-		rw.Write([]byte("500: " + r.Error()))
+	err := json.NewDecoder(r.Body).Decode(&link);
+	if err != nil {
+		http.Error(rw, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	switch req.Method {
+	switch r.Method {
 	case "DELETE":
 		switch link.Action {
 		case "delete-link":
-			r := link.LinkDelete()
-			if r != nil {
-				rw.Write([]byte("500: " + r.Error()))
+			err := link.LinkDelete()
+			if err != nil {
+				http.Error(rw, err.Error(), http.StatusInternalServerError)
 			}
 		}
 	}
 }
 
-func NetworkLinkSet(rw http.ResponseWriter, req *http.Request) {
+func NetworkLinkSet(rw http.ResponseWriter, r *http.Request) {
 	link := new(Link)
 
-	r := json.NewDecoder(req.Body).Decode(&link);
-	if r != nil {
-		log.Error("Failed to find decode json: ", r)
-		rw.Write([]byte("500: " + r.Error()))
+	err := json.NewDecoder(r.Body).Decode(&link);
+	if err != nil {
+		http.Error(rw, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	switch req.Method {
+	switch r.Method {
 	case "POST":
 		switch link.Action {
 		case "set-link-up", "set-link-down", "set-link-mtu":
-			r := link.SetLink()
-			if r != nil {
-				rw.Write([]byte("500: " + r.Error()))
+			err := link.SetLink()
+			if err != nil {
+				http.Error(rw, err.Error(), http.StatusInternalServerError)
 			}
 		}
 	}
 }
 
-func NetworkGetAddress(rw http.ResponseWriter, req *http.Request) {
-	address := new(Address)
+func NetworkGetAddress(rw http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	link := vars["link"]
 
-	r := json.NewDecoder(req.Body).Decode(&address);
-	if r != nil {
-		log.Error("Failed to find decode json: ", r)
-		rw.Write([]byte("500: " + r.Error()))
-		return
-	}
+	address := Address{Link: link}
 
-	switch req.Method {
+	switch r.Method {
 	case "GET":
-		GetAddress(rw, address)
+		address.GetAddress(rw)
 		break
 	}
 }
 
-func NetworkAddAddress(rw http.ResponseWriter, req *http.Request) {
+func NetworkAddAddress(rw http.ResponseWriter, r *http.Request) {
 	address := new(Address)
 
-	r := json.NewDecoder(req.Body).Decode(&address);
-	if r != nil {
-		log.Error("Failed to find decode json: ", r)
-		rw.Write([]byte("500: " + r.Error()))
+	err := json.NewDecoder(r.Body).Decode(&address);
+	if err != nil {
+		http.Error(rw, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	switch req.Method {
+	switch r.Method {
 	case "PUT":
 		switch address.Action {
 		case "add-address":
@@ -130,34 +117,32 @@ func NetworkAddAddress(rw http.ResponseWriter, req *http.Request) {
 	}
 }
 
-func NetworkDeleteAddres(rw http.ResponseWriter, req *http.Request) {
+func NetworkDeleteAddres(rw http.ResponseWriter, r *http.Request) {
 	address := new(Address)
 
-	r := json.NewDecoder(req.Body).Decode(&address);
-	if r != nil {
-		log.Error("Failed to find decode json: ", r)
-		rw.Write([]byte("500: " + r.Error()))
+	err := json.NewDecoder(r.Body).Decode(&address);
+	if err != nil {
+		http.Error(rw, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	switch req.Method {
+	switch r.Method {
 	case "DELETE":
 		DelAddress(address)
 		break
 	}
 }
 
-func NetworkAddRoute(rw http.ResponseWriter, req *http.Request) {
+func NetworkAddRoute(rw http.ResponseWriter, r *http.Request) {
 	route := new(Route)
 
-	r := json.NewDecoder(req.Body).Decode(&route);
-	if r != nil {
-		log.Error("Failed to find decode json: ", r)
-		rw.Write([]byte("500:" + r.Error()))
+	err := json.NewDecoder(r.Body).Decode(&route);
+	if err != nil {
+		http.Error(rw, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	switch req.Method {
+	switch r.Method {
 	case "PUT":
 		switch route.Action {
 		case "add-default-gw":
@@ -167,17 +152,16 @@ func NetworkAddRoute(rw http.ResponseWriter, req *http.Request) {
 	}
 }
 
-func NetworkDeleteRoute(rw http.ResponseWriter, req *http.Request) {
+func NetworkDeleteRoute(rw http.ResponseWriter, r *http.Request) {
 	route := new(Route)
 
-	r := json.NewDecoder(req.Body).Decode(&route);
-	if r != nil {
-		log.Error("Failed to find decode json: ", r)
-		rw.Write([]byte("500:" + r.Error()))
+	err := json.NewDecoder(r.Body).Decode(&route);
+	if err != nil {
+		http.Error(rw, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	switch req.Method {
+	switch r.Method {
 	case "DELETE":
 		switch route.Action {
 		case "del-default-gw":
@@ -187,33 +171,30 @@ func NetworkDeleteRoute(rw http.ResponseWriter, req *http.Request) {
 	}
 }
 
-func NetworkdConfigureNetwork(rw http.ResponseWriter, req *http.Request) {
-	switch req.Method {
+func NetworkdConfigureNetwork(rw http.ResponseWriter, r *http.Request) {
+	switch r.Method {
 	case "PUT":
-		networkd.ConfigureNetworkFile(rw, req)
+		networkd.ConfigureNetworkFile(rw, r)
 		break
 	}
 }
 
-func NetworkdConfigureNetDev(rw http.ResponseWriter, req *http.Request) {
-	switch req.Method {
+func NetworkdConfigureNetDev(rw http.ResponseWriter, r *http.Request) {
+	switch r.Method {
 	case "PUT":
-		networkd.ConfigureNetDevFile(rw, req)
+		networkd.ConfigureNetDevFile(rw, r)
 		break
 	}
 }
 
-func NetworkConfigureEthtool(rw http.ResponseWriter, req *http.Request) {
-	ethtool := new(Ethtool)
+func NetworkConfigureEthtool(rw http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	link := vars["link"]
+	command := vars["command"]
 
-	r := json.NewDecoder(req.Body).Decode(&ethtool);
-	if r != nil {
-		log.Error("Failed to decode json for ethtool: ", r)
-		rw.Write([]byte("500:" + r.Error()))
-		return
-	}
+	ethtool := Ethtool{Link: link, Action: command}
 
-	switch req.Method {
+	switch r.Method {
 	case "GET":
 		ethtool.GetEthTool(rw)
 		break
@@ -225,9 +206,9 @@ func RegisterRouterNetwork(router *mux.Router) {
 	n.HandleFunc("/link/set", NetworkLinkSet)
 	n.HandleFunc("/link/add", NetworkLinkAdd)
 	n.HandleFunc("/link/delete", NetworkLinkDelete)
-	n.HandleFunc("/link/get", NetworkLinkGet)
+	n.HandleFunc("/link/get/{link}", NetworkLinkGet)
 
-	n.HandleFunc("/address/get", NetworkGetAddress)
+	n.HandleFunc("/address/get/{link}", NetworkGetAddress)
 	n.HandleFunc("/address/add", NetworkAddAddress)
 
 	n.HandleFunc("/route/add", NetworkAddRoute)
@@ -239,5 +220,5 @@ func RegisterRouterNetwork(router *mux.Router) {
 	n.HandleFunc("/networkd/netdev", NetworkdConfigureNetDev)
 
 	// ethtool
-	n.HandleFunc("/ethtool/get", NetworkConfigureEthtool)
+	n.HandleFunc("/ethtool/{link}/{command}", NetworkConfigureEthtool)
 }
