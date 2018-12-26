@@ -18,7 +18,7 @@ func GetProc(rw http.ResponseWriter, req *http.Request) {
 
 	err := json.NewDecoder(req.Body).Decode(&proc);
 	if err != nil {
-		http.Error(rw, "Failed to decode JSON", http.StatusInternalServerError)
+		http.Error(rw, err.Error(), http.StatusBadRequest)
 		return
 	}
 
@@ -30,6 +30,9 @@ func GetProc(rw http.ResponseWriter, req *http.Request) {
 			break
 		case "version":
 			err = GetVersion(rw)
+			break
+		case "userstat":
+			err = GetUserStat(rw)
 			break
 		case "netstat":
 			err = GetNetStat(rw, proc.Property)
@@ -65,7 +68,7 @@ func ConfigureProcSysVM(rw http.ResponseWriter, req *http.Request) {
 
 	err := json.NewDecoder(req.Body).Decode(&proc);
 	if err != nil {
-		http.Error(rw, err.Error(), http.StatusInternalServerError)
+		http.Error(rw, err.Error(), http.StatusBadRequest)
 		return
 	}
 
@@ -88,7 +91,7 @@ func ConfigureProcSysNet(rw http.ResponseWriter, req *http.Request) {
 
 	err := json.NewDecoder(req.Body).Decode(&proc);
 	if err != nil {
-		http.Error(rw, "Failed to decode JSON", http.StatusInternalServerError)
+		http.Error(rw, err.Error(), http.StatusBadRequest)
 		return
 	}
 
@@ -111,7 +114,7 @@ func GetProcMisc(rw http.ResponseWriter, req *http.Request) {
 	case "GET":
 		err := GetMisc(rw)
 		if err != nil {
-			http.Error(rw, "Failed to get /proc/misc", http.StatusInternalServerError)
+			http.Error(rw, err.Error(), http.StatusInternalServerError)
 		}
 		break
 	}

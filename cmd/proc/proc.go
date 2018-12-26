@@ -55,6 +55,23 @@ func GetVersion(rw http.ResponseWriter) (error) {
 	return nil
 }
 
+func GetUserStat(rw http.ResponseWriter) (error) {
+	userstat, r := host.Users()
+	if r != nil {
+		return r
+	}
+
+	j, err := json.Marshal(userstat)
+	if err != nil {
+		return errors.New("Json encoding avg stat")
+	}
+
+	rw.WriteHeader(http.StatusOK)
+	rw.Write(j)
+
+	return nil
+}
+
 func GetNetStat(rw http.ResponseWriter, protocol string) (error) {
 	conn, err := net.Connections(protocol)
 	if err != nil {
