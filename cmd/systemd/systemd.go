@@ -42,11 +42,6 @@ func StartUnit(unit string) {
 		log.Errorf("Failed to start unit %s: %s",  unit)
 		return
 	}
-
-	job := <-reschan
-	if job != "done" {
-		log.Errorf("Failed job %s: %s", job, unit)
-	}
 }
 
 func StopUnit(unit string) {
@@ -61,12 +56,6 @@ func StopUnit(unit string) {
 	_, r = conn.StopUnit(unit, "fail", reschan)
 	if r != nil {
 		log.Errorf("Failed to stop unit %s: %s", unit, r)
-		return
-	}
-
-	job := <-reschan
-	if job != "done" {
-		log.Errorf("Failed job: %s", job, unit)
 		return
 	}
 }
@@ -84,11 +73,6 @@ func RestartUnit(unit string) {
 	if r != nil {
 		log.Errorf("Failed to restart unit %s: %s",  unit, r)
 		return
-	}
-
-	job := <-reschan
-	if job != "done" {
-		log.Errorf("Failed job %s: %s", job, unit)
 	}
 }
 
@@ -125,17 +109,17 @@ func GetUnitStatus(w http.ResponseWriter, unit string) {
 	json.NewEncoder(w).Encode(status)
 }
 
-func GetUnitProperty(w http.ResponseWriter, unit string, property string) {
-	conn, r := sd.NewSystemdConnection()
-	if r != nil {
-		log.Errorf("Failed to get systemd bus connection: %s", r)
+func (unit *Unit) GetUnitProperty(w http.ResponseWriter) {
+	conn, err := sd.NewSystemdConnection()
+	if err != nil {
+		log.Errorf("Failed to get systemd bus connection: %s", err)
 		return
 	}
 	defer conn.Close()
 
-	prop, r := conn.GetUnitProperty(unit, property)
-	if r != nil {
-		log.Errorf("Failed to get unit %s property %s: %s", unit, property, r)
+	prop, err := conn.GetUnitProperty(unit.Unit, unit.Property,)
+	if err != nil {
+		log.Errorf("Failed to get unit %s property %s: %s", unit.Unit, unit.Property, err)
 		return
 	}
 
@@ -143,25 +127,25 @@ func GetUnitProperty(w http.ResponseWriter, unit string, property string) {
 	json.NewEncoder(w).Encode(unitprop)
 }
 
-func SetUnitProperty(w http.ResponseWriter, unit string, property string, value string) {
-	conn, r := sd.NewSystemdConnection()
-	if r != nil {
-		log.Errorf("Failed to get systemd bus connection: %s", r)
+func (unit *Unit) SetUnitProperty(w http.ResponseWriter) {
+	conn, err := sd.NewSystemdConnection()
+	if err != nil {
+		log.Errorf("Failed to get systemd bus connection: %s", err)
 		return
 	}
 	defer conn.Close()
 
-	switch property {
+	switch unit.Property {
 	case "CPUShares":
-		n, r := strconv.ParseInt(value, 10, 64)
-		if r != nil {
-			log.Errorf("Failed to parse CPUShares: ", value, r)
+		n, err := strconv.ParseInt(unit.Value, 10, 64)
+		if err != nil {
+			log.Errorf("Failed to parse CPUShares: ", unit.Value, err)
 			return
 		}
 
-		r = conn.SetUnitProperties(unit, true, sd.Property{"CPUShares", dbus.MakeVariant(uint64(n))})
-		if r != nil {
-			log.Errorf("Failed to set CPUShares %s: %s", value, r)
+		err = conn.SetUnitProperties(unit.Unit, true, sd.Property{"CPUShares", dbus.MakeVariant(uint64(n))})
+		if err != nil {
+			log.Errorf("Failed to set CPUShares %s: %s", unit.Value, err)
 			return
 		}
 	}

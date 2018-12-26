@@ -133,7 +133,7 @@ server.crt  server.key
 /etc/api-routerd/tls
 
 ```
-Now start curl using ** https ***
+Now start curl using https
 ```
 [sus@Zeus tls]$ curl -k --header "X-Session-Token: aaaaa" --header "Content-Type: application/json" --request GET --data '{"action":"get-link-features", "link":"vmnet8"}' https://localhost:8080/network/ethtool/get --tlsv1.2
 
@@ -151,14 +151,14 @@ Now start curl using ** https ***
 ```
 Use case: systemd
 ```
-[sus@Zeus] curl --header "Content-Type: application/json" --request PUT --data '{"action":"set-property", "unit":"sshd.service", "property":"CPUShares", "value":"1024"}' http://localhost:8080/service/systemd/property
-{"property":"CPUShares","value":"1024"}
+[sus@Zeus] curl --header "X-Session-Token: aaaaa" --header "Content-Type: application/json" --request PUT --data '{"value":"1100"}' http://localhost:8080/service/systemd/sshd.service/set/CPUShares
+
+[sus@Zeus]  curl --header "Content-Type: application/json" --request GET --header "X-Session-Token: aaaaa" http://localhost:8080/service/systemd/sshd.service/get/CPUShares
 
 [sus@Zeus]$ curl --header "Content-Type: application/json" --request POST --data '{"action":"start","unit":"sshd.service"}' --header "X-Session-Token: aaaaa" http://localhost:8080/service/systemd
-
 [sus@Zeus]$ curl --header "Content-Type: application/json" --request POST --data '{"action":"stop","unit":"sshd.service"}' --header "X-Session-Token: aaaaa" http://localhost:8080/service/systemd
-
-[sus@Zeus]$ curl --header "Content-Type: application/json" --request GET --data '{"action":"status","unit":"sshd.service"}' --header "X-Session-Token: aaaaa" http://localhost:8080/service/systemd
+[sus@Zeus]$ [sus@Zeus proc]$ curl --header "Content-Type: application/json" --request GET --header "X-Session-Token: aaaaa" http://localhost:8080/service/systemd/sshd.service/status
+{"property":"active","unit":"sshd.service"}
 ```
 Use case:
 * command: "GET"
@@ -366,7 +366,8 @@ Bridge=bridge-test
 Example: Get and Set Hostname
 ```
 [sus@Zeus proc]$ curl --header "Content-Type: application/json" --request GET --header "X-Session-Token: aaaaa" http://localhost:8080/hostname/get/static
-{"property":"StaticHostname","value":"Zeus1"}[sus@Zeus proc]$ curl --header "Content-Type: application/json" --request GET --header "X-Session-Token: aaaaa" http://localhost:8080/hostname/get/static                                                                   PUT --data '{"value":"Zeus"}' --header "X-Session-Token: aaaaa" http://localhost:8080/hostname/set/static
+{"property":"StaticHostname","value":"Zeus1"}
+[sus@Zeus proc]$ curl --header "Content-Type: application/json" --request PUT --data '{"value":"Zeus"}' --header "X-Session-Token: aaaaa" http://localhost:8080/hostname/set/static
 [sus@Zeus proc]$ curl --header "Content-Type: application/json" --request GET --header "X-Session-Token: aaaaa" http://localhost:8080/hostname/get/static
 {"property":"StaticHostname","value":"Zeus"}[sus@Zeus proc]$
 ```

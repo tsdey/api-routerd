@@ -5,22 +5,19 @@ package systemd
 import (
 	"encoding/json"
 	"github.com/gorilla/mux"
-	log "github.com/sirupsen/logrus"
 	"net/http"
 )
 
-func ConfigureUnit(rw http.ResponseWriter, req *http.Request) {
+func RouterConfigureUnit(rw http.ResponseWriter, r *http.Request) {
 	unit := new(Unit)
 
-	r := json.NewDecoder(req.Body).Decode(&unit);
-	if r != nil {
-		log.Error("Failed to find decode json: ", r)
-		rw.Write([]byte("500: " + r.Error()))
+	err := json.NewDecoder(r.Body).Decode(&unit);
+	if err != nil {
+		http.Error(rw, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	switch req.Method {
-
+	switch r.Method {
 	case "POST":
 		switch unit.Action {
 		case "start":
@@ -36,37 +33,63 @@ func ConfigureUnit(rw http.ResponseWriter, req *http.Request) {
 			ReloadUnit(unit.Unit)
 			break
 		}
-
 		break
+	}
+}
 
+func RouterGetUnitStatus(rw http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	unit := vars["unit"]
+
+	switch r.Method {
 	case "GET":
-		GetUnitStatus(rw, unit.Unit)
+		GetUnitStatus(rw, unit)
 		break;
 	}
 }
 
-func ConfigureUnitProperty(rw http.ResponseWriter, req *http.Request) {
-	unit := new(Unit)
+func RouterGetUnitProperty(rw http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	unit := vars["unit"]
+	property := vars["property"]
 
-	r := json.NewDecoder(req.Body).Decode(&unit);
-	if r != nil {
-		log.Error("Failed to find decode json: ", r)
-		rw.Write([]byte("500: " + r.Error()))
+	u := new(Unit)
+	u.Unit = unit
+	u.Property = property
+
+	switch r.Method {
+	case "GET":
+		u.GetUnitProperty(rw)
+		break
+	}
+}
+
+func RouterConfigureUnitProperty(rw http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	unit := vars["unit"]
+	property := vars["property"]
+
+	u := new(Unit)
+	err := json.NewDecoder(r.Body).Decode(&u);
+	if err != nil {
+		http.Error(rw, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	switch req.Method {
-	case "GET":
-		GetUnitProperty(rw, unit.Unit, unit.Property)
-		break
+	u.Unit = unit
+	u.Property = property
+
+	switch r.Method {
 	case "PUT":
-		SetUnitProperty(rw, unit.Unit, unit.Property, unit.Value)
+		u.SetUnitProperty(rw)
 		break
 	}
 }
 
 func RegisterRouterSystemd(router *mux.Router) {
 	n := router.PathPrefix("/service").Subrouter()
-	n.HandleFunc("/systemd", ConfigureUnit)
-	n.HandleFunc("/systemd/property", ConfigureUnitProperty)
+	n.HandleFunc("/systemd", RouterConfigureUnit)
+	n.HandleFunc("/systemd/{unit}/status", RouterGetUnitStatus)
+	n.HandleFunc("/systemd/{unit}/get/{property}", RouterGetUnitProperty)
+	n.HandleFunc("/systemd/{unit}/set/{property}", RouterConfigureUnitProperty)
 }
