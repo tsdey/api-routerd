@@ -206,7 +206,9 @@ sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request G
 ```
 proc vm: property any file name in /proc/sys/vm/
 ```
-[sus@Zeus api-routerd]# curl --header "Content-Type: application/json" --request GET --data '{"property":"swappiness"}' --header "X-Session-Token: aaaaa" http://localhost:8080/proc/sys/vm
+[sus@Zeus api-routerd]$ curl --header "Content-Type: application/json" --request GET --header "X-Session-Token: aaaaa" http://localhost:8080/proc/sys/vm/swappiness
+{"property":"swappiness","value":"60"}
+[sus@Zeus api-routerd]$ curl --header "Content-Type: application/json" --request PUT --data '{"value":"70"}' --header "X-Session-Token: aaaaa" http://localhost:8080/proc/sys/vm/swappiness
 {"property":"swappiness","value":"70"}
 
 ```

@@ -74,20 +74,27 @@ func GetProc(rw http.ResponseWriter, r *http.Request) {
 }
 
 func ConfigureProcSysVM(rw http.ResponseWriter, r *http.Request) {
-	proc := new(ProcVM)
+	var err error
 
-	err := json.NewDecoder(r.Body).Decode(&proc);
-	if err != nil {
-		http.Error(rw, err.Error(), http.StatusBadRequest)
-		return
-	}
+	vars := mux.Vars(r)
+	vm := ProcVM{Property: vars["path"]}
 
 	switch r.Method {
 	case "GET":
-		err = proc.GetVM(rw)
+		err = vm.GetVM(rw)
 		break
 	case "PUT":
-		err = proc.SetVM(rw)
+
+		v := new(ProcValue)
+
+		err = json.NewDecoder(r.Body).Decode(&v);
+		if err != nil {
+			http.Error(rw, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		vm.Value = v.Value
+		err = vm.SetVM(rw)
 		break
 	}
 
@@ -180,6 +187,6 @@ func RegisterRouterProc(router *mux.Router) {
 	n.HandleFunc("/modules", GetProcModules)
 	n.HandleFunc("/net/arp", GetProcNetArp)
 	n.HandleFunc("/process/{pid}/{property}", GetProcProcess)
-	n.HandleFunc("/sys/vm", ConfigureProcSysVM)
+	n.HandleFunc("/sys/vm/{path}", ConfigureProcSysVM)
 	n.HandleFunc("/sys/net/{path}/{link}/{conf}", ConfigureProcSysNet)
 }
