@@ -128,10 +128,22 @@ func GetProcNetArp(rw http.ResponseWriter, req *http.Request) {
 	}
 }
 
+func GetProcModules(rw http.ResponseWriter, req *http.Request) {
+	switch req.Method {
+	case "GET":
+		err := GetModules(rw)
+		if err != nil {
+			http.Error(rw, "Failed to get /proc/module", http.StatusInternalServerError)
+		}
+		break
+	}
+}
+
 func RegisterRouterProc(router *mux.Router) {
 	n := router.PathPrefix("/proc").Subrouter()
 	n.HandleFunc("/", GetProc)
 	n.HandleFunc("/misc", GetProcMisc)
+	n.HandleFunc("/modules", GetProcModules)
 	n.HandleFunc("/net/arp", GetProcNetArp)
 	n.HandleFunc("/sys/vm", ConfigureProcSysVM)
 	n.HandleFunc("/sys/net", ConfigureProcSysNet)

@@ -19,6 +19,7 @@ import (
 
 const ProcMiscPath = "/proc/misc"
 const ProcNetArpPath = "/proc/net/arp"
+const ProcModulesPath = "/proc/modules"
 
 type NetArp struct {
 	IPAddress string `json:"ip_address"`
@@ -29,6 +30,14 @@ type NetArp struct {
 	Device    string `json:"device"`
 }
 
+type Modules struct {
+	Module      string `json:"module"`
+	MemorySize  string `json:"memory_size"`
+	Instances   string `json:"instances"`
+	Dependent   string `json:"dependent"`
+	State       string `json:"state"`
+}
+
 func GetVersion(rw http.ResponseWriter) (error) {
 	infostat, err := host.Info()
 	if err != nil {
@@ -37,7 +46,6 @@ func GetVersion(rw http.ResponseWriter) (error) {
 
 	j, err := json.Marshal(infostat)
 	if err != nil {
-		http.Error(rw, err.Error(), http.StatusInternalServerError)
 		return errors.New("Json encoding: Version")
 	}
 
@@ -55,7 +63,6 @@ func GetNetStat(rw http.ResponseWriter, protocol string) (error) {
 
 	j, err := json.Marshal(conn)
 	if err != nil {
-		http.Error(rw, err.Error(), http.StatusInternalServerError)
 		return errors.New("Json encoding netstat")
 	}
 
@@ -73,7 +80,6 @@ func GetNetDev(rw http.ResponseWriter) (error) {
 
 	j, err := json.Marshal(netdev)
 	if err != nil {
-		http.Error(rw, err.Error(), http.StatusInternalServerError)
 		return errors.New("Json encoding NetDev")
 	}
 
@@ -91,7 +97,6 @@ func GetInterfaceStat(rw http.ResponseWriter) (error) {
 
 	j, err := json.Marshal(interfaces)
 	if err != nil {
-		http.Error(rw, err.Error(), http.StatusInternalServerError)
 		return errors.New("Json encoding interface stat")
 	}
 
@@ -109,7 +114,6 @@ func GetSwapMemoryStat(rw http.ResponseWriter) (error) {
 
 	j, err := json.Marshal(swap)
 	if err != nil {
-		http.Error(rw, err.Error(), http.StatusInternalServerError)
 		return errors.New("Json encoding memory stat")
 	}
 
@@ -127,7 +131,6 @@ func GetVirtualMemoryStat(rw http.ResponseWriter) (error) {
 
 	j, err := json.Marshal(virt)
 	if err != nil {
-		http.Error(rw, err.Error(), http.StatusInternalServerError)
 		return errors.New("Json encoding VM stat")
 	}
 
@@ -145,7 +148,6 @@ func GetCPUInfo(rw http.ResponseWriter) (error) {
 
 	j, err := json.Marshal(cpus)
 	if err != nil {
-		http.Error(rw, err.Error(), http.StatusInternalServerError)
 		return errors.New("Json encoding CPU Info")
 	}
 
@@ -163,7 +165,6 @@ func GetCPUTimeStat(rw http.ResponseWriter) (error) {
 
 	j, err := json.Marshal(cpus)
 	if err != nil {
-		http.Error(rw, err.Error(), http.StatusInternalServerError)
 		return errors.New("Json encoding CPU stat")
 	}
 
@@ -181,7 +182,6 @@ func GetAvgStat(rw http.ResponseWriter) (error) {
 
 	j, err := json.Marshal(avgstat)
 	if err != nil {
-		http.Error(rw, err.Error(), http.StatusInternalServerError)
 		return errors.New("Json encoding avg stat")
 	}
 
@@ -211,7 +211,6 @@ func GetMisc(rw http.ResponseWriter) (error) {
 
 	j, err := json.Marshal(miscMap)
 	if err != nil {
-		http.Error(rw, err.Error(), http.StatusInternalServerError)
 		return errors.New("Json encoding")
 	}
 
@@ -225,7 +224,7 @@ func GetNetArp(rw http.ResponseWriter) (error) {
 	lines, err := share.ReadFullFile(ProcNetArpPath)
 	if err != nil {
 		log.Fatal("Failed to read: %s", ProcNetArpPath)
-		return errors.New("Failed to read ProcNetArpPath")
+		return errors.New("Failed to read /proc/net/arp")
 	}
 
 	netarp := make([]NetArp, len(lines)-1)
@@ -248,8 +247,54 @@ func GetNetArp(rw http.ResponseWriter) (error) {
 
 	j, err := json.Marshal(netarp)
 	if err != nil {
-		http.Error(rw, err.Error(), http.StatusInternalServerError)
 		return errors.New("Json encoding ARP")
+	}
+
+	rw.WriteHeader(http.StatusOK)
+	rw.Write(j)
+
+	return nil
+}
+
+func GetModules(rw http.ResponseWriter) (error) {
+	lines, err := share.ReadFullFile(ProcModulesPath)
+	if err != nil {
+		log.Fatal("Failed to read: %s", ProcModulesPath)
+		return errors.New("Failed to read /proc/modules")
+	}
+
+	modules := make([]Modules, len(lines))
+	for i, line := range lines {
+		fields := strings.Fields(line)
+
+		module := Modules{}
+
+		for j, field := range fields {
+			switch j {
+			case 0:
+				module.Module = field
+				break
+			case 1:
+				module.MemorySize = field
+				break
+			case 2:
+				module.Instances = field
+				break
+			case 3:
+				module.Dependent = field
+				break
+			case 4:
+				module.State = field
+				break
+			}
+		}
+
+		modules[i] = module
+	}
+
+	j, err := json.Marshal(modules)
+	if err != nil {
+		return errors.New("Json encoding Module")
 	}
 
 	rw.WriteHeader(http.StatusOK)
