@@ -25,6 +25,9 @@ func ParseBool(str string) (bool, error) {
 }
 
 func ParseIP(ip string) (net.IP, error) {
+	if len(ip) == 0 {
+		return nil, fmt.Errorf("ParseIP")
+	}
 
 	a := net.ParseIP(ip)
 
