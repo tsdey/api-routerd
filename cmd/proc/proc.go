@@ -106,6 +106,49 @@ func GetNetStat(rw http.ResponseWriter, protocol string) (error) {
 	return nil
 }
 
+func GetNetStatPid(rw http.ResponseWriter, protocolPid string) (error) {
+	s := strings.Split(protocolPid, ":")
+	protocol := s[0]
+	pid, err := strconv.ParseInt(s[1], 10, 32)
+	if err != nil ||  protocol == "" || pid == 0 {
+		return errors.New("Can't parse request")
+	}
+
+	conn, err := net.ConnectionsPid(protocol, int32(pid))
+	if err != nil {
+		return err
+	}
+
+	j, err := json.Marshal(conn)
+	if err != nil {
+		return errors.New("Json encoding netstat")
+	}
+
+	rw.WriteHeader(http.StatusOK)
+	rw.Write(j)
+
+	return nil
+}
+
+func GetProtoCountersStat(rw http.ResponseWriter) (error) {
+	protocols := [] string{"ip", "icmp", "icmpmsg", "tcp", "udp", "udplite"}
+
+	proto, err := net.ProtoCounters(protocols)
+	if err != nil {
+		return err
+	}
+
+	j, err := json.Marshal(proto)
+	if err != nil {
+		return errors.New("Json encoding proto counters stat")
+	}
+
+	rw.WriteHeader(http.StatusOK)
+	rw.Write(j)
+
+	return nil
+}
+
 func GetNetDev(rw http.ResponseWriter) (error) {
 	netdev, err := net.IOCounters(true)
 	if err != nil {

@@ -43,6 +43,12 @@ func GetProc(rw http.ResponseWriter, req *http.Request) {
 		case "interface-stat":
 			err = GetInterfaceStat(rw)
 			break
+		case "proto-counter-stat":
+			err = GetProtoCountersStat(rw)
+			break
+		case "proto-pid-stat":
+			err = GetNetStatPid(rw, proc.Property)
+			break
 		case "swap-memory":
 			err = GetSwapMemoryStat(rw)
 			break

@@ -165,7 +165,9 @@ Use case:
   * netdev
   * version
   * vm
-  * netstat
+  * netstat ("property":"protocol")
+  * proto-counter-stat
+  * proto-pid-stat ("property":"protocol:pid")
   * interface-stat
   * swap-memory
   * virtual-memory
@@ -183,6 +185,7 @@ Use case:
 sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --data '{"path":"netdev"}' --header "X-Session-Token: aaaaa" http://localhost:8080/proc/
 sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --data '{"path":"version"}' --header "X-Session-Token: aaaaa" http://localhost:8080/proc/
 sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --data '{"path":"netstat", "property":"tcp"}' --header "X-Session-Token: aaaaa" http://localhost:8080/proc/
+sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --data '{"path":"proto-pid-stat", "property":"tcp:2881"}' --header "X-Session-Token: aaaaa" http://localhost:8080/proc/
 
 sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --data '{"path":"cpuinfo"}' --header "X-Session-Token: aaaaa" http://localhost:8080/proc/
 sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --data '{"path":"cputimestat"}' --header "X-Session-Token: aaaaa" http://localhost:8080/proc/
@@ -191,7 +194,7 @@ sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request G
 sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --data '{"path":"swap-memory"}' --header "X-Session-Token: aaaaa" http://localhost:8080/proc/
 sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --data '{"path":"userstat"}' --header "X-Session-Token: aaaaa" http://localhost:8080/proc/
 sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --data '{"path":"temperaturestat"}' --header "X-Session-Token: aaaaa" http://localhost:8080/proc/
-
+sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --data '{"path":"proto-counter-stat"}' --header "X-Session-Token: aaaaa" http://localhost:8080/proc/
 sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --header "X-Session-Token: aaaaa" http://localhost:8080/proc/misc
 sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --header "X-Session-Token: aaaaa" https://localhost:8080/proc/net/arp
 sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --header "X-Session-Token: aaaaa" http://localhost:8080/proc/modules
