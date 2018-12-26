@@ -25,7 +25,7 @@ var portFlag string
 
 func init() {
 	const (
-		defaultIP  = "0.0.0.0"
+		defaultIP  = ""
 		defaultPort  = "8080"
 	)
 
@@ -35,21 +35,30 @@ func init() {
 
 func InitConf() {
 	confFile := path.Join(ConfPath, ConfFile)
-	cfg, r := ini.Load(confFile)
-	if r != nil {
-		log.Errorf("Fail to read conf file '%s': %v", ConfPath, r)
+	cfg, err := ini.Load(confFile)
+	if err != nil {
+		log.Errorf("Fail to read conf file '%s': %v", ConfPath, err)
 		return
 	}
 
 	ip := cfg.Section("Network").Key("IPAddress").String()
+	_, err = share.ParseIP(ip)
+	if err != nil {
+		log.Errorf("Failed to parse Conf file IPAddress=%s", ip)
+		return
+	}
+
 	port := cfg.Section("Network").Key("Port").String()
+	_, err = share.ParsePort(port)
+	if err != nil {
+		log.Errorf("Failed to parse Conf file Port=%d", port)
+		return
+	}
 
 	log.Infof("Conf file IPAddress=%s, Port=%s", ip, port)
 
-	if ip != "" && port != "" {
-		ipFlag = ip
-		portFlag = port
-	}
+	ipFlag = ip
+	portFlag = port
 }
 
 func main() {
@@ -60,9 +69,9 @@ func main() {
 	log.Infof("api-routerd: v%s (built %s)", Version, runtime.Version())
 	log.Infof("Start Server at %s:%s", ipFlag, portFlag)
 
-	r := router.StartRouter(ipFlag, portFlag, path.Join(ConfPath, TlsCert), path.Join(ConfPath, TlsKey))
-	if r != nil {
-		log.Fatal("Failed to init router: %s", r)
+	err := router.StartRouter(ipFlag, portFlag, path.Join(ConfPath, TlsCert), path.Join(ConfPath, TlsKey))
+	if err != nil {
+		log.Fatal("Failed to init router: %s", err)
 		os.Exit(1)
 	}
 }
