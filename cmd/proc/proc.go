@@ -236,27 +236,13 @@ func GetNetArp(rw http.ResponseWriter) (error) {
 
 		fields := strings.Fields(line)
 
-		if len(fields) < 6 {
-			continue
-		}
-
 		arp := NetArp{}
-		for i, f := range fields {
-			switch i {
-			case 0:
-				arp.IPAddress = f
-			case 1:
-				arp.HWType = f
-			case 2:
-				arp.Flags = f
-			case 3:
-				arp.HWAddress = f
-			case 4:
-				arp.Mask = f
-			case 5:
-				arp.Device = f
-			}
-		}
+		arp.IPAddress = fields[0]
+		arp.HWType = fields[1]
+		arp.Flags = fields[2]
+		arp.HWAddress = fields[3]
+		arp.Mask = fields[4]
+		arp.Device = fields[5]
 		netarp[i-1] = arp
 	}
 

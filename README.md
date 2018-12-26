@@ -1,6 +1,6 @@
 ![Logo](https://ibin.co/4R6Hzr2H7l4A.png)
 
-#### A RestAPI GateWay For Linux
+#### A RestAPI Microservice GateWay For Linux
 
 A super light weight remote management tool which uses REST API for real time configuration and performance as well as health monitoring for systems (containers) and applications. It provides fast API based monitoring without affecting the system it's running on.
 
@@ -32,7 +32,7 @@ A super light weight remote management tool which uses REST API for real time co
 - see information from /proc such as netstat, netdev, memory
 - See ethtool information
 
-##### Basic Setup and Use of api-routerd
+##### Quick Start
 
 First configure your GOPATH. If you have already done this skip this step.
 ```
@@ -46,7 +46,7 @@ export OS_OUTPUT_GOPATH=1
 
  ```
 
- clone inside src dir of GOPATH. In my case
+clone inside src dir of GOPATH. In my case
 
 ```
 [sus@Zeus src]$ pwd
@@ -98,9 +98,7 @@ Joy ccccc
 
 $ curl --header "Content-Type: application/json" --request GET --data '{"path":"netdev"}' --header "X-Session-Token: aaaaa" http://localhost:8080/proc/
 ```
-
 ##### How to configure TLS ?
-
 Generate private key (.key)
 ```
 # Key considerations for algorithm "RSA" ≥ 2048-bit
@@ -135,8 +133,7 @@ server.crt  server.key
 /etc/api-routerd/tls
 
 ```
-
-Now start curl using ***https***
+Now start curl using ** https ***
 ```
 [sus@Zeus tls]$ curl -k --header "X-Session-Token: aaaaa" --header "Content-Type: application/json" --request GET --data '{"action":"get-link-features", "link":"vmnet8"}' https://localhost:8080/network/ethtool/get --tlsv1.2
 
@@ -147,7 +144,7 @@ Now start curl using ***https***
 [sus@Zeus cmd]$ curl --header "Content-Type: application/json" --request GET --header "X-Session-Token: aaaaa" https://localhost:8080/proc/misc --tlsv1.2 -k
 {"130":"watchdog","144":"nvram","165":"vmmon","183":"hw_random","184":"microcode","227":"mcelog","228":"hpet","229":"fuse","231":"snapshot","232":"kvm","235":"autofs","236":"device-mapper","53":"vboxnetctl","54":"vsock","55":"vmci","56":"vboxdrvu","57":"vboxdrv","58":"rfkill","59":"memory_bandwidth","60":"network_throughput","61":"network_latency","62":"cpu_dma_latency","63":"vga_arbiter"}
 
-[sus@Zeurl --header "Content-Type: application/json" --request GET --header "X-Session-Token: aaaaa" https://localhost:8080/proc/net/arp --tlsv1.2 -k
+[sus@Zeus cmd]$ curl --header "Content-Type: application/json" --request GET --header "X-Session-Token: aaaaa" https://localhost:8080/proc/net/arp --tlsv1.2 -k
 [{"ip_address":"192.168.225.1","hw_type":"0x1","flags":"0x2","hw_address":"1a:89:20:38:68:8f","mask":"*","device":"wlp4s0"}]
 ```
 Use case: systemd
@@ -180,7 +177,9 @@ proc examples:
 ```
 sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --data '{"path":"netdev"}' --header "X-Session-Token: aaaaa" http://localhost:8080/proc/
 sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --data '{"path":"version"}' --header "X-Session-Token: aaaaa" http://localhost:8080/proc/
-sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --data '{"path":"netstat", "property":"tcp"}' --header "X-Session-Token: aaaaa" http://localhost:8080/proc/sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --data '{"path":"cpuinfo"}' --header "X-Session-Token: aaaaa" http://localhost:8080/proc/
+sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --data '{"path":"netstat", "property":"tcp"}' --header "X-Session-Token: aaaaa" http://localhost:8080/proc/
+
+sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --data '{"path":"cpuinfo"}' --header "X-Session-Token: aaaaa" http://localhost:8080/proc/
 sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --data '{"path":"cputimestat"}' --header "X-Session-Token: aaaaa" http://localhost:8080/proc/
 sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --data '{"path":"avgstat"}' --header "X-Session-Token: aaaaa" http://localhost:8080/proc/
 sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --data '{"path":"virtual-memory"}' --header "X-Session-Token: aaaaa" http://localhost:8080/proc/
