@@ -18,17 +18,14 @@ type ProcValue struct {
 }
 
 func GetProc(rw http.ResponseWriter, r *http.Request) {
-	proc := new(ProcInfo)
+	var err error
 
-	err := json.NewDecoder(r.Body).Decode(&proc);
-	if err != nil {
-		http.Error(rw, err.Error(), http.StatusBadRequest)
-		return
-	}
+	vars := mux.Vars(r)
+	path := vars["path"]
 
 	switch r.Method {
 	case "GET":
-		switch proc.Path {
+		switch path {
 		case "netdev":
 			err = GetNetDev(rw)
 			break
@@ -42,7 +39,7 @@ func GetProc(rw http.ResponseWriter, r *http.Request) {
 			err = GetTemperatureStat(rw)
 			break
 		case "netstat":
-			err = GetNetStat(rw, proc.Property)
+			err = GetNetStat(rw, path)
 			break
 		case "interface-stat":
 			err = GetInterfaceStat(rw)
@@ -51,7 +48,7 @@ func GetProc(rw http.ResponseWriter, r *http.Request) {
 			err = GetProtoCountersStat(rw)
 			break
 		case "proto-pid-stat":
-			err = GetNetStatPid(rw, proc.Property)
+			err = GetNetStatPid(rw, path)
 			break
 		case "swap-memory":
 			err = GetSwapMemoryStat(rw)
@@ -178,7 +175,7 @@ func GetProcProcess(rw http.ResponseWriter, r *http.Request) {
 
 func RegisterRouterProc(router *mux.Router) {
 	n := router.PathPrefix("/proc").Subrouter()
-	n.HandleFunc("/", GetProc)
+	n.HandleFunc("/{path}", GetProc)
 	n.HandleFunc("/misc", GetProcMisc)
 	n.HandleFunc("/modules", GetProcModules)
 	n.HandleFunc("/net/arp", GetProcNetArp)

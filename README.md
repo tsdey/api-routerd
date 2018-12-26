@@ -182,19 +182,19 @@ Use case:
 
 /proc examples:
 ```
-sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --data '{"path":"netdev"}' --header "X-Session-Token: aaaaa" http://localhost:8080/proc/
-sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --data '{"path":"version"}' --header "X-Session-Token: aaaaa" http://localhost:8080/proc/
+sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --data --header "X-Session-Token: aaaaa" http://localhost:8080/proc/netdev
+sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --data --header "X-Session-Token: aaaaa" http://localhost:8080/proc/version
 sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --data '{"path":"netstat", "property":"tcp"}' --header "X-Session-Token: aaaaa" http://localhost:8080/proc/
 sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --data '{"path":"proto-pid-stat", "property":"tcp:2881"}' --header "X-Session-Token: aaaaa" http://localhost:8080/proc/
 
-sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --data '{"path":"cpuinfo"}' --header "X-Session-Token: aaaaa" http://localhost:8080/proc/
-sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --data '{"path":"cputimestat"}' --header "X-Session-Token: aaaaa" http://localhost:8080/proc/
-sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --data '{"path":"avgstat"}' --header "X-Session-Token: aaaaa" http://localhost:8080/proc/
-sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --data '{"path":"virtual-memory"}' --header "X-Session-Token: aaaaa" http://localhost:8080/proc/
-sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --data '{"path":"swap-memory"}' --header "X-Session-Token: aaaaa" http://localhost:8080/proc/
-sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --data '{"path":"userstat"}' --header "X-Session-Token: aaaaa" http://localhost:8080/proc/
-sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --data '{"path":"temperaturestat"}' --header "X-Session-Token: aaaaa" http://localhost:8080/proc/
-sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --data '{"path":"proto-counter-stat"}' --header "X-Session-Token: aaaaa" http://localhost:8080/proc/
+sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --data --header "X-Session-Token: aaaaa" http://localhost:8080/proc/cpuinfo
+sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --data --header "X-Session-Token: aaaaa" http://localhost:8080/proc/cputimestat
+sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --data --header "X-Session-Token: aaaaa" http://localhost:8080/proc/cputimestat
+sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --data --header "X-Session-Token: aaaaa" http://localhost:8080/proc/virtual-memory
+sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --data --header "X-Session-Token: aaaaa" http://localhost:8080/proc/swap-memory
+sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --data --header "X-Session-Token: aaaaa" http://localhost:8080/proc/userstat
+sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --data --header "X-Session-Token: aaaaa" http://localhost:8080/proc/temperaturestat
+sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --data --header "X-Session-Token: aaaaa" http://localhost:8080/proc/proto-counter-stat
 sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --header "X-Session-Token: aaaaa" http://localhost:8080/proc/misc
 sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --header "X-Session-Token: aaaaa" https://localhost:8080/proc/net/arp
 sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --header "X-Session-Token: aaaaa" http://localhost:8080/proc/modules
@@ -218,13 +218,13 @@ sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request G
 
 More example
 ```
-[sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --data '{"path":"netdev"}' --header "X-Session-Token: aaaaa" http://localhost:8080/proc/
+[sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --header "X-Session-Token: aaaaa" http://localhost:8080/proc/netdev
 [{"name":"wlan0","bytesSent":21729026,"bytesRecv":222301420,"packetsSent":127279,"packetsRecv":210421,"errin":0,"errout":0,"dropin":0,"dropout":0,"fifoin":0,"fifoout":0},{"name":"tunl0","bytesSent":0,"bytesRecv":0,"packetsSent":0,"packetsRecv":0,"errin":0,"errout":0,"dropin":0,"dropout":0,"fifoin":0,"fifoout":0},{"name":"lo","bytesSent":87414,"bytesRecv":87414,"packetsSent":927,"packetsRecv":927,"errin":0,"errout":0,"dropin":0,"dropout":0,"fifoin":0,"fifoout":0},{"name":"eth0","bytesSent":0,"bytesRecv":0,"packetsSent":0,"packetsRecv":0,"errin":0,"errout":0,"dropin":0,"dropout":0,"fifoin":0,"fifoout":0},{"name":"sit0","bytesSent":0,"bytesRecv":0,"packetsSent":0,"packetsRecv":0,"errin":0,"errout":0,"dropin":0,"dropout":0,"fifoin":0,"fifoout":0},{"name":"my-macvlan","bytesSent":0,"bytesRecv":0,"packetsSent":0,"packetsRecv":0,"errin":0,"errout":0,"dropin":0,"dropout":0,"fifoin":0,"fifoout":0},{"name":"vmnet1","bytesSent":0,"bytesRecv":0,"packetsSent":701,"packetsRecv":0,"errin":0,"errout":0,"dropin":0,"dropout":0,"fifoin":0,"fifoout":0},{"name":"vmnet8","bytesSent":0,"bytesRecv":0,"packetsSent":701,"packetsRecv":0,"errin":0,"errout":0,"dropin":0,"dropout":0,"fifoin":0,"fifoout":0}]
 
 ```
 
 ```
-[sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --data '{"path":"version"}' --header "X-Session-Token: aaaaa" http://localhost:8080/proc/
+[sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --header "X-Session-Token: aaaaa" http://localhost:8080/proc/version
 {"hostname":"Zeus","uptime":17747,"bootTime":1545381768,"procs":360,"os":"linux","platform":"fedora","platformFamily":"fedora","platformVersion":"29","kernelVersion":"4.19.2-300.fc29.x86_64","virtualizationSystem":"kvm","virtualizationRole":"host","hostid":"27f7c64c-3148-11b2-a85c-ec64a5733ce1"}
 
 ```
