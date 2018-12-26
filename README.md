@@ -365,13 +365,10 @@ Bridge=bridge-test
 
 Example: Get and Set Hostname
 ```
-[sus@Zeus api-routerd]$  curl --header "Content-Type: application/json" --request GET --data '{"property":"static"}' --header "X-Session-Token: aaaaa" http://localhost:8080/hostname/
-{"method":"","property":"StaticHostname","value":"Zeus"}
-
-[sus@Zeus api-routerd]$ curl --header "Content-Type: application/json" --request PUT --data '{"method":"static", "value":"Zeus1"}' --header "X-Session-Token: aaaaa" http://localhost:8080/hostname/
-
-[sus@Zeus api-routerd]$ curl --header "Content-Type: application/json" --request GET --data '{"property":"static"}' --header "X-Session-Token: aaaaa" http://localhost:8080/hostname/
-{"method":"","property":"StaticHostname","value":"Zeus1"}
+[sus@Zeus proc]$ curl --header "Content-Type: application/json" --request GET --header "X-Session-Token: aaaaa" http://localhost:8080/hostname/get/static
+{"property":"StaticHostname","value":"Zeus1"}[sus@Zeus proc]$ curl --header "Content-Type: application/json" --request GET --header "X-Session-Token: aaaaa" http://localhost:8080/hostname/get/static                                                                   PUT --data '{"value":"Zeus"}' --header "X-Session-Token: aaaaa" http://localhost:8080/hostname/set/static
+[sus@Zeus proc]$ curl --header "Content-Type: application/json" --request GET --header "X-Session-Token: aaaaa" http://localhost:8080/hostname/get/static
+{"property":"StaticHostname","value":"Zeus"}[sus@Zeus proc]$
 ```
 
 

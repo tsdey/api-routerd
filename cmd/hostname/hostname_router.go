@@ -5,36 +5,50 @@ package hostname
 import (
 	"encoding/json"
 	"github.com/gorilla/mux"
-	log "github.com/sirupsen/logrus"
 	"net/http"
 )
 
-func ConfigureHostname(rw http.ResponseWriter, req *http.Request) {
+func RouterGetHostname(rw http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	property := vars["property"]
+
+	switch r.Method {
+	case "GET":
+		err := GetHostname(rw, property)
+		if err != nil {
+			http.Error(rw, err.Error(), http.StatusInternalServerError)
+		}
+
+		break
+	}
+}
+
+func RouterSetHostname(rw http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	property := vars["property"]
+
 	hostname := new(Hostname)
 
-	err := json.NewDecoder(req.Body).Decode(&hostname);
+	err := json.NewDecoder(r.Body).Decode(&hostname);
 	if err != nil {
-		log.Error("Failed to decode json: ", err)
 		http.Error(rw, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	switch req.Method {
-	case "GET":
-		err = hostname.GetHostname(rw)
-		break
-
+	switch r.Method {
 	case "PUT":
-		err = hostname.SetHostname()
-		break
-	}
+		hostname.Property = property
 
-	if err != nil {
-		http.Error(rw, err.Error(), http.StatusInternalServerError)
+		err := hostname.SetHostname()
+		if err != nil {
+			http.Error(rw, err.Error(), http.StatusInternalServerError)
+		}
+		break
 	}
 }
 
 func RegisterRouterHostname(router *mux.Router) {
 	s := router.PathPrefix("/hostname").Subrouter().StrictSlash(false)
-	s.HandleFunc("/", ConfigureHostname)
+	s.HandleFunc("/get/{property}", RouterGetHostname)
+	s.HandleFunc("/set/{property}", RouterSetHostname)
 }

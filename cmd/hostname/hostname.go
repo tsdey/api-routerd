@@ -12,7 +12,6 @@ import (
 )
 
 type Hostname struct {
-	Method string   `json:"method"`
 	Property string `json:"property"`
 	Value string    `json:"value"`
 }
@@ -30,22 +29,22 @@ func (hostname *Hostname) SetHostname() (error) {
 		return errors.New("Empty hostname received")
 	}
 
-	method := "SetStaticHostname"
+	property := "SetStaticHostname"
 
-	switch(hostname.Method) {
+	switch(hostname.Property) {
 	case "pretty":
-		method = "PrettyHostname"
+		property = "PrettyHostname"
 		break
 	case "transient":
-		method = "SetHostname"
+		property = "SetHostname"
 		break
 	case "static":
-		method = "SetStaticHostname"
+		property = "SetStaticHostname"
 		break
 	}
 
 	h := conn.Object("org.freedesktop.hostname1", "/org/freedesktop/hostname1")
-	errDbus := h.Call("org.freedesktop.hostname1." + method, 0, hostname.Value, false).Err
+	errDbus := h.Call("org.freedesktop.hostname1." + property, 0, hostname.Value, false).Err
 	if errDbus != nil {
 		log.Errorf("Failed to set hostname: ", errDbus)
 		return errors.New("Failed to set hostname")
@@ -54,7 +53,7 @@ func (hostname *Hostname) SetHostname() (error) {
 	return nil
 }
 
-func (hostname *Hostname) GetHostname(rw http.ResponseWriter) (error) {
+func GetHostname(rw http.ResponseWriter, property string) (error) {
 	conn, err := share.GetSystemBusPrivateConn()
 	if err != nil {
 		log.Error("Failed to get dbus connection: ", err)
@@ -62,15 +61,7 @@ func (hostname *Hostname) GetHostname(rw http.ResponseWriter) (error) {
 	}
 	defer conn.Close()
 
-	prop := strings.TrimSpace(hostname.Property)
-	if (len(prop) == 0) {
-		log.Error("Empty hostname received")
-		return errors.New("Empty hostname received")
-	}
-
-	property := "static"
-
-	switch(prop) {
+	switch(property) {
 	case "pretty":
 		property = "PrettyHostname"
 		break
