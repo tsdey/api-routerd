@@ -17,59 +17,153 @@ type ProcValue struct {
 	Value string `json:"value"`
 }
 
-func GetProc(rw http.ResponseWriter, r *http.Request) {
-	var err error
+func GetProcNetDev(rw http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case "GET":
+		err := GetNetDev(rw)
+		if err != nil {
+			http.Error(rw, err.Error(), http.StatusInternalServerError)
+		}
+		break
+	}
+}
 
+func GetProcVersion(rw http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case "GET":
+		err := GetVersion(rw)
+		if err != nil {
+			http.Error(rw, err.Error(), http.StatusInternalServerError)
+		}
+		break
+	}
+}
+
+func GetProcUserStat(rw http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case "GET":
+		err := GetUserStat(rw)
+		if err != nil {
+			http.Error(rw, err.Error(), http.StatusInternalServerError)
+		}
+		break
+	}
+}
+
+func GetProcTemperatureStat(rw http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case "GET":
+		err := GetTemperatureStat(rw)
+		if err != nil {
+			http.Error(rw, err.Error(), http.StatusInternalServerError)
+		}
+		break
+	}
+}
+
+func GetProcNetStat(rw http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	path := vars["path"]
+	protocol := vars["protocol"]
 
 	switch r.Method {
 	case "GET":
-		switch path {
-		case "netdev":
-			err = GetNetDev(rw)
-			break
-		case "version":
-			err = GetVersion(rw)
-			break
-		case "userstat":
-			err = GetUserStat(rw)
-			break
-		case "temperaturestat":
-			err = GetTemperatureStat(rw)
-			break
-		case "netstat":
-			err = GetNetStat(rw, path)
-			break
-		case "interface-stat":
-			err = GetInterfaceStat(rw)
-			break
-		case "proto-counter-stat":
-			err = GetProtoCountersStat(rw)
-			break
-		case "proto-pid-stat":
-			err = GetNetStatPid(rw, path)
-			break
-		case "swap-memory":
-			err = GetSwapMemoryStat(rw)
-			break
-		case "virtual-memory":
-			err = GetVirtualMemoryStat(rw)
-			break
-		case "cpuinfo":
-			err = GetCPUInfo(rw)
-			break
-		case "cputimestat":
-			err = GetCPUTimeStat(rw)
-			break
-		case "avgstat":
-			err = GetAvgStat(rw)
-			break
+		err := GetNetStat(rw, protocol)
+		if err != nil {
+			http.Error(rw, err.Error(), http.StatusInternalServerError)
 		}
+		break
 	}
+}
 
-	if err != nil {
-		http.Error(rw, err.Error(), http.StatusInternalServerError)
+func GetProcPidNetStat(rw http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	protocol:= vars["protocol"]
+	pid := vars["pid"]
+
+	switch r.Method {
+	case "GET":
+		err := GetNetStatPid(rw, protocol, pid)
+		if err != nil {
+			http.Error(rw, err.Error(), http.StatusInternalServerError)
+		}
+		break
+	}
+}
+
+func GetProcInterfaceStat(rw http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case "GET":
+		err := GetInterfaceStat(rw)
+		if err != nil {
+			http.Error(rw, err.Error(), http.StatusInternalServerError)
+		}
+		break
+	}
+}
+
+func GetProcProtoCountersStat(rw http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case "GET":
+		err := GetProtoCountersStat(rw)
+		if err != nil {
+			http.Error(rw, err.Error(), http.StatusInternalServerError)
+		}
+		break
+	}
+}
+
+func GetProcGetSwapMemoryStat(rw http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case "GET":
+		err := GetSwapMemoryStat(rw)
+		if err != nil {
+			http.Error(rw, err.Error(), http.StatusInternalServerError)
+		}
+		break
+	}
+}
+
+func GetProcVirtualMemoryStat(rw http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case "GET":
+		err := GetVirtualMemoryStat(rw)
+		if err != nil {
+			http.Error(rw, err.Error(), http.StatusInternalServerError)
+		}
+		break
+	}
+}
+
+func GetProcCPUInfo(rw http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case "GET":
+		err := GetCPUInfo(rw)
+		if err != nil {
+			http.Error(rw, err.Error(), http.StatusInternalServerError)
+		}
+		break
+	}
+}
+
+func GetProcCPUTimeStat(rw http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case "GET":
+		err := GetCPUTimeStat(rw)
+		if err != nil {
+			http.Error(rw, err.Error(), http.StatusInternalServerError)
+		}
+		break
+	}
+}
+
+func GetProcAvgStat(rw http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case "GET":
+		err := GetAvgStat(rw)
+		if err != nil {
+			http.Error(rw, err.Error(), http.StatusInternalServerError)
+		}
+		break
 	}
 }
 
@@ -182,11 +276,23 @@ func GetProcProcess(rw http.ResponseWriter, r *http.Request) {
 
 func RegisterRouterProc(router *mux.Router) {
 	n := router.PathPrefix("/proc").Subrouter()
-	n.HandleFunc("/{path}", GetProc)
+	n.HandleFunc("/netdev", GetProcNetDev)
+	n.HandleFunc("/version", GetProcVersion)
+	n.HandleFunc("/userstat", GetProcUserStat)
+	n.HandleFunc("/temperaturestat", GetProcTemperatureStat)
+	n.HandleFunc("/netstat/{protocol}", GetProcNetStat)
+	n.HandleFunc("/interface-stat", GetProcInterfaceStat)
+	n.HandleFunc("/proto-counter-stat", GetProcProtoCountersStat)
+	n.HandleFunc("/proto-pid-stat/{pid}/{protocol}", GetProcPidNetStat)
+	n.HandleFunc("/swap-memory", GetProcGetSwapMemoryStat)
+	n.HandleFunc("/virtual-memory", GetProcVirtualMemoryStat)
+	n.HandleFunc("/cpuinfo", GetProcCPUInfo)
+	n.HandleFunc("/cputimestat", GetProcCPUTimeStat)
+	n.HandleFunc("/avgstat", GetProcAvgStat)
 	n.HandleFunc("/misc", GetProcMisc)
 	n.HandleFunc("/modules", GetProcModules)
 	n.HandleFunc("/net/arp", GetProcNetArp)
-	n.HandleFunc("/process/{pid}/{property}", GetProcProcess)
+	n.HandleFunc("/process/{pid}/{method}/", GetProcProcess)
 	n.HandleFunc("/sys/vm/{path}", ConfigureProcSysVM)
 	n.HandleFunc("/sys/net/{path}/{link}/{conf}", ConfigureProcSysNet)
 }

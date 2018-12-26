@@ -107,10 +107,8 @@ func GetNetStat(rw http.ResponseWriter, protocol string) (error) {
 	return nil
 }
 
-func GetNetStatPid(rw http.ResponseWriter, protocolPid string) (error) {
-	s := strings.Split(protocolPid, ":")
-	protocol := s[0]
-	pid, err := strconv.ParseInt(s[1], 10, 32)
+func GetNetStatPid(rw http.ResponseWriter, protocol string, process string) (error) {
+	pid, err := strconv.ParseInt(process, 10, 32)
 	if err != nil ||  protocol == "" || pid == 0 {
 		return errors.New("Can't parse request")
 	}
@@ -306,7 +304,11 @@ func GetNetArp(rw http.ResponseWriter) (error) {
 	}
 
 	netarp := make([]NetArp, len(lines)-1)
-	for i, line := range lines[1:] {
+	for i, line := range lines {
+		if i == 0 {
+			continue
+		}
+
 		fields := strings.Fields(line)
 
 		arp := NetArp{}
