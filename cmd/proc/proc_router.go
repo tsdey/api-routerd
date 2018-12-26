@@ -13,16 +13,20 @@ type ProcInfo struct {
 	Property string `json:"property"`
 }
 
-func GetProc(rw http.ResponseWriter, req *http.Request) {
+type ProcValue struct {
+	Value string `json:"value"`
+}
+
+func GetProc(rw http.ResponseWriter, r *http.Request) {
 	proc := new(ProcInfo)
 
-	err := json.NewDecoder(req.Body).Decode(&proc);
+	err := json.NewDecoder(r.Body).Decode(&proc);
 	if err != nil {
 		http.Error(rw, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	switch req.Method {
+	switch r.Method {
 	case "GET":
 		switch proc.Path {
 		case "netdev":
@@ -72,16 +76,16 @@ func GetProc(rw http.ResponseWriter, req *http.Request) {
 	}
 }
 
-func ConfigureProcSysVM(rw http.ResponseWriter, req *http.Request) {
+func ConfigureProcSysVM(rw http.ResponseWriter, r *http.Request) {
 	proc := new(ProcVM)
 
-	err := json.NewDecoder(req.Body).Decode(&proc);
+	err := json.NewDecoder(r.Body).Decode(&proc);
 	if err != nil {
 		http.Error(rw, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	switch req.Method {
+	switch r.Method {
 	case "GET":
 		err = proc.GetVM(rw)
 		break
@@ -91,35 +95,41 @@ func ConfigureProcSysVM(rw http.ResponseWriter, req *http.Request) {
 	}
 
 	if err != nil {
-		http.Error(rw, "Failed to configure VM", http.StatusInternalServerError)
+		http.Error(rw, err.Error(), http.StatusInternalServerError)
 	}
 }
 
-func ConfigureProcSysNet(rw http.ResponseWriter, req *http.Request) {
-	proc := new(ProcSysNet)
+func ConfigureProcSysNet(rw http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	proc := ProcSysNet{Path: vars["path"], Property: vars["conf"] , Link: vars["link"]}
 
-	err := json.NewDecoder(req.Body).Decode(&proc);
-	if err != nil {
-		http.Error(rw, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	switch req.Method {
+	switch r.Method {
 	case "GET":
-		err = proc.GetProcSysNet(rw)
+		err := proc.GetProcSysNet(rw)
+		if err != nil {
+			http.Error(rw, err.Error(), http.StatusInternalServerError)
+		}
 		break
 	case "PUT":
-		err = proc.SetProcSysNet(rw)
-		break
-	}
 
-	if err != nil {
-		http.Error(rw, "Failed to configure /proc/sys/net", http.StatusInternalServerError)
+		v := new(ProcValue)
+		err := json.NewDecoder(r.Body).Decode(&v);
+		if err != nil {
+			http.Error(rw, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		proc.Value = v.Value
+		err = proc.SetProcSysNet(rw)
+		if err != nil {
+			http.Error(rw, err.Error(), http.StatusInternalServerError)
+		}
+		break
 	}
 }
 
-func GetProcMisc(rw http.ResponseWriter, req *http.Request) {
-	switch req.Method {
+func GetProcMisc(rw http.ResponseWriter, r *http.Request) {
+	switch r.Method {
 	case "GET":
 		err := GetMisc(rw)
 		if err != nil {
@@ -129,23 +139,38 @@ func GetProcMisc(rw http.ResponseWriter, req *http.Request) {
 	}
 }
 
-func GetProcNetArp(rw http.ResponseWriter, req *http.Request) {
-	switch req.Method {
+func GetProcNetArp(rw http.ResponseWriter, r *http.Request) {
+	switch r.Method {
 	case "GET":
 		err := GetNetArp(rw)
 		if err != nil {
-			http.Error(rw, "Failed to get /proc/net/arp", http.StatusInternalServerError)
+			http.Error(rw, err.Error(), http.StatusInternalServerError)
 		}
 		break
 	}
 }
 
-func GetProcModules(rw http.ResponseWriter, req *http.Request) {
-	switch req.Method {
+func GetProcModules(rw http.ResponseWriter, r *http.Request) {
+	switch r.Method {
 	case "GET":
 		err := GetModules(rw)
 		if err != nil {
-			http.Error(rw, "Failed to get /proc/module", http.StatusInternalServerError)
+			http.Error(rw, err.Error(), http.StatusInternalServerError)
+		}
+		break
+	}
+}
+
+func GetProcProcess(rw http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	pid := vars["pid"]
+	property := vars["property"]
+
+	switch r.Method {
+	case "GET":
+		err := GetProcessInfo(rw, pid, property)
+		if err != nil {
+			http.Error(rw, err.Error(), http.StatusInternalServerError)
 		}
 		break
 	}
@@ -157,6 +182,7 @@ func RegisterRouterProc(router *mux.Router) {
 	n.HandleFunc("/misc", GetProcMisc)
 	n.HandleFunc("/modules", GetProcModules)
 	n.HandleFunc("/net/arp", GetProcNetArp)
+	n.HandleFunc("/process/{pid}/{property}", GetProcProcess)
 	n.HandleFunc("/sys/vm", ConfigureProcSysVM)
-	n.HandleFunc("/sys/net", ConfigureProcSysNet)
+	n.HandleFunc("/sys/net/{path}/{link}/{conf}", ConfigureProcSysNet)
 }

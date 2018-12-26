@@ -165,9 +165,9 @@ Use case:
   * netdev
   * version
   * vm
-  * netstat ("property":"protocol")
+  * netstat
   * proto-counter-stat
-  * proto-pid-stat ("property":"protocol:pid")
+  * proto-pid-stat
   * interface-stat
   * swap-memory
   * virtual-memory
@@ -231,11 +231,13 @@ More example
 set and get any value from ```/proc/sys/net```.
 supported: IPv4, IPv6 and core
 ```
-[sus@Zeus api-routerd]# curl --header "Content-Type: application/json" --request GET --data '{"property":"forwarding", "link":"enp0s31f6", "path":"ipv4"}' --header "X-Session-Token: aaaaa" http://localhost:8080/proc/sys/net
+[sus@Zeus proc]$ curl --header "Content-Type: application/json" --request GET --header "X-Session-Token: aaaaa" http://localhost:8080/proc/sys/net/ipv4/enp0s31f6/forwarding
 {"path":"ipv4","property":"forwarding","value":"0","link":"enp0s31f6"}
-[sus@Zeus api-routerd]# curl --header "Content-Type: application/json" --request PUT --data '{"property":"forwarding", "value":"1","link":"enp0s31f6", "path":"ipv4"}' --header "X-Session-Token: aaaaa" http://localhost:8080/proc/sys/net
-[sus@Zeus api-routerd]# curl --header "Content-Type: application/json" --request GET --data '{"property":"forwarding", "link":"enp0s31f6", "path":"ipv4"}' --header "X-Session-Token: aaaaa" http://localhost:8080/proc/sys/net
+[sus@Zeus proc]$  curl --header "Content-Type: application/json" --request PUT --data '{"value":"1"}' --header "X-Session-Token: aaaaa" http://localhost:8080/proc/sys/net/ipv4/enp0s31f6/forwarding
+[sus@Zeus proc]$ curl --header "Content-Type: application/json" --request GET --header "X-Session-Token: aaaaa" http://localhost:8080/proc/sys/net/ipv4/enp0s31f6/forwarding
 {"path":"ipv4","property":"forwarding","value":"1","link":"enp0s31f6"}
+[sus@Zeus proc]$
+
 ```
 
 ##### Use case configure link

@@ -10,6 +10,7 @@ import (
 	"github.com/shirou/gopsutil/host"
 	"github.com/shirou/gopsutil/net"
 	"github.com/shirou/gopsutil/mem"
+	"github.com/shirou/gopsutil/process"
 	"github.com/shirou/gopsutil/load"
 	log "github.com/sirupsen/logrus"
 	"net/http"
@@ -305,11 +306,7 @@ func GetNetArp(rw http.ResponseWriter) (error) {
 	}
 
 	netarp := make([]NetArp, len(lines)-1)
-	for i, line := range lines {
-		if i == 0 {
-			continue
-		}
-
+	for i, line := range lines[1:] {
 		fields := strings.Fields(line)
 
 		arp := NetArp{}
@@ -372,6 +369,40 @@ func GetModules(rw http.ResponseWriter) (error) {
 	j, err := json.Marshal(modules)
 	if err != nil {
 		return errors.New("Json encoding Module")
+	}
+
+	rw.WriteHeader(http.StatusOK)
+	rw.Write(j)
+
+	return nil
+}
+
+func GetProcessInfo(rw http.ResponseWriter, proc string, property string) (error) {
+	var j []byte
+
+	pid, err := strconv.ParseInt(proc, 10, 32)
+	if err != nil {
+		return err
+	}
+
+	p, err := process.NewProcess(int32(pid))
+	if err != nil {
+		return err
+	}
+
+	switch property {
+	case "pid-connections":
+		conn, err := p.Connections()
+		if err != nil {
+			return err
+		}
+
+		j, err = json.Marshal(conn)
+		break
+	}
+
+	if err != nil {
+		return err
 	}
 
 	rw.WriteHeader(http.StatusOK)
