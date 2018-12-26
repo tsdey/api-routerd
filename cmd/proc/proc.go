@@ -63,7 +63,24 @@ func GetUserStat(rw http.ResponseWriter) (error) {
 
 	j, err := json.Marshal(userstat)
 	if err != nil {
-		return errors.New("Json encoding avg stat")
+		return errors.New("Json encoding UserStat")
+	}
+
+	rw.WriteHeader(http.StatusOK)
+	rw.Write(j)
+
+	return nil
+}
+
+func GetTemperatureStat(rw http.ResponseWriter) (error) {
+	tempstat, r := host.SensorsTemperatures()
+	if r != nil {
+		return r
+	}
+
+	j, err := json.Marshal(tempstat)
+	if err != nil {
+		return errors.New("Json encoding TemperatureStat")
 	}
 
 	rw.WriteHeader(http.StatusOK)

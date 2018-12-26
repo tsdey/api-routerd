@@ -34,6 +34,9 @@ func GetProc(rw http.ResponseWriter, req *http.Request) {
 		case "userstat":
 			err = GetUserStat(rw)
 			break
+		case "temperaturestat":
+			err = GetTemperatureStat(rw)
+			break
 		case "netstat":
 			err = GetNetStat(rw, proc.Property)
 			break
