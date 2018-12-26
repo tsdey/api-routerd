@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"net"
 )
 
 func ParseBool(str string) (bool, error) {
@@ -21,4 +22,28 @@ func ParseBool(str string) (bool, error) {
 	}
 
 	return false, fmt.Errorf("ParseBool")
+}
+
+func ParseIP(ip string) (net.IP, error) {
+
+	a := net.ParseIP(ip)
+
+	if a.To4 == nil || a.To16 == nil {
+		return nil, fmt.Errorf("ParseIP")
+	}
+
+	return a, nil
+}
+
+func ParsePort(port string) (uint16, error) {
+	if len(port) == 0 {
+		return 0, nil
+	}
+
+	p, err := strconv.ParseUint(port, 10, 16)
+	if err != nil {
+		return 0, err
+	}
+
+	return uint16(p), nil
 }
