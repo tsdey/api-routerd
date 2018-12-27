@@ -196,7 +196,11 @@ func NetworkConfigureEthtool(rw http.ResponseWriter, r *http.Request) {
 
 	switch r.Method {
 	case "GET":
-		ethtool.GetEthTool(rw)
+		err := ethtool.GetEthTool(rw)
+		if err != nil {
+			http.Error(rw, err.Error(), http.StatusInternalServerError)
+			return
+		}
 		break
 	}
 }

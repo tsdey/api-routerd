@@ -5,6 +5,7 @@ package network
 import (
 	"api-routerd/cmd/share"
 	"encoding/json"
+	"errors"
 	"github.com/safchain/ethtool"
 	log "github.com/sirupsen/logrus"
 	"net/http"
@@ -16,101 +17,99 @@ type Ethtool struct {
 	Reply    string `json:"reply"`
 }
 
-func (req *Ethtool) GetEthTool(rw http.ResponseWriter) {
-	l := share.LinkExists(req.Link)
-	if !l  {
+func (req *Ethtool) GetEthTool(rw http.ResponseWriter) (error) {
+	var j []byte
+
+	link := share.LinkExists(req.Link)
+	if !link {
 		log.Errorf("Failed to get link: %s", req.Link)
-		return
+		return errors.New("Link not found")
 	}
 
-	e, r := ethtool.NewEthtool()
-	if r != nil {
-		log.Errorf("Failed to init ethtool for link %s: %s", r, req.Link)
-		return
+	e, err := ethtool.NewEthtool()
+	if err != nil {
+		log.Errorf("Failed to init ethtool for link %s: %s", err, req.Link)
+		return err
 	}
 	defer e.Close()
 
 	switch req.Action {
 	case "get-link-stat":
-		stats, r := e.Stats(req.Link)
-		if r != nil {
-			log.Errorf("Failed to get ethtool statitics for link %s: %s", r, req.Link)
-			return
+		stats, err := e.Stats(req.Link)
+		if err != nil {
+			log.Errorf("Failed to get ethtool statitics for link %s: %s", err, req.Link)
+			return err
 		}
 
-		jsonStat, r := json.Marshal(stats)
-		if r != nil {
-			log.Errorf("Failed to encode ethtool json statitics for link %s: %s", r, req.Link)
-			return
+		j, err = json.Marshal(stats)
+		if err != nil {
+			log.Errorf("Failed to encode ethtool json statitics for link %s: %s", err, req.Link)
+			return err
 		}
-
-		rw.Write([]byte(jsonStat))
 		break
 
 	case "get-link-features":
 
-		features, r := e.Features(req.Link)
-		if r != nil {
-			log.Errorf("Failed to get ethtool features for link %s: %s", r, req.Link)
-			return
+		features, err := e.Features(req.Link)
+		if err != nil {
+			log.Errorf("Failed to get ethtool features for link %s: %s", err, req.Link)
+			return err
 		}
 
-		jsonFeatures, r := json.Marshal(features)
-		if r != nil {
-			log.Errorf("Failed to encode json features for link %s: %s", r, req.Link)
-			return
+		j, err = json.Marshal(features)
+		if err != nil {
+			log.Errorf("Failed to encode json features for link %s: %s", err, req.Link)
+			return err
 		}
-
-		rw.Write([]byte(jsonFeatures))
-
 		break
 
 	case "get-link-bus":
 
-		bus, r := e.BusInfo(req.Link)
-		if r != nil {
-			log.Errorf("Failed to get ethtool bus for link %s: %s", r, req.Link)
-			return
+		bus, err := e.BusInfo(req.Link)
+		if err != nil {
+			log.Errorf("Failed to get ethtool bus for link %s: %s", err, req.Link)
+			return err
 		}
 
-		ethtool := Ethtool {
-			Action: "get-link-bus",
-			Link:   req.Link,
-			Reply:  bus,
+		b := struct {
+			Bus string
+		}{
+			bus,
 		}
 
-		jsonBus, r := json.Marshal(ethtool)
-		if r != nil {
-			log.Errorf("Failed to get encode json bus information for link %s: %s", r, req.Link)
-			return
+		j, err = json.Marshal(b)
+		if err != nil {
+			log.Errorf("Failed to get encode json bus information for link %s: %s", err, req.Link)
+			return err
 		}
-
-		rw.Write([]byte(jsonBus))
 
 		break
 
 	case "get-link-driver-name":
 
-		driver, r := e.DriverName(req.Link)
-		if r != nil {
-			log.Errorf("Failed to get ethtool driver name for link %s: %s", r, req.Link)
-			return
+		driver, err := e.DriverName(req.Link)
+		if err != nil {
+			log.Errorf("Failed to get ethtool driver name for link %s: %s", err, req.Link)
+			return err
 		}
 
-		ethtool := Ethtool{
-			Action: "get-link-driver-name",
-			Link:   req.Link,
-			Reply:  driver,
+		d := struct {
+			Driver string
+		}{
+			driver,
 		}
 
-		jsonDriver, r := json.Marshal(ethtool)
-		if r != nil {
-			log.Errorf("Failed to get encode json driver name for link %s: %s", r, req.Link)
-			return
+		j, err = json.Marshal(d)
+		if err != nil {
+			log.Errorf("Failed to get encode json driver name for link %s: %s", err, req.Link)
+			return err
 		}
-
-		rw.Write([]byte(jsonDriver))
 
 		break
 	}
+
+	rw.WriteHeader(http.StatusOK)
+	rw.Write(j)
+
+	return nil
 }
