@@ -95,8 +95,6 @@ Add user name and authentication string in space separated lines
 Susant aaaaa
 Max bbbb
 Joy ccccc
-
-$ curl --header "Content-Type: application/json" --request GET --data '{"path":"netdev"}' --header "X-Session-Token: aaaaa" http://localhost:8080/proc/
 ```
 ##### How to configure TLS ?
 Generate private key (.key)
@@ -135,29 +133,29 @@ server.crt  server.key
 ```
 Now start curl using https
 ```
-[sus@Zeus tls]$ curl -k --header "X-Session-Token: aaaaa" --header "Content-Type: application/json" --request GET --data '{"action":"get-link-features", "link":"vmnet8"}' https://localhost:8080/network/ethtool/get --tlsv1.2
+[sus@Zeus tls]$ curl --header "X-Session-Token: aaaaa" --request GET  http://localhost:8080/network/ethtool/vmnet8/get-link-features -k --tlsv1.2
 
 {"esp-hw-offload":false,"esp-tx-csum-hw-offload":false,"fcoe-mtu":false,"highdma":false,"hw-tc-offload":false,"l2-fwd-offload":false,"loopback":false,"netns-local":false,"rx-all":false,"rx-checksum":false,"rx-fcs":false,"rx-gro":true,"rx-gro-hw":false,"rx-hashing":false,"rx-lro":false,"rx-ntuple-filter":false,"rx-udp_tunnel-port-offload":false,"rx-vlan-filter":false,"rx-vlan-hw-parse":false,"rx-vlan-stag-filter":false,"rx-vlan-stag-hw-parse":false,"tls-hw-record":false,"tls-hw-rx-offload":false,"tls-hw-tx-offload":false,"tx-checksum-fcoe-crc":false,"tx-checksum-ip-generic":false,"tx-checksum-ipv4":false,"tx-checksum-ipv6":false,"tx-checksum-sctp":false,"tx-esp-segmentation":false,"tx-fcoe-segmentation":false,"tx-generic-segmentation":false,"tx-gre-csum-segmentation":false,"tx-gre-segmentation":false,"tx-gso-partial":false,"tx-gso-robust":false,"tx-ipxip4-segmentation":false,"tx-ipxip6-segmentation":false,"tx-lockless":false,"tx-nocache-copy":false,"tx-scatter-gather":false,"tx-scatter-gather-fraglist":false,"tx-sctp-segmentation":false,"tx-tcp-ecn-segmentation":false,"tx-tcp-mangleid-segmentation":false,"tx-tcp-segmentation":false,"tx-tcp6-segmentation":false,"tx-udp-segmentation":false,"tx-udp_tnl-csum-segmentation":false,"tx-udp_tnl-segmentation":false,"tx-vlan-hw-insert":false,"tx-vlan-stag-hw-insert":false,"vlan-challenged":false}
 ```
 
 ```
-[sus@Zeus cmd]$ curl --header "Content-Type: application/json" --request GET --header "X-Session-Token: aaaaa" https://localhost:8080/proc/misc --tlsv1.2 -k
+[sus@Zeus cmd]$ curl --request GET --header "X-Session-Token: aaaaa" https://localhost:8080/proc/misc --tlsv1.2 -k
 {"130":"watchdog","144":"nvram","165":"vmmon","183":"hw_random","184":"microcode","227":"mcelog","228":"hpet","229":"fuse","231":"snapshot","232":"kvm","235":"autofs","236":"device-mapper","53":"vboxnetctl","54":"vsock","55":"vmci","56":"vboxdrvu","57":"vboxdrv","58":"rfkill","59":"memory_bandwidth","60":"network_throughput","61":"network_latency","62":"cpu_dma_latency","63":"vga_arbiter"}
 
-[sus@Zeus cmd]$ curl --header "Content-Type: application/json" --request GET --header "X-Session-Token: aaaaa" https://localhost:8080/proc/net/arp --tlsv1.2 -k
+[sus@Zeus cmd]$ curl --request GET --header "X-Session-Token: aaaaa" https://localhost:8080/proc/net/arp --tlsv1.2 -k
 [{"ip_address":"192.168.225.1","hw_type":"0x1","flags":"0x2","hw_address":"1a:89:20:38:68:8f","mask":"*","device":"wlp4s0"}]
 
-[sus@Zeus cmd]$ curl --header "Content-Type: application/json" --request GET --header "X-Session-Token: aaaaa" https://localhost:8080/proc/modules --tlsv1.2 -k
+[sus@Zeus cmd]$ curl --request GET --header "X-Session-Token: aaaaa" https://localhost:8080/proc/modules --tlsv1.2 -k
 ```
 Use case: systemd
 ```
 [sus@Zeus] curl --header "X-Session-Token: aaaaa" --header "Content-Type: application/json" --request PUT --data '{"value":"1100"}' http://localhost:8080/service/systemd/sshd.service/set/CPUShares
 
-[sus@Zeus]  curl --header "Content-Type: application/json" --request GET --header "X-Session-Token: aaaaa" http://localhost:8080/service/systemd/sshd.service/get/CPUShares
+[sus@Zeus]  curl --request GET --header "X-Session-Token: aaaaa" http://localhost:8080/service/systemd/sshd.service/get/CPUShares
 
 [sus@Zeus]$ curl --header "Content-Type: application/json" --request POST --data '{"action":"start","unit":"sshd.service"}' --header "X-Session-Token: aaaaa" http://localhost:8080/service/systemd
 [sus@Zeus]$ curl --header "Content-Type: application/json" --request POST --data '{"action":"stop","unit":"sshd.service"}' --header "X-Session-Token: aaaaa" http://localhost:8080/service/systemd
-[sus@Zeus]$ [sus@Zeus proc]$ curl --header "Content-Type: application/json" --request GET --header "X-Session-Token: aaaaa" http://localhost:8080/service/systemd/sshd.service/status
+[sus@Zeus proc]$ curl --request GET --header "X-Session-Token: aaaaa" http://localhost:8080/service/systemd/sshd.service/status
 {"property":"active","unit":"sshd.service"}
 ```
 Use case:
@@ -182,26 +180,26 @@ Use case:
 
 /proc examples:
 ```
-sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --header "X-Session-Token: aaaaa" http://localhost:8080/proc/netdev
-sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --header "X-Session-Token: aaaaa" http://localhost:8080/proc/version
-sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --header "X-Session-Token: aaaaa" http://localhost:8080/proc/netstat/tcp
-sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --header "X-Session-Token: aaaaa" http://localhost:8080/proc/proto-pid-stat/2881/tcp
+sus@Zeus api-router]$ curl --request GET --header "X-Session-Token: aaaaa" http://localhost:8080/proc/netdev
+sus@Zeus api-router]$ curl --request GET --header "X-Session-Token: aaaaa" http://localhost:8080/proc/version
+sus@Zeus api-router]$ curl --request GET --header "X-Session-Token: aaaaa" http://localhost:8080/proc/netstat/tcp
+sus@Zeus api-router]$ curl --request GET --header "X-Session-Token: aaaaa" http://localhost:8080/proc/proto-pid-stat/2881/tcp
 
-sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --header "X-Session-Token: aaaaa" http://localhost:8080/proc/cpuinfo
-sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --header "X-Session-Token: aaaaa" http://localhost:8080/proc/cputimestat
-sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --header "X-Session-Token: aaaaa" http://localhost:8080/proc/virtual-memory
-sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --header "X-Session-Token: aaaaa" http://localhost:8080/proc/swap-memory
-sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --header "X-Session-Token: aaaaa" http://localhost:8080/proc/userstat
-sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --header "X-Session-Token: aaaaa" http://localhost:8080/proc/temperaturestat
-sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --header "X-Session-Token: aaaaa" http://localhost:8080/proc/proto-counter-stat
-sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --header "X-Session-Token: aaaaa" http://localhost:8080/proc/misc
-sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --header "X-Session-Token: aaaaa" https://localhost:8080/proc/net/arp
-sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --header "X-Session-Token: aaaaa" http://localhost:8080/proc/modules
+sus@Zeus api-router]$ curl --request GET --header "X-Session-Token: aaaaa" http://localhost:8080/proc/cpuinfo
+sus@Zeus api-router]$ curl --request GET --header "X-Session-Token: aaaaa" http://localhost:8080/proc/cputimestat
+sus@Zeus api-router]$ curl --request GET --header "X-Session-Token: aaaaa" http://localhost:8080/proc/virtual-memory
+sus@Zeus api-router]$ curl --request GET --header "X-Session-Token: aaaaa" http://localhost:8080/proc/swap-memory
+sus@Zeus api-router]$ curl --request GET --header "X-Session-Token: aaaaa" http://localhost:8080/proc/userstat
+sus@Zeus api-router]$ curl --request GET --header "X-Session-Token: aaaaa" http://localhost:8080/proc/temperaturestat
+sus@Zeus api-router]$ curl --request GET --header "X-Session-Token: aaaaa" http://localhost:8080/proc/proto-counter-stat
+sus@Zeus api-router]$ curl --request GET --header "X-Session-Token: aaaaa" http://localhost:8080/proc/misc
+sus@Zeus api-router]$ curl --request GET --header "X-Session-Token: aaaaa" https://localhost:8080/proc/net/arp
+sus@Zeus api-router]$ curl --request GET --header "X-Session-Token: aaaaa" http://localhost:8080/proc/modules
 ```
 
 information by pid request = "GET"
 ```
-[sus@Zeus cmd]$ curl --header "Content-Type: application/json" --request GET --header "X-Session-Token: aaaaa" http://localhost:8080/proc/process/2769/pid-connections/
+[sus@Zeus cmd]$ curl --request GET --header "X-Session-Token: aaaaa" http://localhost:8080/proc/process/2769/pid-connections/
 [{"fd":270,"family":2,"type":1,"localaddr":{"ip":"192.168.225.101","port":45354},"remoteaddr":{"ip":"74.125.24.102","port":443},"status":"ESTABLISHED","uids":[1000,1000,1000,1000],"pid":2769},{"fd":196,"family":2,"type":1,"localaddr":{"ip":"192.168.225.101","port":49138},"remoteaddr":{"ip":"172.217.194.94","port":443},"status":"ESTABLISHED","uids":[1000,1000,1000,1000],"pid":27
 
 http://localhost:8080/proc/process/2769/pid-rlimit/
@@ -218,12 +216,12 @@ http://localhost:8080/proc/process/2769/pid-io-counters/
 ```
 
 ```
-[sus@Zeus api-routerd]# curl --header "Content-Type: application/json" --request GET  --header "X-Session-Token: aaaaa" http://localhost:8080/proc/misc
+[sus@Zeus api-routerd]# curl --header --request GET  --header "X-Session-Token: aaaaa" http://localhost:8080/proc/misc
 {"130":"watchdog","144":"nvram","165":"vmmon","183":"hw_random","184":"microcode","227":"mcelog","228":"hpet","229":"fuse","231":"snapshot","232":"kvm","235":"autofs","236":"device-mapper","53":"vboxnetctl","54":"vsock","55":"vmci","56":"vboxdrvu","57":"vboxdrv","58":"rfkill","59":"memory_bandwidth","60":"network_throughput","61":"network_latency","62":"cpu_dma_latency","63":"vga_arbiter"}
 ```
 proc vm: property any file name in /proc/sys/vm/
 ```
-[sus@Zeus api-routerd]$ curl --header "Content-Type: application/json" --request GET --header "X-Session-Token: aaaaa" http://localhost:8080/proc/sys/vm/swappiness
+[sus@Zeus api-routerd]$ curl --request GET --header "X-Session-Token: aaaaa" http://localhost:8080/proc/sys/vm/swappiness
 {"property":"swappiness","value":"60"}
 [sus@Zeus api-routerd]$ curl --header "Content-Type: application/json" --request PUT --data '{"value":"70"}' --header "X-Session-Token: aaaaa" http://localhost:8080/proc/sys/vm/swappiness
 {"property":"swappiness","value":"70"}
@@ -231,17 +229,17 @@ proc vm: property any file name in /proc/sys/vm/
 ```
 
 ```
-[sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --header "X-Session-Token: aaaaa" http://localhost:8080/proc/version
+[sus@Zeus api-router]$ curl --request GET --header "X-Session-Token: aaaaa" http://localhost:8080/proc/version
 {"hostname":"Zeus","uptime":17747,"bootTime":1545381768,"procs":360,"os":"linux","platform":"fedora","platformFamily":"fedora","platformVersion":"29","kernelVersion":"4.19.2-300.fc29.x86_64","virtualizationSystem":"kvm","virtualizationRole":"host","hostid":"27f7c64c-3148-11b2-a85c-ec64a5733ce1"}
 
 ```
 set and get any value from ```/proc/sys/net```.
 supported: IPv4, IPv6 and core
 ```
-[sus@Zeus proc]$ curl --header "Content-Type: application/json" --request GET --header "X-Session-Token: aaaaa" http://localhost:8080/proc/sys/net/ipv4/enp0s31f6/forwarding
+[sus@Zeus proc]$ curl --request GET --header "X-Session-Token: aaaaa" http://localhost:8080/proc/sys/net/ipv4/enp0s31f6/forwarding
 {"path":"ipv4","property":"forwarding","value":"0","link":"enp0s31f6"}
 [sus@Zeus proc]$  curl --header "Content-Type: application/json" --request PUT --data '{"value":"1"}' --header "X-Session-Token: aaaaa" http://localhost:8080/proc/sys/net/ipv4/enp0s31f6/forwarding
-[sus@Zeus proc]$ curl --header "Content-Type: application/json" --request GET --header "X-Session-Token: aaaaa" http://localhost:8080/proc/sys/net/ipv4/enp0s31f6/forwarding
+[sus@Zeus proc]$ curl --request GET --header "X-Session-Token: aaaaa" http://localhost:8080/proc/sys/net/ipv4/enp0s31f6/forwarding
 {"path":"ipv4","property":"forwarding","value":"1","link":"enp0s31f6"}
 [sus@Zeus proc]$
 
@@ -383,60 +381,41 @@ Bridge=bridge-test
 
 Example: Get and Set Hostname
 ```
-[sus@Zeus proc]$ curl --header "Content-Type: application/json" --request GET --header "X-Session-Token: aaaaa" http://localhost:8080/hostname/get/static
+[sus@Zeus proc]$ curl --request GET --header "X-Session-Token: aaaaa" http://localhost:8080/hostname/get/static
 {"property":"StaticHostname","value":"Zeus1"}
 [sus@Zeus proc]$ curl --header "Content-Type: application/json" --request PUT --data '{"value":"Zeus"}' --header "X-Session-Token: aaaaa" http://localhost:8080/hostname/set/static
-[sus@Zeus proc]$ curl --header "Content-Type: application/json" --request GET --header "X-Session-Token: aaaaa" http://localhost:8080/hostname/get/static
+[sus@Zeus proc]$ curl --request GET --header "X-Session-Token: aaaaa" http://localhost:8080/hostname/get/static
 {"property":"StaticHostname","value":"Zeus"}[sus@Zeus proc]$
 ```
 
-
-Example: Netlink
-```
-sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --data '{"path":"version"}' --header "X-Session-Token: aaaaa" http://localhost:8080/proc/
-sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --data '{"link":"wlan0"}' --header "X-Session-Token: aaaaa" http://192.168.225.23:8080/network/link/get
-sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --data '{"link":"wlan0"}' --header "X-Session-Token: aaaaa" http://localhost:8080/network/link/get
-sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --data '{"action":"get-hostname"}' --header "X-Session-Token: aaaaa" http://localhost:8080/hostname/get
-http://localhost:8080/hostname
-sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --data '{"path":"version"}' --header "X-Session-Token: aaaaa" http://localhost:8080/proc/
-```
-
-proc: netstat protocol tcp
-```
-[sus@Zeus api-router]$curl --header "Content-Type: application/json" --request GET --data '{"path":"netstat", "property":"tcp"}' --header "X-Session-Token: aaaaa" http://localhost:8080/proc/
-```
-
 ##### ethtool
+
 ```
-[sus@Zeus src]$ curl --header "X-Session-Token: aaaaa" --header "Content-Type: application/json" --request GET  http://localhost:8080/network/ethtool/vmnet8/get-link-features
+[sus@Zeus src]$ curl --header "X-Session-Token: aaaaa" --request GET  http://localhost:8080/network/ethtool/vmnet8/get-link-features
 
 {"esp-hw-offload":false,"esp-tx-csum-hw-offload":false,"fcoe-mtu":false,"highdma":false,"hw-tc-offload":false,"l2-fwd-offload":false,"loopback":false,"netns-local":false,"rx-all":false,"rx-checksum":false,"rx-fcs":false,"rx-gro":true,"rx-gro-hw":false,"rx-hashing":false,"rx-lro":false,"rx-ntuple-filter":false,"rx-udp_tunnel-port-offload":false,"rx-vlan-filter":false,"rx-vlan-hw-parse":false,"rx-vlan-stag-filter":false,"rx-vlan-stag-hw-parse":false,"tls-hw-record":false,"tls-hw-rx-offload":false,"tls-hw-tx-offload":false,"tx-checksum-fcoe-crc":false,"tx-checksum-ip-generic":false,"tx-checksum-ipv4":false,"tx-checksum-ipv6":false,"tx-checksum-sctp":false,"tx-esp-segmentation":false,"tx-fcoe-segmentation":false,"tx-generic-segmentation":false,"tx-gre-csum-segmentation":false,"tx-gre-segmentation":false,"tx-gso-partial":false,"tx-gso-robust":false,"tx-ipxip4-segmentation":false,"tx-ipxip6-segmentation":false,"tx-lockless":false,"tx-nocache-copy":false,"tx-scatter-gather":false,"tx-scatter-gather-fraglist":false,"tx-sctp-segmentation":false,"tx-tcp-ecn-segmentation":false,"tx-tcp-mangleid-segmentation":false,"tx-tcp-segmentation":false,"tx-tcp6-segmentation":false,"tx-udp-segmentation":false,"tx-udp_tnl-csum-segmentation":false,"tx-udp_tnl-segmentation":false,"tx-vlan-hw-insert":false,"tx-vlan-stag-hw-insert":false,"vlan-challenged":false}
+```
 
-[sus@Zeus src]$ curl --header "X-Session-Token: aaaaa" --header "Content-Type: application/json" --request GET http://localhost:8080/network/ethtool/wlp4s0/get-link-stat
+```
+[sus@Zeus src]$ curl --header "X-Session-Token: aaaaa" --request GET http://localhost:8080/network/ethtool/wlp4s0/get-link-stat
 {"ch_time":18446744073709551615,"ch_time_busy":18446744073709551615,"ch_time_ext_busy":18446744073709551615,"ch_time_rx":18446744073709551615,"ch_time_tx":18446744073709551615,"channel":0,"noise":18446744073709551615,"rx_bytes":1387313,"rx_dropped":45,"rx_duplicates":0,"rx_fragments":3255,"rx_packets":3275,"rxrate":117000000,"signal":227,"sta_state":4,"tx_bytes":584843,"tx_filtered":0,"tx_packets":2949,"tx_retries":321,"tx_retry_failed":0,"txrate":144400000}
+```
 
-[sus@Zeus cmd]$  curl --header "X-Session-Token: aaaaa" --header "Content-Type: application/json" --request GET http://localhost:8080/network/ethtool/wlp4s0/get-link-stat
+```
+[sus@Zeus cmd]$  curl --header "X-Session-Token: aaaaa" --request GET http://localhost:8080/network/ethtool/wlp4s0/get-link-stat
 {"ch_time":18446744073709551615,"ch_time_busy":18446744073709551615,"ch_time_ext_busy":18446744073709551615,"ch_time_rx":18446744073709551615,"ch_time_tx":18446744073709551615,"channel":0,"noise":18446744073709551615,"rx_bytes":1387313,"rx_dropped":45,"rx_duplicates":0,"rx_fragments":3255,"rx_packets":3275,"rxrate":117000000,"signal":227,"sta_state":4,"tx_bytes":584843,"tx_filtered":0,"tx_packets":2949,"tx_retries":321,"tx_retry_failed":0,"txrate":144400000}
+```
 
-[sus@Zeus cmd]$  curl --header "X-Session-Token: aaaaa" --header "Content-Type: application/json" --request GET http://localhost:8080/network/ethtool/wlp4s0/get-link-driver-name
+```
+[sus@Zeus cmd]$  curl --header "X-Session-Token: aaaaa" --request GET http://localhost:8080/network/ethtool/wlp4s0/get-link-driver-name
 {"action":"get-link-driver-name","link":"wlp4s0","reply":"iwlwifi"}
-```
-
-example:
-```
-[sus@Zeus ethtool]$ curl --header "Content-Type: application/json" --request GET --data '{"action":"get-link-features", "link":"eth0"}' --header "X-Session-Token: aaaaa" http://localhost:8080/network/ethtool/get
-{"esp-hw-offload":false,"esp-tx-csum-hw-offload":false,"fcoe-mtu":false,"highdma":true,"hw-tc-offload":false,"l2-fwd-offload":false,"loopback":false,"netns-local":false,"rx-all":false,"rx-checksum":true,"rx-fcs":false,"rx-gro":true,"rx-gro-hw":false,"rx-hashing":true,"rx-lro":false,"rx-ntuple-filter":false,"rx-udp_tunnel-port-offload":false,"rx-vlan-filter":false,"rx-vlan-hw-parse":true,"rx-vlan-stag-filter":false,"rx-vlan-stag-hw-parse":false,"tls-hw-record":false,"tls-hw-rx-offload":false,"tls-hw-tx-offload":false,"tx-checksum-fcoe-crc":false,"tx-checksum-ip-generic":true,"tx-checksum-ipv4":false,"tx-checksum-ipv6":false,"tx-checksum-sctp":false,"tx-esp-segmentation":false,"tx-fcoe-segmentation":false,"tx-generic-segmentation":true,"tx-gre-csum-segmentation":false,"tx-gre-segmentation":false,"tx-gso-partial":false,"tx-gso-robust":false,"tx-ipxip4-segmentation":false,"tx-ipxip6-segmentation":false,"tx-lockless":false,"tx-nocache-copy":false,"tx-scatter-gather":true,"tx-scatter-gather-fraglist":false,"tx-sctp-segmentation":false,"tx-tcp-ecn-segmentation":false,"tx-tcp-mangleid-segmentation":false,"tx-tcp-segmentation":true,"tx-tcp6-segmentation":true,"tx-udp-segmentation":false,"tx-udp_tnl-csum-segmentation":false,"tx-udp_tnl-segmentation":false,"tx-vlan-hw-insert":true,"tx-vlan-stag-hw-insert":false,"vlan-challenged":false}
-
-[sus@Zeus ethtool]$ curl --header "Content-Type: application/json" --request GET --data '{"action":"get-link-driver-name", "link":"eth0"}' --header "X-Session-Token: aaaaa" http://localhost:8080/network/ethtool/get
-{"action":"get-link-driver-name","link":"eth0","reply":"e1000e"}
-
 ```
 
 Get link netlink
 ```
-[sus@Zeus ethtool]$ curl --header "X-Session-Token: aaaaa" --header "Content-Type: application/json" --request GET http://localhost:8080/network/link/get/wlp4s0
+[sus@Zeus ethtool]$ curl --header "X-Session-Token: aaaaa" --request GET http://localhost:8080/network/link/get/wlp4s0
 {"index":5,"MTU":1500,"TxQLen":0,"Name":"wlp4s0","HardwareAdd":"7c:76:35:ea:89:90","LinkOperState":""}
 
-[sus@Zeus cmd]$  curl --header "X-Session-Token: aaaaa" --header "Content-Type: application/json" --request GET http://localhost:8080/network/address/get/wlp4s0
+[sus@Zeus cmd]$  curl --header "X-Session-Token: aaaaa" --request GET http://localhost:8080/network/address/get/wlp4s0
 [{"action":"","link":"wlp4s0","address":"192.168.43.105/24","label":""},{"action":"","link":"wlp4s0","address":"2409:4042:239c:7f9d:e45f:27a9:c6de:c39e/64","label":""},{"action":"","link":"wlp4s0","address":"fe80::c912:39ce:e9a3:aaca/64","label":""}]
 ```
