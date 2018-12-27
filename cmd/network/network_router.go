@@ -32,7 +32,7 @@ func NetworkLinkAdd(rw http.ResponseWriter, r *http.Request) {
 	}
 
 	switch r.Method {
-	case "PUT":
+	case "POST":
 		switch link.Action {
 		case "add-link-bridge":
 			err := link.LinkCreateBridge()
@@ -74,7 +74,7 @@ func NetworkLinkSet(rw http.ResponseWriter, r *http.Request) {
 	}
 
 	switch r.Method {
-	case "POST":
+	case "PUT":
 		switch link.Action {
 		case "set-link-up", "set-link-down", "set-link-mtu":
 			err := link.SetLink()
@@ -153,10 +153,22 @@ func NetworkAddRoute(rw http.ResponseWriter, r *http.Request) {
 	}
 
 	switch r.Method {
-	case "PUT":
+	case "POST":
 		switch route.Action {
 		case "add-default-gw":
 			err := route.AddDefaultGateWay()
+			if err != nil {
+				http.Error(rw, err.Error(), http.StatusInternalServerError)
+				return
+			}
+			break
+		}
+
+		break
+	case "PUT":
+		switch route.Action {
+		case "replace-default-gw":
+			err := route.ReplaceDefaultGateWay()
 			if err != nil {
 				http.Error(rw, err.Error(), http.StatusInternalServerError)
 				return
@@ -204,7 +216,7 @@ func NetworkGetRoute(rw http.ResponseWriter, r *http.Request) {
 
 func NetworkdConfigureNetwork(rw http.ResponseWriter, r *http.Request) {
 	switch r.Method {
-	case "PUT":
+	case "POST":
 		networkd.ConfigureNetworkFile(rw, r)
 		break
 	}
@@ -212,7 +224,7 @@ func NetworkdConfigureNetwork(rw http.ResponseWriter, r *http.Request) {
 
 func NetworkdConfigureNetDev(rw http.ResponseWriter, r *http.Request) {
 	switch r.Method {
-	case "PUT":
+	case "POST":
 		networkd.ConfigureNetDevFile(rw, r)
 		break
 	}

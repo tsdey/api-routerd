@@ -250,7 +250,7 @@ supported: IPv4, IPv6 and core
 
 Set address
 ```
-[sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request PUT --data '{"action":"add-address", "address":"192.168.1.131/24", "link":"dummy"}' --header "X-Session-Token: aaaaa" http://localhost:8080/network/address/add
+[sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request POST --data '{"action":"add-address", "address":"192.168.1.131/24", "link":"dummy"}' --header "X-Session-Token: aaaaa" http://localhost:8080/network/address/add
 [sus@Zeus api-router]$ ip addr show dummy
 9: dummy: <BROADCAST,NOARP> mtu 1500 qdisc noop state DOWN group default qlen 1000
     link/ether ea:d0:e3:be:ea:25 brd ff:ff:ff:ff:ff:ff
@@ -260,9 +260,9 @@ Set address
 ```
 Set link up/down
 ```
-[sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request POST --data '{"action":"set-link-up", "link":"dummy"}' --header "X-Session-Token: aaaaa" http://localhost:8080/network/link/set
+[sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request PUT --data '{"action":"set-link-up", "link":"dummy"}' --header "X-Session-Token: aaaaa" http://localhost:8080/network/link/set
 
-[sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request POST --data '{"action":"set-link-down", "link":"dummy"}' --header "X-Session-Token: aaaaa" http://localhost:8080/network/link/set
+[sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request PUT --data '{"action":"set-link-down", "link":"dummy"}' --header "X-Session-Token: aaaaa" http://localhost:8080/network/link/set
 [sus@Zeus api-router]$ ip addr show dummy
 9: dummy: <BROADCAST,NOARP> mtu 1500 qdisc noqueue state DOWN group default qlen 1000
     link/ether ea:d0:e3:be:ea:25 brd ff:ff:ff:ff:ff:ff
@@ -272,7 +272,7 @@ Set link up/down
 
 Set MTU
  ```
-[sus@Zeus api-router]$curl --header "Content-Type: application/json" --request POST --data '{"action":"set-link-mtu", "link":"dummy", "mtu":"1280"}' http://localhost:8080/network/link/set
+[sus@Zeus api-router]$curl --header "Content-Type: application/json" --request PUT --data '{"action":"set-link-mtu", "link":"dummy", "mtu":"1280"}' http://localhost:8080/network/link/set
 [sus@Zeus api-router]$ ip addr show dummy
 9: dummy: <BROADCAST,NOARP> mtu 1280 qdisc noqueue state DOWN group default qlen 1000
     link/ether ea:d0:e3:be:ea:25 brd ff:ff:ff:ff:ff:ff
@@ -282,7 +282,7 @@ Set MTU
 
 Set Default GateWay
 ```
- sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request PUT --data '{"action":"add-default-gw", "link":"dummy", "gateway":"192.168.1.1/24", "onlink":"true"}' --header "X-Session-Token: aaaaa" http://localhost:8080/network/route/add
+ sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request POST --data '{"action":"add-default-gw", "link":"dummy", "gateway":"192.168.1.1/24", "onlink":"true"}' --header "X-Session-Token: aaaaa" http://localhost:8080/network/route/add
 [sus@Zeus api-router]$ ip route
 default via 192.168.1.1 dev dummy onlink
 
@@ -290,7 +290,7 @@ default via 192.168.1.1 dev dummy onlink
 
 Create a bridge and enslave two links
 ```
-sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request PUT --data '{"action":"add-link-bridge", "link":"test-br", "enslave":["dummy","dummy1"]}' --header "X-Session-Token: aaaaa" http://localhost:8080/network/link/add
+sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request POST --data '{"action":"add-link-bridge", "link":"test-br", "enslave":["dummy","dummy1"]}' --header "X-Session-Token: aaaaa" http://localhost:8080/network/link/add
 
 [sus@Zeus log]# ip link
 9: dummy: <BROADCAST,NOARP> mtu 12801 qdisc noop master test-br state DOWN mode DEFAULT group default qlen 1000
@@ -310,7 +310,7 @@ sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request D
 
 ##### Use Case: networkd
 ```
-[sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request PUT --data '{"Name":"eth0", "DHCP":"yes", "LLDP":"yes","Addresses": [{"Address":"192.168.1.2", "Label":"test1"},{"Address":"192.168.1.4", "Label":"test3", "Peer":"192.168.1.5"}], "Routes": [{"Gateway":"192.168.1.1",  "GatewayOnlink":"true"},{"Destination":"192.168.1.10","Table":"10"}]}' --header "X-Session-Token: aaaaa" http://localhost:8080/network/networkd/network
+[sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request POST --data '{"Name":"eth0", "DHCP":"yes", "LLDP":"yes","Addresses": [{"Address":"192.168.1.2", "Label":"test1"},{"Address":"192.168.1.4", "Label":"test3", "Peer":"192.168.1.5"}], "Routes": [{"Gateway":"192.168.1.1",  "GatewayOnlink":"true"},{"Destination":"192.168.1.10","Table":"10"}]}' --header "X-Session-Token: aaaaa" http://localhost:8080/network/networkd/network
 
 [sus@Zeus api-router]$ cat /var/run/systemd/network/25-eth0.network
 [Match]
@@ -343,7 +343,7 @@ Table=10
 
 networkd NetDev
 ```
-sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request PUT --data '{"Name":"bond-test", "Description":"testing bond", "Kind":"bond", "Mode":"balance-rr"}' --header "X-Session-Token: aaaaa" http://localhost:8080/network/networkd/netdev
+sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request POST --data '{"Name":"bond-test", "Description":"testing bond", "Kind":"bond", "Mode":"balance-rr"}' --header "X-Session-Token: aaaaa" http://localhost:8080/network/networkd/netdev
 
 [sus@Zeus log]# cat /var/run/systemd/network/25-bond-test.netdev
 [NetDev]
@@ -359,7 +359,7 @@ Mode=balance-rr
 Bridge
 ```
 
-[sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request PUT --data '{"Name":"bridge-test", "Description":"testing bridge", "Kind":"bridge", "HelloTimeSec":"30"}' --header "X-Session-Token: aaaaa" http://localhost:8080/network/networkd/netdev
+[sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request POST --data '{"Name":"bridge-test", "Description":"testing bridge", "Kind":"bridge", "HelloTimeSec":"30"}' --header "X-Session-Token: aaaaa" http://localhost:8080/network/networkd/netdev
 [sus@Zeus api-router]$ cat /var/run/systemd/network/25-bridge-test.netdev
 [NetDev]
 Name=bridge-test
@@ -369,7 +369,7 @@ Kind=bridge
 [Bridge]
 HelloTimeSec =30
 
-[sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request PUT --data '{"Name":"eth0", "Description":"etho bridge enslave", "Bridge":"bridge-test"}' http://localhost:8080/network/networkd/network
+[sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request POST --data '{"Name":"eth0", "Description":"etho bridge enslave", "Bridge":"bridge-test"}' http://localhost:8080/network/networkd/network
 [sus@Zeus api-router]$ cat /var/run/systemd/network/25-eth0.network
 [Match]
 Name=eth0
@@ -429,4 +429,16 @@ curl --header "X-Session-Token: aaaaa" --request GET http://localhost:8080/netwo
 get all routes
 ```
 curl --header "X-Session-Token: aaaaa" --request GET http://localhost:8080/network/route/get
+```
+Replace route
+```
+[sus@Zeus cmd]$ curl --header "Content-Type: application/json" --request PUT --data '{"action":"replace-default-gw", "link":"dummy", "gateway":"192.168.1.3/24", "onlink":"true"}' --header "X-Session-Token: aaaaa" http://localhost:8080/network/route/add
+[sus@Zeus cmd]$ ip route
+default via 192.168.1.3 dev dummy onlink
+default via 192.168.225.1 dev wlp4s0 proto dhcp metric 600
+172.16.130.0/24 dev vmnet8 proto kernel scope link src 172.16.130.1
+192.168.1.0/24 dev dummy proto kernel scope link src 192.168.1.131
+192.168.137.0/24 dev vmnet1 proto kernel scope link src 192.168.137.1
+192.168.225.0/24 dev wlp4s0 proto kernel scope link src 192.168.225.101 metric 600
+
 ```

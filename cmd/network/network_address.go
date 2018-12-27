@@ -16,11 +16,6 @@ type Address struct {
 	Label   string `json:"label"`
 }
 
-type AddressInfo struct {
-	Link        string `json:"link"`
-	Addresses []string `json:"addresses"`
-}
-
 func (address *Address) AddAddress() (error){
 	link, err := netlink.LinkByName(address.Link)
 	if err != nil {

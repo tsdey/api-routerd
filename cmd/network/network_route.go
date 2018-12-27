@@ -54,6 +54,47 @@ func (route *Route) AddDefaultGateWay() (error) {
 	err = netlink.RouteAdd(rt)
 	if err != nil {
 		log.Errorf("Failed to add default GateWay address %s: %s", route.Gateway, err)
+		return err
+	}
+
+	return nil
+}
+
+func (route *Route) ReplaceDefaultGateWay() (error) {
+	link, err := netlink.LinkByName(route.Link)
+	if err != nil {
+		log.Errorf("Failed to find link %s: %s", err, route.Link)
+		return err
+	}
+
+	ipAddr, _, err := net.ParseCIDR(route.Gateway)
+	if err != nil {
+		log.Errorf("Failed to parse default GateWay address %s: %s", route.Gateway, err)
+		return err
+	}
+
+	onlink := 0
+	b, err := share.ParseBool(strings.TrimSpace(route.OnLink))
+	if err != nil {
+		log.Errorf("Failed to parse GatewayOnlink %s: %s", err, route.OnLink)
+	} else {
+		if b == true {
+			onlink |= syscall.RTNH_F_ONLINK
+		}
+	}
+
+	// add a gateway route
+	rt := &netlink.Route{
+		Scope:     netlink.SCOPE_UNIVERSE,
+		LinkIndex: link.Attrs().Index,
+		Gw:        ipAddr,
+		Flags:     onlink,
+	}
+
+	err = netlink.RouteReplace(rt)
+	if err != nil {
+		log.Errorf("Failed to replace default GateWay address %s: %s", route.Gateway, err)
+		return err
 	}
 
 	return nil
