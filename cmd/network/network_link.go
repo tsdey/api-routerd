@@ -177,6 +177,7 @@ func (req *Link) GetLink(rw http.ResponseWriter) (error) {
 			MTU:          link.Attrs().MTU,
 			Name:         link.Attrs().Name,
 			HardwareAddr: link.Attrs().HardwareAddr.String(),
+			OperState:    link.Attrs().OperState.String(),
 		}
 
 		j, err := json.Marshal(linkInfo)
@@ -202,6 +203,7 @@ func (req *Link) GetLink(rw http.ResponseWriter) (error) {
 			linkInfo[i].MTU          = link.Attrs().MTU
 			linkInfo[i].Name         = link.Attrs().Name
 			linkInfo[i].HardwareAddr = link.Attrs().HardwareAddr.String()
+			linkInfo[i].OperState    = link.Attrs().OperState.String()
 		}
 
 		j, err := json.Marshal(linkInfo)
