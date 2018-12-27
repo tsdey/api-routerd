@@ -53,14 +53,14 @@ func (req *ProcSysNet) GetProcSysNetPath() (string, error) {
 }
 
 func (req *ProcSysNet) GetProcSysNet(rw http.ResponseWriter) (error) {
-	path, r := req.GetProcSysNetPath()
-	if r != nil {
-		return r
+	path, err := req.GetProcSysNetPath()
+	if err != nil {
+		return err
 	}
 
-	line, r := share.ReadOneLineFile(path)
-	if r != nil {
-		return r
+	line, err := share.ReadOneLineFile(path)
+	if err != nil {
+		return err
 	}
 
 	property := ProcSysNet {Path: req.Path, Property: req.Property, Value: line, Link: req.Link}
@@ -70,14 +70,14 @@ func (req *ProcSysNet) GetProcSysNet(rw http.ResponseWriter) (error) {
 }
 
 func (req *ProcSysNet) SetProcSysNet(rw http.ResponseWriter) (error) {
-	path, r := req.GetProcSysNetPath()
-	if r != nil {
-		return r
+	path, err := req.GetProcSysNetPath()
+	if err != nil {
+		return err
 	}
 
-	r = share.WriteOneLineFile(path, req.Value)
-	if r != nil {
-		return r
+	err = share.WriteOneLineFile(path, req.Value)
+	if err != nil {
+		return err
 	}
 
 	return nil

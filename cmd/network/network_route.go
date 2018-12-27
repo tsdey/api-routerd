@@ -4,7 +4,9 @@ package network
 
 import (
 	"api-routerd/cmd/share"
+	"encoding/json"
 	"net"
+	"net/http"
 	"strings"
 	"syscall"
 	log "github.com/sirupsen/logrus"
@@ -82,6 +84,25 @@ func (route *Route) DelDefaultGateWay() (error) {
 		log.Errorf("Failed to delete default GateWay address %s: %s", ipAddr, err)
 		return err
 	}
+
+	return nil
+}
+
+func GetRoutes(rw http.ResponseWriter) (error) {
+	routes, err := netlink.RouteList(nil, 0)
+	if err != nil {
+		log.Errorf("Failed to get routes %s", err)
+		return err
+	}
+
+	j, err := json.Marshal(routes)
+	if err != nil {
+		log.Errorf("Failed to encode json routeInfo : %s", err)
+		return err
+	}
+
+	rw.WriteHeader(http.StatusOK)
+	rw.Write(j)
 
 	return nil
 }

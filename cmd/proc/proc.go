@@ -57,9 +57,9 @@ func GetVersion(rw http.ResponseWriter) (error) {
 }
 
 func GetUserStat(rw http.ResponseWriter) (error) {
-	userstat, r := host.Users()
-	if r != nil {
-		return r
+	userstat, err := host.Users()
+	if err != nil {
+		return err
 	}
 
 	j, err := json.Marshal(userstat)
@@ -74,9 +74,9 @@ func GetUserStat(rw http.ResponseWriter) (error) {
 }
 
 func GetTemperatureStat(rw http.ResponseWriter) (error) {
-	tempstat, r := host.SensorsTemperatures()
-	if r != nil {
-		return r
+	tempstat, err := host.SensorsTemperatures()
+	if err != nil {
+		return err
 	}
 
 	j, err := json.Marshal(tempstat)

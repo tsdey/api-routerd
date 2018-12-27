@@ -141,7 +141,6 @@ func LinkSetMTU(link string, mtu int) (error) {
 }
 
 func (req *Link) SetLink() (error) {
-
 	link := strings.TrimSpace(req.Link)
 
 	switch req.Action {

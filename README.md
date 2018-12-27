@@ -425,3 +425,8 @@ get all links
 ```
 curl --header "X-Session-Token: aaaaa" --request GET http://localhost:8080/network/link/get
 ```
+
+get all routes
+```
+curl --header "X-Session-Token: aaaaa" --request GET http://localhost:8080/network/route/get
+```

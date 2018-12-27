@@ -99,10 +99,10 @@ func (netdev *NetDev) CreateNetDevSectionConfig() string {
 func NetdevdParseJsonFromHttpReq(req *http.Request) error {
 	var configs map[string]interface{}
 
-	body, r := ioutil.ReadAll(req.Body)
-	if r != nil {
-		log.Error("Failed to parse HTTP request: ", r)
-		return r
+	body, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		log.Error("Failed to parse HTTP request: ", err)
+		return err
 	}
 
 	json.Unmarshal([]byte(body), &configs)

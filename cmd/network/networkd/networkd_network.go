@@ -291,9 +291,9 @@ func (network *Network) CreateNetworkSectionConfig() string {
 		IPv6AcceptRAConf := "IPv6AcceptRA="
 
 		IPv6RA := strings.TrimSpace(network.IPv6AcceptRA)
-		b, r := share.ParseBool(IPv6RA)
-		if r != nil {
-			log.Error("Failed to parse IPv6AcceptRA: ", r, network.IPv6AcceptRA)
+		b, err := share.ParseBool(IPv6RA)
+		if err != nil {
+			log.Error("Failed to parse IPv6AcceptRA: ", err, network.IPv6AcceptRA)
 		} else {
 			if b == true {
 				IPv6AcceptRAConf += "yes"
@@ -308,9 +308,9 @@ func (network *Network) CreateNetworkSectionConfig() string {
 		LinkLocalAddressingConf := "LinkLocalAddressing="
 
 		IPv6RA := strings.TrimSpace(network.LinkLocalAddressing)
-		b, r := share.ParseBool(IPv6RA)
-		if r != nil {
-			log.Error("Failed to parse LinkLocalAddressing: ", r, network.LinkLocalAddressing)
+		b, err := share.ParseBool(IPv6RA)
+		if err != nil {
+			log.Error("Failed to parse LinkLocalAddressing: ", err, network.LinkLocalAddressing)
 		} else {
 			if b == true {
 				LinkLocalAddressingConf += "yes"
@@ -325,9 +325,9 @@ func (network *Network) CreateNetworkSectionConfig() string {
 		LLDPConf := "LLDP="
 
 		LLDP := strings.TrimSpace(network.LLDP)
-		b, r := share.ParseBool(LLDP)
-		if r != nil {
-			log.Error("Failed to parse LLDP: ", r, network.LLDP)
+		b, err := share.ParseBool(LLDP)
+		if err != nil {
+			log.Error("Failed to parse LLDP: ", err, network.LLDP)
 		} else {
 			if b == true {
 				LLDPConf += "yes"
@@ -342,9 +342,9 @@ func (network *Network) CreateNetworkSectionConfig() string {
 		EmitLLDPConf := "EmitLLDP="
 
 		EmitLLDP := strings.TrimSpace(network.EmitLLDP)
-		b, r := share.ParseBool(EmitLLDP)
-		if r != nil {
-			log.Error("Failed to parse EmitLLDP: ", r, network.EmitLLDP)
+		b, err := share.ParseBool(EmitLLDP)
+		if err != nil {
+			log.Error("Failed to parse EmitLLDP: ", err, network.EmitLLDP)
 		} else {
 			if b == true {
 				EmitLLDPConf += "yes"
@@ -377,10 +377,10 @@ func (network *Network) CreateNetworkSectionConfig() string {
 func NetworkdParseJsonFromHttpReq(req *http.Request) error {
 	var configs map[string]interface{}
 
-	body, r := ioutil.ReadAll(req.Body)
-	if r != nil {
-		log.Errorf("Failed to parse HTTP request: %s ", r)
-		return r
+	body, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		log.Errorf("Failed to parse HTTP request: %s ", err)
+		return err
 	}
 
 	json.Unmarshal([]byte(body), &configs)
@@ -452,9 +452,7 @@ func NetworkdParseJsonFromHttpReq(req *http.Request) error {
 	unitName := fmt.Sprintf("25-%s.network", network.Name)
 	unitPath := filepath.Join(NetworkdUnitPath, unitName)
 
-	share.WriteFullFile(unitPath, config)
-
-	return nil
+	return share.WriteFullFile(unitPath, config)
 }
 
 func ConfigureNetworkFile(rw http.ResponseWriter, req *http.Request) {

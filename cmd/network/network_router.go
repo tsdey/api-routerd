@@ -190,6 +190,18 @@ func NetworkDeleteRoute(rw http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func NetworkGetRoute(rw http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case "GET":
+		err := GetRoutes(rw)
+		if err != nil {
+			http.Error(rw, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		break
+	}
+}
+
 func NetworkdConfigureNetwork(rw http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "PUT":
@@ -226,18 +238,23 @@ func NetworkConfigureEthtool(rw http.ResponseWriter, r *http.Request) {
 
 func RegisterRouterNetwork(router *mux.Router) {
 	n := router.PathPrefix("/network").Subrouter()
+
+	// Link
 	n.HandleFunc("/link/set",        NetworkLinkSet)
 	n.HandleFunc("/link/add",        NetworkLinkAdd)
 	n.HandleFunc("/link/delete",     NetworkLinkDelete)
 	n.HandleFunc("/link/get/{link}", NetworkLinkGet)
 	n.HandleFunc("/link/get",        NetworkLinkGet)
 
+	// Address
 	n.HandleFunc("/address/add",        NetworkAddAddress)
 	n.HandleFunc("/address/delete",     NetworkDeleteAddres)
 	n.HandleFunc("/address/get/{link}", NetworkGetAddress)
 
+	// Route
 	n.HandleFunc("/route/add", NetworkAddRoute)
 	n.HandleFunc("/route/del", NetworkDeleteRoute)
+	n.HandleFunc("/route/get", NetworkGetRoute)
 
 	// systemd-networkd
 	networkd.InitNetworkd()
