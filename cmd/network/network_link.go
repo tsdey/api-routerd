@@ -20,15 +20,6 @@ type Link struct {
 	Enslave []string `json:"enslave"`
 }
 
-type LinkInfo struct {
-	Index        int    `json:"index"`
-	MTU          int    `json:"MTU"`
-	TxQLen       int    `json:"TxQLen"`
-	Name         string `json:"Name"`
-	HardwareAddr string `json:"HardwareAdd"`
-	OperState    string `json:"LinkOperState"`
-}
-
 func (req *Link) LinkSetMasterBridge() (error) {
 	bridge, err := netlink.LinkByName(req.Link)
 	if err != nil {
@@ -171,15 +162,7 @@ func (req *Link) GetLink(rw http.ResponseWriter) (error) {
 			return err
 		}
 
-		linkInfo := LinkInfo{
-			Index:        link.Attrs().Index,
-			MTU:          link.Attrs().MTU,
-			Name:         link.Attrs().Name,
-			HardwareAddr: link.Attrs().HardwareAddr.String(),
-			OperState:    link.Attrs().OperState.String(),
-		}
-
-		j, err := json.Marshal(linkInfo)
+		j, err := json.Marshal(link)
 		if err != nil {
 			log.Errorf("Failed to encode json linkInfo for link %s: %s", req.Link, err)
 			return err
@@ -196,16 +179,7 @@ func (req *Link) GetLink(rw http.ResponseWriter) (error) {
 			return err
 		}
 
-		linkInfo := make([]LinkInfo, len(links))
-		for i, link := range links {
-			linkInfo[i].Index        = link.Attrs().Index
-			linkInfo[i].MTU          = link.Attrs().MTU
-			linkInfo[i].Name         = link.Attrs().Name
-			linkInfo[i].HardwareAddr = link.Attrs().HardwareAddr.String()
-			linkInfo[i].OperState    = link.Attrs().OperState.String()
-		}
-
-		j, err := json.Marshal(linkInfo)
+		j, err := json.Marshal(links)
 		if err != nil {
 			log.Errorf("Failed to encode json linkInfo for link %s: %s", req.Link, err)
 			return err

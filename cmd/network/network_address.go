@@ -78,12 +78,7 @@ func (address *Address) GetAddress(rw http.ResponseWriter) (error) {
 		return err
 	}
 
-	addresses := AddressInfo{Link: address.Link}
-	for _, address := range addrs {
-		addresses.Addresses = append(addresses.Addresses, address.IPNet.String())
-	}
-
-	j, err := json.Marshal(addresses)
+	j, err := json.Marshal(addrs)
 	if err != nil {
 		log.Errorf("Failed to encode json address for link %s: %s", err, address.Link)
 		return err
