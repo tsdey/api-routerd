@@ -18,23 +18,23 @@ type Route struct {
 	OnLink  string `json:"onlink"`
 }
 
-func AddDefaultGateWay(route *Route) {
-	link, r := netlink.LinkByName(route.Link)
-	if r != nil {
-		log.Errorf("Failed to find link %s: %s", r, route.Link)
-		return
+func (route *Route) AddDefaultGateWay() (error) {
+	link, err := netlink.LinkByName(route.Link)
+	if err != nil {
+		log.Errorf("Failed to find link %s: %s", err, route.Link)
+		return err
 	}
 
-	ipAddr, _, r := net.ParseCIDR(route.Gateway)
-	if r != nil {
-		log.Errorf("Failed to parse default GateWay address %s: %s", route.Gateway, r)
-		return
+	ipAddr, _, err := net.ParseCIDR(route.Gateway)
+	if err != nil {
+		log.Errorf("Failed to parse default GateWay address %s: %s", route.Gateway, err)
+		return err
 	}
 
 	onlink := 0
-	b, r := share.ParseBool(strings.TrimSpace(route.OnLink))
-	if r != nil {
-		log.Errorf("Failed to parse GatewayOnlink %s: %s", r, route.OnLink)
+	b, err := share.ParseBool(strings.TrimSpace(route.OnLink))
+	if err != nil {
+		log.Errorf("Failed to parse GatewayOnlink %s: %s", err, route.OnLink)
 	} else {
 		if b == true {
 			onlink |= syscall.RTNH_F_ONLINK
@@ -49,23 +49,25 @@ func AddDefaultGateWay(route *Route) {
 		Flags:     onlink,
 	}
 
-	r = netlink.RouteAdd(rt)
-	if r != nil {
-		log.Errorf("Failed to add default GateWay address %s: %s", route.Gateway, r)
+	err = netlink.RouteAdd(rt)
+	if err != nil {
+		log.Errorf("Failed to add default GateWay address %s: %s", route.Gateway, err)
 	}
+
+	return nil
 }
 
-func DelDefaultGateWay(route *Route) {
+func (route *Route) DelDefaultGateWay() (error) {
 	link, err := netlink.LinkByName(route.Link)
 	if err != nil {
 		log.Errorf("Failed to delete default gateway %s: %s", link, err)
-		return
+		return err
 	}
 
 	ipAddr, _, err := net.ParseCIDR(route.Gateway)
 	if err != nil {
 		log.Errorf("Failed to parse default GateWay address %s: %s", route.Gateway, err)
-		return
+		return err
 	}
 
 	// del a gateway route
@@ -78,5 +80,8 @@ func DelDefaultGateWay(route *Route) {
 	err = netlink.RouteDel(r)
 	if err != nil {
 		log.Errorf("Failed to delete default GateWay address %s: %s", ipAddr, err)
+		return err
 	}
+
+	return nil
 }

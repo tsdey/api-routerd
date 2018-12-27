@@ -156,7 +156,11 @@ func NetworkAddRoute(rw http.ResponseWriter, r *http.Request) {
 	case "PUT":
 		switch route.Action {
 		case "add-default-gw":
-			AddDefaultGateWay(route)
+			err := route.AddDefaultGateWay()
+			if err != nil {
+				http.Error(rw, err.Error(), http.StatusInternalServerError)
+				return
+			}
 			break
 		}
 	}
@@ -175,7 +179,12 @@ func NetworkDeleteRoute(rw http.ResponseWriter, r *http.Request) {
 	case "DELETE":
 		switch route.Action {
 		case "del-default-gw":
-			DelDefaultGateWay(route)
+			err := route.DelDefaultGateWay()
+			if err != nil {
+				http.Error(rw, err.Error(), http.StatusInternalServerError)
+				return
+			}
+
 			break
 		}
 	}
