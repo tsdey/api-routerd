@@ -5,7 +5,6 @@ package network
 import (
 	"encoding/json"
 	"net/http"
-
 	log "github.com/sirupsen/logrus"
 	"github.com/vishvananda/netlink"
 )
@@ -17,64 +16,81 @@ type Address struct {
 	Label   string `json:"label"`
 }
 
-func AddAddress(address *Address) {
-	link, r := netlink.LinkByName(address.Link)
-	if r != nil {
-		log.Errorf("Failed to find link %s: %s", r, address.Link)
-		return
-	}
-
-	addr, r := netlink.ParseAddr(address.Address)
-	if r != nil {
-		log.Errorf("Failed to parse address %s: %s", r, address.Address)
-		return
-	}
-
-	r = netlink.AddrAdd(link, addr)
-	if r != nil {
-		log.Errorf("Failed to add Address %s to link %s: %s", r, addr, link)
-		return
-	}
+type AddressInfo struct {
+	Link        string `json:"link"`
+	Addresses []string `json:"addresses"`
 }
 
-func DelAddress(address *Address) {
-	link, r := netlink.LinkByName(address.Link)
-	if r != nil {
-		log.Errorf("Failed to find link %s: %s", r, address.Link)
-		return
+func (address *Address) AddAddress() (error){
+	link, err := netlink.LinkByName(address.Link)
+	if err != nil {
+		log.Errorf("Failed to find link %s: %s", err, address.Link)
+		return err
 	}
 
-	addr, r := netlink.ParseAddr(address.Address)
-	if r != nil {
-		log.Errorf("Failed to parse address %s: %s", r, addr)
-		return
+	addr, err := netlink.ParseAddr(address.Address)
+	if err != nil {
+		log.Errorf("Failed to parse address %s: %s", err, address.Address)
+		return err
 	}
 
-	r = netlink.AddrDel(link, addr)
-	if r != nil {
-		log.Errorf("Failed to add address %s: %s", r, addr, link)
-		return
+	err = netlink.AddrAdd(link, addr)
+	if err != nil {
+		log.Errorf("Failed to add Address %s to link %s: %s", err, addr, link)
+		return err
 	}
+
+	return nil
 }
 
-func (address *Address) GetAddress(rw http.ResponseWriter) {
-	link, r := netlink.LinkByName(address.Link)
-	if r != nil {
-		log.Errorf("Failed to get link %s: %s", r, address.Link)
-		return
+func (address *Address) DelAddress() (error) {
+	link, err := netlink.LinkByName(address.Link)
+	if err != nil {
+		log.Errorf("Failed to find link %s: %s", err, address.Link)
+		return err
 	}
 
-	addrs, r := netlink.AddrList(link, netlink.FAMILY_ALL)
-	if r != nil {
-		log.Errorf("Could not get addresses %s: %s", link, r)
-		return
+	addr, err := netlink.ParseAddr(address.Address)
+	if err != nil {
+		log.Errorf("Failed to parse address %s: %s", err, addr)
+		return err
 	}
 
-	addresses := make([]Address, len(addrs))
-	for i, address := range addrs {
-		addresses[i].Address = address.IPNet.String()
-		addresses[i].Link = link.Attrs().Name
+	err = netlink.AddrDel(link, addr)
+	if err != nil {
+		log.Errorf("Failed to add address %s: %s", err, addr, link)
+		return err
 	}
 
-	json.NewEncoder(rw).Encode(addresses)
+	return nil
+}
+
+func (address *Address) GetAddress(rw http.ResponseWriter) (error) {
+	link, err := netlink.LinkByName(address.Link)
+	if err != nil {
+		log.Errorf("Failed to get link %s: %s", address.Link, err)
+		return err
+	}
+
+	addrs, err := netlink.AddrList(link, netlink.FAMILY_ALL)
+	if err != nil {
+		log.Errorf("Could not get addresses for link %s: %s", link, err)
+		return err
+	}
+
+	addresses := AddressInfo{Link: address.Link}
+	for _, address := range addrs {
+		addresses.Addresses = append(addresses.Addresses, address.IPNet.String())
+	}
+
+	j, err := json.Marshal(addresses)
+	if err != nil {
+		log.Errorf("Failed to encode json address for link %s: %s", err, address.Link)
+		return err
+	}
+
+	rw.WriteHeader(http.StatusOK)
+	rw.Write(j)
+
+	return nil
 }

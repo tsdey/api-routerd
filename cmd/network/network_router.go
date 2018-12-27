@@ -111,9 +111,14 @@ func NetworkAddAddress(rw http.ResponseWriter, r *http.Request) {
 	case "PUT":
 		switch address.Action {
 		case "add-address":
-			AddAddress(address)
-			break
+			err := address.AddAddress()
+			if err != nil {
+				http.Error(rw, err.Error(), http.StatusInternalServerError)
+				return
+			}
 		}
+
+		break
 	}
 }
 
@@ -128,7 +133,12 @@ func NetworkDeleteAddres(rw http.ResponseWriter, r *http.Request) {
 
 	switch r.Method {
 	case "DELETE":
-		DelAddress(address)
+		err := address.DelAddress()
+		if err != nil {
+			http.Error(rw, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
 		break
 	}
 }
@@ -207,13 +217,15 @@ func NetworkConfigureEthtool(rw http.ResponseWriter, r *http.Request) {
 
 func RegisterRouterNetwork(router *mux.Router) {
 	n := router.PathPrefix("/network").Subrouter()
-	n.HandleFunc("/link/set", NetworkLinkSet)
-	n.HandleFunc("/link/add", NetworkLinkAdd)
-	n.HandleFunc("/link/delete", NetworkLinkDelete)
+	n.HandleFunc("/link/set",        NetworkLinkSet)
+	n.HandleFunc("/link/add",        NetworkLinkAdd)
+	n.HandleFunc("/link/delete",     NetworkLinkDelete)
 	n.HandleFunc("/link/get/{link}", NetworkLinkGet)
+	n.HandleFunc("/link/get",        NetworkLinkGet)
 
+	n.HandleFunc("/address/add",        NetworkAddAddress)
+	n.HandleFunc("/address/delete",     NetworkDeleteAddres)
 	n.HandleFunc("/address/get/{link}", NetworkGetAddress)
-	n.HandleFunc("/address/add", NetworkAddAddress)
 
 	n.HandleFunc("/route/add", NetworkAddRoute)
 	n.HandleFunc("/route/del", NetworkDeleteRoute)
@@ -221,7 +233,7 @@ func RegisterRouterNetwork(router *mux.Router) {
 	// systemd-networkd
 	networkd.InitNetworkd()
 	n.HandleFunc("/networkd/network", NetworkdConfigureNetwork)
-	n.HandleFunc("/networkd/netdev", NetworkdConfigureNetDev)
+	n.HandleFunc("/networkd/netdev",  NetworkdConfigureNetDev)
 
 	// ethtool
 	n.HandleFunc("/ethtool/{link}/{command}", NetworkConfigureEthtool)

@@ -420,3 +420,8 @@ Get link netlink
 [sus@Zeus cmd]$  curl --header "X-Session-Token: aaaaa" --request GET http://localhost:8080/network/address/get/wlp4s0
 [{"action":"","link":"wlp4s0","address":"192.168.43.105/24","label":""},{"action":"","link":"wlp4s0","address":"2409:4042:239c:7f9d:e45f:27a9:c6de:c39e/64","label":""},{"action":"","link":"wlp4s0","address":"fe80::c912:39ce:e9a3:aaca/64","label":""}]
 ```
+
+get all links
+```
+curl --header "X-Session-Token: aaaaa" --request GET http://localhost:8080/network/link/get
+```

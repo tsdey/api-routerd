@@ -14,7 +14,6 @@ import (
 type Ethtool struct {
 	Action   string `json:"action"`
 	Link     string `json:"link"`
-	Reply    string `json:"reply"`
 }
 
 func (req *Ethtool) GetEthTool(rw http.ResponseWriter) (error) {

@@ -29,46 +29,46 @@ type LinkInfo struct {
 	OperState    string `json:"LinkOperState"`
 }
 
-func (req *Link) LinkSetMasterBridge() error {
-	bridge, r := netlink.LinkByName(req.Link)
-	if r != nil {
-		log.Errorf("Failed to find bridge link %s: %s", req.Link, r)
-		return r
+func (req *Link) LinkSetMasterBridge() (error) {
+	bridge, err := netlink.LinkByName(req.Link)
+	if err != nil {
+		log.Errorf("Failed to find bridge link %s: %s", req.Link, err)
+		return err
 	}
 
 	br, b := bridge.(*netlink.Bridge)
 	if !b {
-		log.Errorf("Link is not a bridge %s: %s", req.Link, r)
+		log.Errorf("Link is not a bridge: %s", req.Link)
 		return errors.New("Link is not a bridge")
 	}
 
 	for _, n := range req.Enslave {
-		link, r := netlink.LinkByName(n)
-		if r != nil {
-			log.Errorf("Failed to find slave link %s: %s", n, r)
+		link, err := netlink.LinkByName(n)
+		if err != nil {
+			log.Errorf("Failed to find slave link %s: %s", n, err)
 			continue
 		}
 
-		r = netlink.LinkSetMaster(link, br)
-		if r != nil {
-			log.Errorf("Failed to set link %s master device %s: %s", n, req.Link, r)
+		err = netlink.LinkSetMaster(link, br)
+		if err != nil {
+			log.Errorf("Failed to set link %s master device %s: %s", n, req.Link, err)
 		}
 	}
 
 	return nil
 }
 
-func (req *Link) LinkCreateBridge() error {
-	_, r := netlink.LinkByName(req.Link)
-	if r == nil {
+func (req *Link) LinkCreateBridge() (error) {
+	_, err := netlink.LinkByName(req.Link)
+	if err == nil {
 		log.Infof("Bridge link %s exists. Using the bridge", req.Link)
 	} else {
 
 		bridge := &netlink.Bridge{LinkAttrs: netlink.LinkAttrs{Name: req.Link}}
-		r = netlink.LinkAdd(bridge)
-		if r != nil {
-			log.Errorf("Failed to create bride %s: %s", req.Link, r)
-			return r
+		err = netlink.LinkAdd(bridge)
+		if err != nil {
+			log.Errorf("Failed to create bride %s: %s", req.Link, err)
+			return err
 		}
 
 		log.Debugf("Successfully create bridge link: %s", req.Link)
@@ -76,71 +76,71 @@ func (req *Link) LinkCreateBridge() error {
 	return req.LinkSetMasterBridge()
 }
 
-func (req *Link) LinkDelete() error {
-	l, r := netlink.LinkByName(req.Link)
-	if r != nil {
-		log.Errorf("Failed to find link %s: %s", req.Link, r)
-		return r
+func (req *Link) LinkDelete() (error) {
+	l, err := netlink.LinkByName(req.Link)
+	if err != nil {
+		log.Errorf("Failed to find link %s: %s", req.Link, err)
+		return err
 	}
 
-	r = netlink.LinkDel(l)
-	if r != nil {
-		log.Errorf("Failed to delete link %s up: %s", l, r)
-		return r
-	}
-
-	return nil
-}
-
-func LinkSetUp(link string) error {
-	l, r := netlink.LinkByName(link)
-	if r != nil {
-		log.Errorf("Failed to find link %s: %s", link, r)
-		return r
-	}
-
-	r = netlink.LinkSetUp(l)
-	if r != nil {
-		log.Errorf("Failed to set link %s up: %s", l, r)
-		return r
+	err = netlink.LinkDel(l)
+	if err != nil {
+		log.Errorf("Failed to delete link %s up: %s", l, err)
+		return err
 	}
 
 	return nil
 }
 
-func LinkSetDown(link string) error {
-	l, r := netlink.LinkByName(link)
-	if r != nil {
-		log.Errorf("Failed to find link %s: %s", link, r)
-		return r
+func LinkSetUp(link string) (error) {
+	l, err := netlink.LinkByName(link)
+	if err != nil {
+		log.Errorf("Failed to find link %s: %s", link, err)
+		return err
 	}
 
-	r = netlink.LinkSetDown(l)
-	if r != nil {
-		log.Errorf("Failed to set link down %s: %s", l, r)
-		return r
-	}
-
-	return nil
-}
-
-func LinkSetMTU(link string, mtu int) error {
-	l, r := netlink.LinkByName(link)
-	if r != nil {
-		log.Errorf("Failed to find link %s: %s", link, r)
-		return r
-	}
-
-	r = netlink.LinkSetMTU(l, mtu)
-	if r != nil {
-		log.Errorf("Failed to set link %s MTU %d: %s", link, mtu, r)
-		return r
+	err = netlink.LinkSetUp(l)
+	if err != nil {
+		log.Errorf("Failed to set link %s up: %s", l, err)
+		return err
 	}
 
 	return nil
 }
 
-func (req *Link) SetLink() error {
+func LinkSetDown(link string) (error) {
+	l, err := netlink.LinkByName(link)
+	if err != nil {
+		log.Errorf("Failed to find link %s: %s", link, err)
+		return err
+	}
+
+	err = netlink.LinkSetDown(l)
+	if err != nil {
+		log.Errorf("Failed to set link down %s: %s", l, err)
+		return err
+	}
+
+	return nil
+}
+
+func LinkSetMTU(link string, mtu int) (error) {
+	l, err := netlink.LinkByName(link)
+	if err != nil {
+		log.Errorf("Failed to find link %s: %s", link, err)
+		return err
+	}
+
+	err = netlink.LinkSetMTU(l, mtu)
+	if err != nil {
+		log.Errorf("Failed to set link %s MTU %d: %s", link, mtu, err)
+		return err
+	}
+
+	return nil
+}
+
+func (req *Link) SetLink() (error) {
 
 	link := strings.TrimSpace(req.Link)
 
@@ -151,10 +151,10 @@ func (req *Link) SetLink() error {
 		return LinkSetDown(link)
 	case "set-link-mtu":
 
-		mtu, r := strconv.ParseInt(strings.TrimSpace(req.MTU), 10, 64)
-		if r != nil {
-			log.Errorf("Failed to parse received link %s MTU %s: %s", req.Link, req.MTU, r)
-			return r
+		mtu, err := strconv.ParseInt(strings.TrimSpace(req.MTU), 10, 64)
+		if err != nil {
+			log.Errorf("Failed to parse received link %s MTU %s: %s", req.Link, req.MTU, err)
+			return err
 		}
 
 		return LinkSetMTU(link, int(mtu))
@@ -163,19 +163,56 @@ func (req *Link) SetLink() error {
 	return nil
 }
 
-func (req *Link) GetLink(rw http.ResponseWriter) {
-	link, r := netlink.LinkByName(strings.TrimSpace(req.Link))
-	if r != nil {
-		log.Errorf("Failed to find link %s: %s", req.Link, r)
-		return
+func (req *Link) GetLink(rw http.ResponseWriter) (error) {
+	l := strings.TrimSpace(req.Link)
+	if l != "" {
+		link, err := netlink.LinkByName(l)
+		if err != nil {
+			log.Errorf("Failed to find link %s: %s", req.Link, err)
+			return err
+		}
+
+		linkInfo := LinkInfo{
+			Index:        link.Attrs().Index,
+			MTU:          link.Attrs().MTU,
+			Name:         link.Attrs().Name,
+			HardwareAddr: link.Attrs().HardwareAddr.String(),
+		}
+
+		j, err := json.Marshal(linkInfo)
+		if err != nil {
+			log.Errorf("Failed to encode json linkInfo for link %s: %s", req.Link, err)
+			return err
+		}
+
+
+		rw.WriteHeader(http.StatusOK)
+		rw.Write(j)
+
+	} else	{
+
+		links, err := netlink.LinkList()
+		if err != nil {
+			return err
+		}
+
+		linkInfo := make([]LinkInfo, len(links))
+		for i, link := range links {
+			linkInfo[i].Index        = link.Attrs().Index
+			linkInfo[i].MTU          = link.Attrs().MTU
+			linkInfo[i].Name         = link.Attrs().Name
+			linkInfo[i].HardwareAddr = link.Attrs().HardwareAddr.String()
+		}
+
+		j, err := json.Marshal(linkInfo)
+		if err != nil {
+			log.Errorf("Failed to encode json linkInfo for link %s: %s", req.Link, err)
+			return err
+		}
+
+		rw.WriteHeader(http.StatusOK)
+		rw.Write(j)
 	}
 
-	linkInfo := LinkInfo{
-		Index:        link.Attrs().Index,
-		MTU:          link.Attrs().MTU,
-		Name:         link.Attrs().Name,
-		HardwareAddr: link.Attrs().HardwareAddr.String(),
-	}
-
-	json.NewEncoder(rw).Encode(linkInfo)
+	return nil
 }
