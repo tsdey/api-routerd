@@ -266,6 +266,7 @@ func GetProcProcess(rw http.ResponseWriter, r *http.Request) {
 
 	switch r.Method {
 	case "GET":
+
 		err := GetProcessInfo(rw, pid, property)
 		if err != nil {
 			http.Error(rw, err.Error(), http.StatusInternalServerError)
@@ -286,7 +287,7 @@ func RegisterRouterProc(router *mux.Router) {
 	n.HandleFunc("/net/arp", GetProcNetArp)
 	n.HandleFunc("/netdev", GetProcNetDev)
 	n.HandleFunc("/netstat/{protocol}", GetProcNetStat)
-	n.HandleFunc("/process/{pid}/{method}/", GetProcProcess)
+	n.HandleFunc("/process/{pid}/{property}/", GetProcProcess)
 	n.HandleFunc("/proto-counter-stat", GetProcProtoCountersStat)
 	n.HandleFunc("/proto-pid-stat/{pid}/{protocol}", GetProcPidNetStat)
 	n.HandleFunc("/swap-memory", GetProcGetSwapMemoryStat)

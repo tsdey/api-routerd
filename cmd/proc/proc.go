@@ -401,6 +401,94 @@ func GetProcessInfo(rw http.ResponseWriter, proc string, property string) (error
 
 		j, err = json.Marshal(conn)
 		break
+	case "pid-rlimit":
+		rlimit, err := p.Rlimit()
+		if err != nil {
+			return err
+		}
+
+		j, err = json.Marshal(rlimit)
+		break
+	case "pid-rlimit-usage":
+		rlimit, err := p.RlimitUsage(true)
+		if err != nil {
+			return err
+		}
+
+		j, err = json.Marshal(rlimit)
+		break
+	case "pid-status":
+		s, err := p.Status()
+		if err != nil {
+			return err
+		}
+
+		j, err = json.Marshal(s)
+		break
+	case "pid-username":
+		u, err := p.Username()
+		if err != nil {
+			return err
+		}
+
+		j, err = json.Marshal(u)
+		break
+	case "pid-open-files":
+		f, err := p.OpenFiles()
+		if err != nil {
+			return err
+		}
+
+		j, err = json.Marshal(f)
+		break
+	case "pid-fds":
+		f, err := p.NumFDs()
+		if err != nil {
+			return err
+		}
+
+		j, err = json.Marshal(f)
+		break
+	case "pid-name":
+		n, err := p.Name()
+		if err != nil {
+			return err
+		}
+
+		j, err = json.Marshal(n)
+		break
+	case "pid-memory-percent":
+		m, err := p.MemoryPercent()
+		if err != nil {
+			return err
+		}
+
+		j, err = json.Marshal(m)
+		break
+	case "pid-memory-maps":
+		m, err := p.MemoryMaps(true)
+		if err != nil {
+			return err
+		}
+
+		j, err = json.Marshal(m)
+		break
+	case "pid-memory-info":
+		m, err := p.MemoryInfo()
+		if err != nil {
+			return err
+		}
+
+		j, err = json.Marshal(m)
+		break
+	case "pid-io-counters":
+		m, err := p.IOCounters()
+		if err != nil {
+			return err
+		}
+
+		j, err = json.Marshal(m)
+		break
 	}
 
 	if err != nil {

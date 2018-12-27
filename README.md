@@ -199,6 +199,24 @@ sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request G
 sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request GET --header "X-Session-Token: aaaaa" http://localhost:8080/proc/modules
 ```
 
+information by pid request = "GET"
+```
+[sus@Zeus cmd]$ curl --header "Content-Type: application/json" --request GET --header "X-Session-Token: aaaaa" http://localhost:8080/proc/process/2769/pid-connections/
+[{"fd":270,"family":2,"type":1,"localaddr":{"ip":"192.168.225.101","port":45354},"remoteaddr":{"ip":"74.125.24.102","port":443},"status":"ESTABLISHED","uids":[1000,1000,1000,1000],"pid":2769},{"fd":196,"family":2,"type":1,"localaddr":{"ip":"192.168.225.101","port":49138},"remoteaddr":{"ip":"172.217.194.94","port":443},"status":"ESTABLISHED","uids":[1000,1000,1000,1000],"pid":27
+
+http://localhost:8080/proc/process/2769/pid-rlimit/
+http://localhost:8080/proc/process/2769/pid-rlimit-usage/
+http://localhost:8080/proc/process/2769/pid-status/
+http://localhost:8080/proc/process/2769/pid-username/
+http://localhost:8080/proc/process/2769/pid-open-files/
+http://localhost:8080/proc/process/2769/pid-fds/
+http://localhost:8080/proc/process/2769/pid-name/
+http://localhost:8080/proc/process/2769/pid-memory-percent/
+http://localhost:8080/proc/process/2769/pid-memory-maps/
+http://localhost:8080/proc/process/2769/pid-memory-info/
+http://localhost:8080/proc/process/2769/pid-io-counters/
+```
+
 ```
 [sus@Zeus api-routerd]# curl --header "Content-Type: application/json" --request GET  --header "X-Session-Token: aaaaa" http://localhost:8080/proc/misc
 {"130":"watchdog","144":"nvram","165":"vmmon","183":"hw_random","184":"microcode","227":"mcelog","228":"hpet","229":"fuse","231":"snapshot","232":"kvm","235":"autofs","236":"device-mapper","53":"vboxnetctl","54":"vsock","55":"vmci","56":"vboxdrvu","57":"vboxdrv","58":"rfkill","59":"memory_bandwidth","60":"network_throughput","61":"network_latency","62":"cpu_dma_latency","63":"vga_arbiter"}
