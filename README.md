@@ -248,7 +248,7 @@ supported: IPv4, IPv6 and core
 
 ##### Use case configure link
 
-Set address
+Add address
 ```
 [sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request POST --data '{"action":"add-address", "address":"192.168.1.131/24", "link":"dummy"}' --header "X-Session-Token: aaaaa" http://localhost:8080/network/address/add
 [sus@Zeus api-router]$ ip addr show dummy

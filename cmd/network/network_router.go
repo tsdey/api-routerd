@@ -108,7 +108,7 @@ func NetworkAddAddress(rw http.ResponseWriter, r *http.Request) {
 	}
 
 	switch r.Method {
-	case "PUT":
+	case "POST":
 		switch address.Action {
 		case "add-address":
 			err := address.AddAddress()
