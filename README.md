@@ -31,7 +31,7 @@ A super light weight remote management tool which uses REST API for real time co
 
 - see information from /proc such as netstat, netdev, memory
 - See ethtool information
-
+- configure nameserver /etc/resolv.conf
 
  ### api-routerd json API
  Refer spreadsheet [API](https://docs.google.com/spreadsheets/d/e/2PACX-1vTl2Vmp-BdTE5Vgi_PiW-qKPJnbLxdSso9kT2GAkAxCu_iWrw3_PZLlEuyXz0lbFgd7DoofXlmmb3dP/pubhtml
@@ -453,13 +453,19 @@ Get all addresses
 http://localhost:8080/network/address/get
 ```
 
-Add/Read/Delete confs in resolv.conf
+##### Add/Read/Delete confs in resolv.conf
+
+Get
 ```
 sus@Zeus cmd]$ http://localhost:8080/network/resolv
+```
 
-sus@Zeus cmd]$ curl --header "Content-Type: application/json" --request POST --data '{"servers":["192.168.1.131","192.168.1.132"], "search":["hello","hello2"]}' --header "X-Session-Token: aaaaa" http://loc
-alhost:8080/network/resolv/add
-
+Add
+```
+sus@Zeus cmd]$ curl --header "Content-Type: application/json" --request POST --data '{"servers":["192.168.1.131","192.168.1.132"], "search":["hello","hello2"]}' --header "X-Session-Token: aaaaa" http://localhost:8080/network/resolv/add
+```
+Delete
+```
 sus@Zeus cmd]$ curl --header "Content-Type: application/json" --request DELETE --data '{"servers":["192.168.225.3","192.168.225.2"]}' --header "X-Session-Token: aaaaa" http://localhost:8080/network/resolv/delete
 
 ```
