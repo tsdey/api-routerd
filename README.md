@@ -32,7 +32,13 @@ A super light weight remote management tool which uses REST API for real time co
 - see information from /proc such as netstat, netdev, memory
 - See ethtool information
 
-##### Quick Start
+
+ ### api-routerd json API 
+ Refer spreadsheet [API](https://docs.google.com/spreadsheets/d/e/2PACX-1vTl2Vmp-BdTE5Vgi_PiW-qKPJnbLxdSso9kT2GAkAxCu_iWrw3_PZLlEuyXz0lbFgd7DoofXlmmb3dP/pubhtml
+)
+
+
+#### Quick Start
 
 First configure your GOPATH. If you have already done this skip this step.
 ```
