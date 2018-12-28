@@ -261,6 +261,7 @@ func RegisterRouterNetwork(router *mux.Router) {
 	// Address
 	n.HandleFunc("/address/add",        NetworkAddAddress)
 	n.HandleFunc("/address/delete",     NetworkDeleteAddres)
+	n.HandleFunc("/address/get",        NetworkGetAddress)
 	n.HandleFunc("/address/get/{link}", NetworkGetAddress)
 
 	// Route

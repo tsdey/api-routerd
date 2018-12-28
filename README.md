@@ -440,5 +440,9 @@ default via 192.168.225.1 dev wlp4s0 proto dhcp metric 600
 192.168.1.0/24 dev dummy proto kernel scope link src 192.168.1.131
 192.168.137.0/24 dev vmnet1 proto kernel scope link src 192.168.137.1
 192.168.225.0/24 dev wlp4s0 proto kernel scope link src 192.168.225.101 metric 600
+```
 
+Get all addresses
+```
+http://localhost:8080/network/address/get
 ```

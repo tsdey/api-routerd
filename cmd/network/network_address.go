@@ -7,6 +7,7 @@ import (
 	"net/http"
 	log "github.com/sirupsen/logrus"
 	"github.com/vishvananda/netlink"
+	"strings"
 )
 
 type Address struct {
@@ -61,26 +62,45 @@ func (address *Address) DelAddress() (error) {
 }
 
 func (address *Address) GetAddress(rw http.ResponseWriter) (error) {
-	link, err := netlink.LinkByName(address.Link)
-	if err != nil {
-		log.Errorf("Failed to get link %s: %s", address.Link, err)
-		return err
-	}
+	l := strings.TrimSpace(address.Link)
+	if l != "" {
+		link, err := netlink.LinkByName(l)
+		if err != nil {
+			log.Errorf("Failed to get link %s: %s", l, err)
+			return err
+		}
 
-	addrs, err := netlink.AddrList(link, netlink.FAMILY_ALL)
-	if err != nil {
-		log.Errorf("Could not get addresses for link %s: %s", link, err)
-		return err
-	}
+		addrs, err := netlink.AddrList(link, netlink.FAMILY_ALL)
+		if err != nil {
+			log.Errorf("Could not get addresses for link %s: %s", link, err)
+			return err
+		}
 
-	j, err := json.Marshal(addrs)
-	if err != nil {
-		log.Errorf("Failed to encode json address for link %s: %s", err, address.Link)
-		return err
+		j, err := json.Marshal(addrs)
+		if err != nil {
+			log.Errorf("Failed to encode json address for link %s: %s", err, address.Link)
+			return err
+		}
+
+		rw.Write(j)
+
+	} else {
+		addrs, err := netlink.AddrList(nil, netlink.FAMILY_ALL)
+		if err != nil {
+			log.Errorf("Could not get addresses: %s", err)
+			return err
+		}
+
+		j, err := json.Marshal(addrs)
+		if err != nil {
+			log.Errorf("Failed to encode json address: %s", err)
+			return err
+		}
+
+		rw.Write(j)
 	}
 
 	rw.WriteHeader(http.StatusOK)
-	rw.Write(j)
 
 	return nil
 }
