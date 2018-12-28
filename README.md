@@ -453,11 +453,13 @@ Get all addresses
 http://localhost:8080/network/address/get
 ```
 
-Add/Read resolv.conf
+Add/Read/Delete confs in resolv.conf
 ```
-$http://localhost:8080/network/resolv
+sus@Zeus cmd]$ http://localhost:8080/network/resolv
 
-$curl --header "Content-Type: application/json" --request POST --data '{"servers":["192.168.1.131","192.168.1.132"], "search":["hello","hello2"]}' --header "X-Session-Token: aaaaa" http://loc
+sus@Zeus cmd]$ curl --header "Content-Type: application/json" --request POST --data '{"servers":["192.168.1.131","192.168.1.132"], "search":["hello","hello2"]}' --header "X-Session-Token: aaaaa" http://loc
 alhost:8080/network/resolv/add
+
+sus@Zeus cmd]$ curl --header "Content-Type: application/json" --request DELETE --data '{"servers":["192.168.225.3","192.168.225.2"]}' --header "X-Session-Token: aaaaa" http://localhost:8080/network/resolv/delete
 
 ```

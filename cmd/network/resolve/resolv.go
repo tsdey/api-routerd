@@ -71,6 +71,15 @@ func ReadResolvConf() (*DnsConfig, error) {
 		}
 	}
 
+	// Don't return nil in json
+	if (len(conf.Servers) == 0) {
+		conf.Servers = []string{""}
+	}
+
+	if (len(conf.Search) == 0) {
+		conf.Search = []string{""}
+	}
+
 	return conf, nil
 }
 
@@ -93,7 +102,10 @@ func GetResolvConf(rw http.ResponseWriter) (error) {
 }
 
 func UpdateResolvConf(rw http.ResponseWriter, r *http.Request) (error) {
-	var dns DnsConfig
+	dns := DnsConfig{
+		Servers: []string{""},
+		Search: []string{""},
+	}
 
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -127,6 +139,64 @@ func UpdateResolvConf(rw http.ResponseWriter, r *http.Request) (error) {
 			continue
 		}
 		conf.Search = append(conf.Search, s)
+	}
+
+	err = conf.WriteResolvConfig()
+	if err != nil {
+		log.Errorf("Failed Write to resolv conf: %s", err)
+		return err
+	}
+
+	j, err := json.Marshal(conf)
+	if err != nil {
+		log.Errorf("Failed to encode json for resolv %s", err)
+		return err
+	}
+
+	rw.Write(j)
+
+	return nil
+}
+
+func DeleteResolvConf(rw http.ResponseWriter, r *http.Request) (error) {
+	dns := DnsConfig{
+		Servers: []string{""},
+		Search: []string{""},
+	}
+
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Error("Failed to parse HTTP request: ", err)
+		return err
+	}
+
+	err = json.Unmarshal([]byte(body), &dns)
+	if err != nil {
+		log.Error("Failed to Decode HTTP request to json: ", err)
+		return err
+	}
+
+	conf, err := ReadResolvConf()
+	if err != nil {
+		return err
+	}
+
+	// update nameserver
+	for _, s := range dns.Servers {
+		if !share.StringContains(conf.Servers, s) {
+			continue
+		}
+
+		conf.Servers, _ = share.StringDeleteSlice(conf.Servers, s)
+	}
+
+	// update domains
+	for _, s := range dns.Search {
+		if !share.StringContains(conf.Search, s) {
+			continue
+		}
+
+		conf.Search, _ = share.StringDeleteSlice(conf.Search, s)
 	}
 
 	err = conf.WriteResolvConfig()

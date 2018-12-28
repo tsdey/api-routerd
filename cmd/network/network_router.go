@@ -267,6 +267,14 @@ func NetworkConfigureResolv(rw http.ResponseWriter, r *http.Request) {
 			return
 		}
 		break
+	case "DELETE":
+
+		err := resolv.DeleteResolvConf(rw, r)
+		if err != nil {
+			http.Error(rw, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		break
 	}
 }
 
@@ -303,4 +311,5 @@ func RegisterRouterNetwork(router *mux.Router) {
 	n.HandleFunc("/resolv", NetworkConfigureResolv)
 	n.HandleFunc("/resolv/get", NetworkConfigureResolv)
 	n.HandleFunc("/resolv/add", NetworkConfigureResolv)
+	n.HandleFunc("/resolv/delete", NetworkConfigureResolv)
 }
