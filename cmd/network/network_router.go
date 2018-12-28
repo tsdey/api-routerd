@@ -307,7 +307,7 @@ func RegisterRouterNetwork(router *mux.Router) {
 	// ethtool
 	n.HandleFunc("/ethtool/{link}/{command}", NetworkConfigureEthtool)
 
-	// ethtool
+	// resolv.conf
 	n.HandleFunc("/resolv", NetworkConfigureResolv)
 	n.HandleFunc("/resolv/get", NetworkConfigureResolv)
 	n.HandleFunc("/resolv/add", NetworkConfigureResolv)

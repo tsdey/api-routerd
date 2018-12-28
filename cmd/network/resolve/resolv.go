@@ -96,7 +96,6 @@ func GetResolvConf(rw http.ResponseWriter) (error) {
 	}
 
 	rw.Write(j)
-	rw.WriteHeader(http.StatusOK)
 
 	return nil
 }

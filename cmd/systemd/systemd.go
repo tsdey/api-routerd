@@ -12,10 +12,11 @@ import (
 )
 
 type Unit struct {
-	Action string `json:"action"`
-	Unit string `json:"unit"`
+	Action string   `json:"action"`
+	Unit string     `json:"unit"`
+	UnitType string `json:"unit_type"`
 	Property string `json:"property"`
-	Value string `json:"value"`
+	Value string    `json:"value"`
 }
 
 type Property struct {
@@ -117,14 +118,22 @@ func (unit *Unit) GetUnitProperty(w http.ResponseWriter) {
 	}
 	defer conn.Close()
 
-	prop, err := conn.GetUnitProperty(unit.Unit, unit.Property,)
-	if err != nil {
-		log.Errorf("Failed to get unit %s property %s: %s", unit.Unit, unit.Property, err)
-		return
-	}
+	p, err := conn.GetServiceProperty(unit.Unit, unit.Property)
 
-	unitprop := Property{ Property: prop.Name, Value: prop.Value.Value().(string) }
-	json.NewEncoder(w).Encode(unitprop)
+	switch unit.Property {
+	case "CPUShares":
+		cpu := strconv.FormatUint(p.Value.Value().(uint64), 10)
+		prop := Property{ Property: p.Name, Value: cpu}
+
+		j, err := json.Marshal(prop)
+		if err != nil {
+			log.Errorf("Failed to encode prop: %s", err)
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+		w.Write(j)
+	}
 }
 
 func (unit *Unit) SetUnitProperty(w http.ResponseWriter) {
