@@ -6,6 +6,7 @@ import (
 	"bufio"
 	"os"
 	"fmt"
+	"strings"
 )
 
 func PathExists(path string) bool {
@@ -26,7 +27,12 @@ func ReadFullFile(path string) (lines []string, err error) {
 
 	scanner := bufio.NewScanner(f)
 	for scanner.Scan() {
-		lines = append(lines, scanner.Text())
+		line := strings.TrimSpace(scanner.Text())
+		if len(line) == 0 || strings.HasPrefix(line, "#") {
+			continue
+		}
+
+		lines = append(lines, line)
 	}
 	err = scanner.Err()
 
