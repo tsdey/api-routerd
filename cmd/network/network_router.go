@@ -3,6 +3,7 @@
 package network
 
 import (
+	"api-routerd/cmd/network/ethtool"
 	"api-routerd/cmd/network/networkd"
 	"api-routerd/cmd/network/resolve"
 	"encoding/json"
@@ -236,7 +237,7 @@ func NetworkConfigureEthtool(rw http.ResponseWriter, r *http.Request) {
 	link := vars["link"]
 	command := vars["command"]
 
-	ethtool := Ethtool{Link: link, Action: command}
+	ethtool := ethtool.Ethtool{Link: link, Action: command}
 
 	switch r.Method {
 	case "GET":

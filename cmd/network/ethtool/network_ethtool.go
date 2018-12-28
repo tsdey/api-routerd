@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
-package network
+package ethtool
 
 import (
 	"api-routerd/cmd/share"
