@@ -33,7 +33,7 @@ A super light weight remote management tool which uses REST API for real time co
 - See ethtool information
 
 
- ### api-routerd json API 
+ ### api-routerd json API
  Refer spreadsheet [API](https://docs.google.com/spreadsheets/d/e/2PACX-1vTl2Vmp-BdTE5Vgi_PiW-qKPJnbLxdSso9kT2GAkAxCu_iWrw3_PZLlEuyXz0lbFgd7DoofXlmmb3dP/pubhtml
 )
 
@@ -451,4 +451,13 @@ default via 192.168.225.1 dev wlp4s0 proto dhcp metric 600
 Get all addresses
 ```
 http://localhost:8080/network/address/get
+```
+
+Add/Read resolv.conf
+```
+$http://localhost:8080/network/resolv
+
+$curl --header "Content-Type: application/json" --request POST --data '{"servers":["192.168.1.131","192.168.1.132"], "search":["hello","hello2"]}' --header "X-Session-Token: aaaaa" http://loc
+alhost:8080/network/resolv/add
+
 ```

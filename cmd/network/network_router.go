@@ -4,6 +4,7 @@ package network
 
 import (
 	"api-routerd/cmd/network/networkd"
+	"api-routerd/cmd/network/resolve"
 	"encoding/json"
 	"github.com/gorilla/mux"
 	"net/http"
@@ -248,6 +249,26 @@ func NetworkConfigureEthtool(rw http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func NetworkConfigureResolv(rw http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case "GET":
+		err := resolv.GetResolvConf(rw)
+		if err != nil {
+			http.Error(rw, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		break
+	case "POST":
+
+		err := resolv.UpdateResolvConf(rw, r)
+		if err != nil {
+			http.Error(rw, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		break
+	}
+}
+
 func RegisterRouterNetwork(router *mux.Router) {
 	n := router.PathPrefix("/network").Subrouter()
 
@@ -276,4 +297,9 @@ func RegisterRouterNetwork(router *mux.Router) {
 
 	// ethtool
 	n.HandleFunc("/ethtool/{link}/{command}", NetworkConfigureEthtool)
+
+	// ethtool
+	n.HandleFunc("/resolv", NetworkConfigureResolv)
+	n.HandleFunc("/resolv/get", NetworkConfigureResolv)
+	n.HandleFunc("/resolv/add", NetworkConfigureResolv)
 }
