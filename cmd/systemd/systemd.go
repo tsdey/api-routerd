@@ -303,8 +303,9 @@ func (u *Unit) GetUnitProperty(w http.ResponseWriter) (error) {
 			log.Errorf("Failed to get service property: %s", err)
 			return err
 		}
+
 		switch u.Property {
-		case "CPUShares":
+		case "CPUShares", "LimitNOFILE", "LimitNOFILESoft":
 			cpu := strconv.FormatUint(p.Value.Value().(uint64), 10)
 			prop := Property{Property: p.Name, Value: cpu}
 
@@ -316,6 +317,7 @@ func (u *Unit) GetUnitProperty(w http.ResponseWriter) (error) {
 
 			w.WriteHeader(http.StatusOK)
 			w.Write(j)
+			break
 		}
 	} else {
 
@@ -360,6 +362,7 @@ func (u *Unit) SetUnitProperty(w http.ResponseWriter) (error) {
 			log.Errorf("Failed to set CPUShares %s: %s", u.Value, err)
 			return err
 		}
+		break
 	}
 
 	return nil
