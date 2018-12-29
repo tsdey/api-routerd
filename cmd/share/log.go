@@ -8,8 +8,10 @@ import (
 	"path"
 )
 
-const defaultLogDir = "/var/log/api-router"
-const defaultLogFile = "api-router.log"
+const (
+	defaultLogDir = "/var/log/api-router"
+	defaultLogFile = "api-router.log"
+)
 
 func InitLog() {
 	log := logrus.New()

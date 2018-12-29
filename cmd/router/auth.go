@@ -9,7 +9,10 @@ import (
 	"net/http"
 	"strings"
 )
-const AuthConfPath = "/etc/api-routerd/api-routerd-auth.conf"
+
+const (
+	AuthConfPath = "/etc/api-routerd/api-routerd-auth.conf"
+)
 
 type TokenDB struct {
 	tokenUsers map[string]string

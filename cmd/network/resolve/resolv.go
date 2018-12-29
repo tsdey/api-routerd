@@ -13,17 +13,19 @@ import (
 	"fmt"
 )
 
-const ResolvConfPath = "/etc/resolv.conf"
+const (
+	ResolvConfPath = "/etc/resolv.conf"
+)
 
 type DnsConfig struct {
 	Servers []string `json:"servers"`
 	Search  []string `json:"search"`
 }
 
-func (conf *DnsConfig) WriteResolvConfig() (err error) {
+func (conf *DnsConfig) WriteResolvConfig() (error) {
 	f, err := os.OpenFile(ResolvConfPath, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
 	if err != nil {
-		return
+		return err
 	}
 	defer f.Close()
 

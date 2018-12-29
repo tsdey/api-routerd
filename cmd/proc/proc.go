@@ -18,9 +18,11 @@ import (
 	"strings"
 )
 
-const ProcMiscPath = "/proc/misc"
-const ProcNetArpPath = "/proc/net/arp"
-const ProcModulesPath = "/proc/modules"
+const (
+	ProcMiscPath    = "/proc/misc"
+	ProcNetArpPath  = "/proc/net/arp"
+	ProcModulesPath = "/proc/modules"
+)
 
 type NetArp struct {
 	IPAddress string `json:"ip_address"`

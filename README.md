@@ -457,7 +457,6 @@ Supported Property (Methods) for setting hostname. For example: ```'{"property":
         "SetChassis"
         "SetDeployment"
         "SetLocation"
-        "GetProductUUID"
 ```
 
 ##### ethtool

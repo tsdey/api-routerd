@@ -7,7 +7,9 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-const NetworkdUnitPath = "/var/run/systemd/network"
+const (
+	NetworkdUnitPath = "/var/run/systemd/network"
+)
 
 func InitNetworkd() (err error) {
 	r := share.CreateDirectory(NetworkdUnitPath, 0777)

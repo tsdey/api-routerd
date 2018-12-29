@@ -10,10 +10,12 @@ import (
 	"path"
 )
 
-const SysNetPath = "/proc/sys/net"
-const SysNetPathCore = "core"
-const SysNetPathIPv4 = "ipv4"
-const SysNetPathIPv6 = "ipv6"
+const (
+	SysNetPath     = "/proc/sys/net"
+	SysNetPathCore = "core"
+	SysNetPathIPv4 = "ipv4"
+	SysNetPathIPv6 = "ipv6"
+)
 
 type ProcSysNet struct {
 	Path string     `json:"path"`

@@ -9,7 +9,9 @@ import (
 	"path"
 )
 
-const VMPath = "/proc/sys/vm"
+const (
+	VMPath = "/proc/sys/vm"
+)
 
 type ProcVM struct {
 	Property string `json:"property"`

@@ -35,7 +35,6 @@ var HostMethodInfo = map[string]string{
 	"SetChassis"        : "",
 	"SetDeployment"     : "",
 	"SetLocation"       : "",
-	"GetProductUUID"    : "",
 }
 
 type Hostname struct {
