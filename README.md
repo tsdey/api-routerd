@@ -13,6 +13,7 @@ A super light weight remote management tool which uses REST API for real time co
 
 ##### Allows you to configure
 - systemd
+    - systemd informations
     - services (start, stop, restart, status)
     - service properties for example CPUShares
     - See service logs.
@@ -155,15 +156,43 @@ Now start using https
 [sus@Zeus cmd]$ curl --request GET --header "X-Session-Token: aaaaa" https://localhost:8080/proc/modules --tlsv1.2 -k
 ```
 Use case: systemd
+
+Know systemd information
 ```
+http://localhost:8080/service/systemd/version
+http://localhost:8080/service/systemd/state
+http://localhost:8080/service/systemd/features
+http://localhost:8080/service/systemd/virtualization
+http://localhost:8080/service/systemd/architecture
+````
+Get all units
+```
+http://localhost:8080/service/systemd/units
+```
+Get all properties of a unit
+```
+http://localhost:8080/service/systemd/sshd.service/get
+```
+Status of a unit
+```
+http://localhost:8080/service/systemd/sshd.service/status
+```
+Set and get propetties
+```
+[sus@Zeus] curl --request GET --header "X-Session-Token: aaaaa"http://localhost:8080/service/systemd/sshd.service/get/LimitNOFILESoft
+[sus@Zeus]  curl --request GET --header "X-Session-Token: aaaaa"  http://localhost:8080/service/systemd/sshd.service/get/LimitNOFILE
+[sus@Zeus]  curl --request GET --header "X-Session-Token: aaaaa"  http://localhost:8080/service/systemd/sshd.service/get
 [sus@Zeus] curl --header "X-Session-Token: aaaaa" --header "Content-Type: application/json" --request PUT --data '{"value":"1100"}' http://localhost:8080/service/systemd/sshd.service/set/CPUShares
-
 [sus@Zeus]  curl --request GET --header "X-Session-Token: aaaaa" http://localhost:8080/service/systemd/sshd.service/get/CPUShares
-
 [sus@Zeus]$ curl --header "Content-Type: application/json" --request POST --data '{"action":"start","unit":"sshd.service"}' --header "X-Session-Token: aaaaa" http://localhost:8080/service/systemd
 [sus@Zeus]$ curl --header "Content-Type: application/json" --request POST --data '{"action":"stop","unit":"sshd.service"}' --header "X-Session-Token: aaaaa" http://localhost:8080/service/systemd
 [sus@Zeus proc]$ curl --request GET --header "X-Session-Token: aaaaa" http://localhost:8080/service/systemd/sshd.service/status
 {"property":"active","unit":"sshd.service"}
+```
+
+Send a signal to the service
+```
+$curl --header "Content-Type: application/json" --request POST --data '{"action":"kill","unit":"sshd.service", "value":"9"}' --header "X-Session-Token: aaaaa" http://localhost:8080/service/systemd
 ```
 Use case:
 * command: "GET"
