@@ -9,31 +9,40 @@ import (
 )
 
 func RouterConfigureUnit(rw http.ResponseWriter, r *http.Request) {
-	unit := new(Unit)
-
-	err := json.NewDecoder(r.Body).Decode(&unit);
-	if err != nil {
-		http.Error(rw, err.Error(), http.StatusInternalServerError)
-		return
-	}
+	var err error
 
 	switch r.Method {
+	case "GET":
+		err = SystemState(rw)
+		break
 	case "POST":
+		unit := new(Unit)
+
+		err = json.NewDecoder(r.Body).Decode(&unit);
+		if err != nil {
+			http.Error(rw, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
 		switch unit.Action {
 		case "start":
-			StartUnit(unit.Unit)
+			err = unit.StartUnit()
 			break
 		case "stop":
-			StopUnit(unit.Unit)
+			err = unit.StopUnit()
 			break
 		case "restart":
-			RestartUnit(unit.Unit)
+			err = unit.RestartUnit()
 			break
 		case "reload":
-			ReloadUnit(unit.Unit)
+			err = unit.ReloadUnit()
 			break
 		}
 		break
+	}
+
+	if err != nil {
+		http.Error(rw, err.Error(), http.StatusInternalServerError)
 	}
 }
 
@@ -41,11 +50,18 @@ func RouterGetUnitStatus(rw http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	unit := vars["unit"]
 
+	u := Unit{Unit: unit}
+
 	switch r.Method {
 	case "GET":
-		GetUnitStatus(rw, unit)
+		err := u.GetUnitStatus(rw)
+		if err != nil {
+			http.Error(rw, err.Error(), http.StatusInternalServerError)
+		}
+
 		break;
 	}
+
 }
 
 func RouterGetUnitProperty(rw http.ResponseWriter, r *http.Request) {
