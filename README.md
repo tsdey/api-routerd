@@ -415,13 +415,49 @@ Bridge=bridge-test
 
 ```
 
+##### Hostname
+
 Example: Get and Set Hostname
 ```
-[sus@Zeus proc]$ curl --request GET --header "X-Session-Token: aaaaa" http://localhost:8080/hostname/get/static
-{"property":"StaticHostname","value":"Zeus1"}
-[sus@Zeus proc]$ curl --header "Content-Type: application/json" --request PUT --data '{"value":"Zeus"}' --header "X-Session-Token: aaaaa" http://localhost:8080/hostname/set/static
-[sus@Zeus proc]$ curl --request GET --header "X-Session-Token: aaaaa" http://localhost:8080/hostname/get/static
-{"property":"StaticHostname","value":"Zeus"}[sus@Zeus proc]$
+[sus@Zeus ~]$ curl --request GET --header "X-Session-Token: aaaaa" http://localhost:8080/hostname
+{"Chassis":"laptop","Deployment":"","HomeURL":"https://fedoraproject.org/","Hostname":"Zeus","IconName":"computer-laptop","KernelName":"Linux","KernelRelease":"4.19.2-300.fc29.x86_64","KernelVersion":"#1 SMP Wed Nov 14 19:05:24 UTC 2018","Location":"","OperatingSystemCPEName":"cpe:/o:fedoraproject:fedora:29","OperatingSystemPrettyName":"Fedora 29 (Twenty Nine)","PrettyHostname":"","StaticHostname":"Zeus"}
+
+[sus@Zeus ~]$ curl --header "Content-Type: application/json" --request PUT --data '{"property":"SetStaticHostname","value":"Zeus1"}' --header "X-Session-Token: aaaaa" http://localhost:8080/hostname/set
+[sus@Zeus ~]$ hostname
+Zeus1
+[sus@Zeus ~]$ curl --header "Content-Type: application/json" --request PUT --data '{"property":"SetStaticHostname","value":"Zeus"}' --header "X-Session-Token: aaaaa" http://localhost:8080/hostname/set
+[sus@Zeus ~]$ hostname
+Zeus
+```
+
+Supported Property for hostname
+```
+        "Hostname"
+        "StaticHostname"
+        "PrettyHostname"
+        "IconName"
+        "Chassis"
+        "Deployment"
+        "Location"
+        "KernelName"
+        "KernelRelease"
+        "KernelVersion",
+        "OperatingSystemPrettyName"
+        "OperatingSystemCPEName"
+        "HomeURL"
+}
+```
+
+Supported Property (Methods) for setting hostname. For example: ```'{"property":"SetStaticHostname","value":"Zeus"}'```
+```
+        "SetHostname"
+        "SetStaticHostname"
+        "SetPrettyHostname"
+        "SetIconName"
+        "SetChassis"
+        "SetDeployment"
+        "SetLocation"
+        "GetProductUUID"
 ```
 
 ##### ethtool

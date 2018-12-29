@@ -7,9 +7,36 @@ import (
 	"encoding/json"
 	"errors"
 	log "github.com/sirupsen/logrus"
-	"strings"
 	"net/http"
+	"fmt"
 )
+
+var HostNameInfo = map[string]string{
+	"Hostname"                  : "",
+	"StaticHostname"            : "",
+	"PrettyHostname"            : "",
+	"IconName"                  : "",
+	"Chassis"                   : "",
+	"Deployment"                : "",
+	"Location"                  : "",
+	"KernelName"                : "",
+	"KernelRelease"             : "",
+	"KernelVersion"             : "",
+	"OperatingSystemPrettyName" : "",
+	"OperatingSystemCPEName"    : "",
+	"HomeURL"                   : "",
+}
+
+var HostMethodInfo = map[string]string{
+	"SetHostname"       : "",
+	"SetStaticHostname" : "",
+	"SetPrettyHostname" : "",
+	"SetIconName"       : "",
+	"SetChassis"        : "",
+	"SetDeployment"     : "",
+	"SetLocation"       : "",
+	"GetProductUUID"    : "",
+}
 
 type Hostname struct {
 	Property string `json:"property"`
@@ -24,29 +51,15 @@ func (hostname *Hostname) SetHostname() (error) {
 	}
 	defer conn.Close()
 
-	if (len(strings.TrimSpace(hostname.Value)) == 0) {
-		log.Error("Empty hostname received")
-		return errors.New("Empty hostname received")
-	}
-
-	property := "SetStaticHostname"
-
-	switch(hostname.Property) {
-	case "pretty":
-		property = "PrettyHostname"
-		break
-	case "transient":
-		property = "SetHostname"
-		break
-	case "static":
-		property = "SetStaticHostname"
-		break
+	_, k := HostMethodInfo[hostname.Property]
+	if !k {
+		return fmt.Errorf("Failed to set hostname property: %s not found", k)
 	}
 
 	h := conn.Object("org.freedesktop.hostname1", "/org/freedesktop/hostname1")
-	errDbus := h.Call("org.freedesktop.hostname1." + property, 0, hostname.Value, false).Err
-	if errDbus != nil {
-		log.Errorf("Failed to set hostname: ", errDbus)
+	r := h.Call("org.freedesktop.hostname1." + hostname.Property, 0, hostname.Value, false).Err
+	if r != nil {
+		log.Errorf("Failed to set hostname: ", r)
 		return errors.New("Failed to set hostname")
 	}
 
@@ -61,44 +74,40 @@ func GetHostname(rw http.ResponseWriter, property string) (error) {
 	}
 	defer conn.Close()
 
-	switch(property) {
-	case "pretty":
-		property = "PrettyHostname"
-		break
-	case "transient":
-		property = "Hostname"
-		break
-	case "static":
-		property = "StaticHostname"
-		break
-	}
 
 	h := conn.Object("org.freedesktop.hostname1", "/org/freedesktop/hostname1")
-	p, perr := h.GetProperty("org.freedesktop.hostname1." + property)
-	if perr != nil {
-		log.Error("Failed to get org.freedesktop.hostname1.%s", property)
-		return perr
+	for k, _ := range HostNameInfo {
+		p, perr := h.GetProperty("org.freedesktop.hostname1." + k)
+		if perr != nil {
+			log.Errorf("Failed to get org.freedesktop.hostname1.%s", k)
+			continue
+		}
+
+		hv, b := p.Value().(string)
+		if !b {
+			log.Error("Received unexpected type as value, expected string got :", property , hv)
+			continue
+		}
+
+		HostNameInfo[k] = hv
 	}
 
-	if p.Value() == nil {
-		log.Error("Empty value received when reading property : ", property)
-		return errors.New("Invalid Value")
-	}
+	if property == "" {
+		b, err := json.Marshal(HostNameInfo)
+		if err != nil {
+			return err
+		}
 
-	v, be := p.Value().(string)
-	if !be {
-		log.Error("Received unexpected type as value, expected string got :", property , v)
-		return errors.New("Invalid value")
-	}
+		rw.Write(b)
+	} else {
+		host := Hostname {Property: property, Value: HostNameInfo[property]}
+		b, err := json.Marshal(host)
+		if err != nil {
+			return err
+		}
 
-	host := Hostname {Property: property, Value: v}
-
-	b, err := json.Marshal(host)
-	if err != nil {
-		return err
+		rw.Write(b)
 	}
-	rw.WriteHeader(http.StatusOK)
-	rw.Write(b)
 
 	return nil
 }
