@@ -6,6 +6,7 @@ import (
 	"api-routerd/cmd/network/ethtool"
 	"api-routerd/cmd/network/networkd"
 	"api-routerd/cmd/network/resolve"
+	"api-routerd/cmd/network/systemdresolved"
 	"encoding/json"
 	"github.com/gorilla/mux"
 	"net/http"
@@ -241,6 +242,7 @@ func NetworkConfigureEthtool(rw http.ResponseWriter, r *http.Request) {
 
 	switch r.Method {
 	case "GET":
+
 		err := ethtool.GetEthTool(rw)
 		if err != nil {
 			http.Error(rw, err.Error(), http.StatusInternalServerError)
@@ -253,6 +255,7 @@ func NetworkConfigureEthtool(rw http.ResponseWriter, r *http.Request) {
 func NetworkConfigureResolv(rw http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
+
 		err := resolv.GetResolvConf(rw)
 		if err != nil {
 			http.Error(rw, err.Error(), http.StatusInternalServerError)
@@ -270,6 +273,35 @@ func NetworkConfigureResolv(rw http.ResponseWriter, r *http.Request) {
 	case "DELETE":
 
 		err := resolv.DeleteResolvConf(rw, r)
+		if err != nil {
+			http.Error(rw, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		break
+	}
+}
+
+func NetworkConfigureSystemdResolved(rw http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case "GET":
+
+		err := systemdresolved.GetResolveConf(rw)
+		if err != nil {
+			http.Error(rw, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		break
+	case "POST":
+
+		err := systemdresolved.UpdateResolveConf(rw, r)
+		if err != nil {
+			http.Error(rw, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		break
+	case "DELETE":
+
+		err := systemdresolved.DeleteResolveConf(rw, r)
 		if err != nil {
 			http.Error(rw, err.Error(), http.StatusInternalServerError)
 			return
@@ -312,4 +344,11 @@ func RegisterRouterNetwork(router *mux.Router) {
 	n.HandleFunc("/resolv/get", NetworkConfigureResolv)
 	n.HandleFunc("/resolv/add", NetworkConfigureResolv)
 	n.HandleFunc("/resolv/delete", NetworkConfigureResolv)
+
+	// systemd-resolved
+	n.HandleFunc("/systemdresolved", NetworkConfigureSystemdResolved)
+	n.HandleFunc("/systemdresolved/get", NetworkConfigureSystemdResolved)
+	n.HandleFunc("/systemdresolved/add", NetworkConfigureSystemdResolved)
+	n.HandleFunc("/systemdresolved/delete", NetworkConfigureSystemdResolved)
+
 }
