@@ -345,7 +345,7 @@ sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request D
 
 ##### Use Case: networkd
 ```
-[sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request POST --data '{"Name":"eth0", "DHCP":"yes", "LLDP":"yes","Addresses": [{"Address":"192.168.1.2", "Label":"test1"},{"Address":"192.168.1.4", "Label":"test3", "Peer":"192.168.1.5"}], "Routes": [{"Gateway":"192.168.1.1",  "GatewayOnlink":"true"},{"Destination":"192.168.1.10","Table":"10"}]}' --header "X-Session-Token: aaaaa" http://localhost:8080/network/networkd/network
+[sus@Zeus ~]$ curl --header "Content-Type: application/json" --request POST --data '{"Match": [{"Name":"eth0"}], "DHCP":"yes", "LLDP":"yes","Addresses": [{"Address":"192.168.1est1"},{"Address":"192.168.1.4", "Label":"test3", "Peer":"192.168.1.5"}], "Routes": [{"Gateway":"192.168.1.1","GatewayOnlink":"true"},{"Destination":"192.168.1.10","Table":"10"}]}' --header "X-Session-Token: aaaaa" http://localhost:8080/network/networkd/network
 
 [sus@Zeus api-router]$ cat /etc/systemd/network/25-eth0.network
 [Match]
@@ -393,8 +393,9 @@ Mode=balance-rr
 
 networkd Link
 ```
-sus@Zeus api-routerd]$  curl --header "Content-Type: application/json" --request POST --data '{"MAC":"00:50:56:c0:00:08", "Name":"test","Description":"testing link", "WakeOnLan":"phy", "TCPSegmentationOffload":"yes"}' --header "X-Session-Token: aaaaa" http://localhost:8080/network/networkd/link
+[sus@Zeus cmd]$ curl --header "Content-Type: application/json" --request POST --data '{"Match": [{"MAC":"00:50:56:c0:00:08"}], "Name":"test","Description":"testing link", "WakeOnLan":"phy", "TCPSegmentationOffload":"yes"}' --header "X-Session-Token: aaaaa" http://localhost:8080/network/networkd/link
 
+sus@Zeus api-routerd]$
 [sus@Zeus network]# pwd
 /etc/systemd/network
 [sus@Zeus network]# cat 00-test.link

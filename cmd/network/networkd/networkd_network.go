@@ -15,66 +15,93 @@ import (
 )
 
 type Address struct {
-	Address string
-	Peer    string
-	Label   string
-	Scope   string
+	Address string `json:Address",omitempty"`
+	Peer    string `json:Peer",omitempty"`
+	Label   string `json:Label",omitempty"`
+	Scope   string `json:Scope",omitempty"`
 }
 
 type Route struct {
-	Gateway         string
-	GatewayOnlink   string
-	Destination     string
-	Source          string
-	PreferredSource string
-	Table           string
+	Gateway         string `json:Gateway",omitempty"`
+	GatewayOnlink   string `json:GatewayOnlink",omitempty"`
+	Destination     string `json:Destination",omitempty"`
+	Source          string `json:Source",omitempty"`
+	PreferredSource string `json:PreferredSource",omitempty"`
+	Table           string `json:Table",omitempty"`
 }
 
 type Network struct {
-	MAC    string
-	Name   string
-	Driver string
+	ConfFile            string     `json:ConfFile",omitempty"`
 
-	Addresses interface{}
-	Routes    interface{}
+	Match               interface{} `json:Match",omitempty"`
+	Addresses           interface{} `json:Addresses",omitempty"`
+	Routes              interface{} `json:Routes",omitempty"`
 
-	Gateway             string
-	DHCP                string
-	DNS                 string
-	Domains             string
-	NTP                 string
-	IPv6AcceptRA        string
-	LinkLocalAddressing string
-	LLDP                string
-	EmitLLDP            string
+	Gateway             string `json:Gateway",omitempty"`
+	DHCP                string `json:DHCP",omitempty"`
+	DNS                 string `json:DNS",omitempty"`
+	Domains             string `json:Domains",omitempty"`
+	NTP                 string `json:NTP",omitempty"`
+	IPv6AcceptRA        string `json:IPv6AcceptRA",omitempty"`
+	LinkLocalAddressing string `json:LinkLocalAddressing",omitempty"`
+	LLDP                string `json:LLDP",omitempty"`
+	EmitLLDP            string `json:EmitLLDP",omitempty"`
 
-	Bridge  string
-	Bond    string
-	VRF     string
-	VLAN    string
-	MACVLAN string
-	VXLAN   string
-	Tunnel  string
+	Bridge              string`json:Bridge",omitempty"`
+	Bond                string`json:Bond",omitempty"`
+	VRF                 string`json:VRF",omitempty"`
+	VLAN                string`json:VLAN",omitempty"`
+	MACVLAN             string`json:MACVLAN",omitempty"`
+	VXLAN               string`json:VXLAN",omitempty"`
+	Tunnel              string`json:Tunnel",omitempty"`
 }
 
 func (network *Network) CreateNetworkMatchSectionConfig() string {
 	conf := "[Match]\n"
 
-	if network.MAC != "" {
-		mac := fmt.Sprintf("MACAddress=%s\n", network.MAC)
-		conf += mac
+	switch v := network.Match.(type) {
+	case []interface{}:
+		for _, b := range v {
+			var mac string
+			var driver string
+			var name string
+
+			if b.(map[string]interface{})["MAC"] != nil {
+				mac = strings.TrimSpace(b.(map[string]interface{})["MAC"].(string))
+			}
+
+			if b.(map[string]interface{})["Driver"] != nil {
+				driver = strings.TrimSpace(b.(map[string]interface{})["Driver"].(string))
+			}
+
+			if b.(map[string]interface{})["Name"] != nil {
+				name = strings.TrimSpace(b.(map[string]interface{})["Name"].(string))
+			}
+
+
+			if mac != "" {
+				mac := fmt.Sprintf("MACAddress=%s\n", mac)
+				conf += mac
+			}
+
+			if driver != "" {
+				driver := fmt.Sprintf("Driver=%s\n", driver)
+				conf += driver
+			}
+
+			if name != "" {
+				if network.ConfFile == "" {
+					network.ConfFile = name
+				}
+
+				name := fmt.Sprintf("Name=%s\n", name)
+				conf += name
+			}
+		}
+		break
 	}
 
-	if network.Driver != "" {
-		driver := fmt.Sprintf("Driver=%s\n", network.Driver)
-		conf += driver
-	}
-
-	if network.Name != "" {
-		name := fmt.Sprintf("Name=%s\n", network.Name)
-		conf += name
-	}
-
+	fmt.Println(conf)
 	return conf
 }
 
@@ -214,11 +241,13 @@ func (network *Network) CreateAddressSectionConfig() string {
 					log.Error("Failed to parse address: ", address)
 				}
 
-				ip = net.ParseIP(peer)
-				if ip != nil {
-					addressConf += "Peer=" + peer + "\n"
-				} else {
-					log.Error("Failed to parse peer address: ", peer)
+				if len(peer) != 0 {
+					ip = net.ParseIP(peer)
+					if ip != nil {
+						addressConf += "Peer=" + peer + "\n"
+					} else {
+						log.Error("Failed to parse peer address: ", peer)
+					}
 				}
 
 				if len(scope) != 0 {
@@ -385,60 +414,8 @@ func NetworkdParseJsonFromHttpReq(req *http.Request) error {
 
 	json.Unmarshal([]byte(body), &configs)
 
-	var network Network
-	for key, value := range configs {
-		switch key {
-		case "MAC":
-			network.MAC = value.(string)
-			break
-		case "Name":
-			network.Name = value.(string)
-			break
-		case "Driver":
-			network.Driver = value.(string)
-			break
-		case "Addresses":
-			network.Addresses = value
-		case "Routes":
-			network.Routes = value
-		case "Gateway":
-			network.Driver = value.(string)
-			break
-		case "DHCP":
-			network.DHCP = value.(string)
-			break
-		case "Domains":
-			network.Domains = value.(string)
-			break
-		case "DNS":
-			network.DNS = value.(string)
-			break
-		case "NTP":
-			network.NTP = value.(string)
-			break
-		case "IPv6AcceptRA":
-			network.IPv6AcceptRA = value.(string)
-			break
-		case "LinkLocalAddressing":
-			network.LinkLocalAddressing = value.(string)
-			break
-		case "LLDP":
-			network.LLDP = value.(string)
-			break
-		case "EmitLLDP":
-			network.EmitLLDP = value.(string)
-			break
-		case "Bridge":
-			network.Bridge = value.(string)
-			break
-		case "Bond":
-			network.Bond = value.(string)
-			break
-		case "VLAN":
-			network.VLAN = value.(string)
-			break
-		}
-	}
+	network := new(Network)
+	json.Unmarshal([]byte(body), &network)
 
 	matchConfig := network.CreateNetworkMatchSectionConfig()
 	networkConfig := network.CreateNetworkSectionConfig()
@@ -449,7 +426,7 @@ func NetworkdParseJsonFromHttpReq(req *http.Request) error {
 
 	fmt.Println(config)
 
-	unitName := fmt.Sprintf("25-%s.network", network.Name)
+	unitName := fmt.Sprintf("25-%s.network", network.ConfFile)
 	unitPath := filepath.Join(NetworkdUnitPath, unitName)
 
 	return share.WriteFullFile(unitPath, config)

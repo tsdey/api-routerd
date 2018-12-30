@@ -10,54 +10,82 @@ import (
 	"io/ioutil"
 	"net/http"
 	"path/filepath"
+	"strings"
 )
 
 type Link struct {
-	MAC                        string `json:"MAC"`
-	MatchName                  string `json:"MatchName"`
-	Driver                     string `json:"Driver"`
+	ConfFile                   string      `json:ConfFile",omitempty"`
+	Match                      interface{} `json:Match",omitempty"`
 
-	Description                string `json:"Description"`
-	Alias                      string `json:"Alias"`
-	MACAddressPolicy           string `json:"MACAddressPolicy"`
-	MACAddress                 string `json:"MACAddress"`
-	NamePolicy                 string `json:"NamePolicy"`
-	Name                       string `json:"Name"`
-	MTUBytes                   string `json:"MTUBytes"`
-	BitsPerSecond              string `json:"BitsPerSecond"`
-	Duplex                     string `json:"Duplex"`
-	AutoNegotiation            string `json:"AutoNegotiation"`
-	WakeOnLan                  string `json:"WakeOnLan"`
-	Port                       string `json:"Port"`
-	TCPSegmentationOffload     string `json:"TCPSegmentationOffload"`
-	TCP6SegmentationOffload    string `json:"TCP6SegmentationOffload"`
-	GenericSegmentationOffload string `json:"GenericSegmentationOffload"`
-	GenericReceiveOffload      string `json:"GenericReceiveOffload"`
-	LargeReceiveOffload        string `json:"LargeReceiveOffload"`
-	RxChannels                 string `json:"RxChannels"`
-	TxChannels                 string `json:"TxChannels"`
-	OtherChannels              string `json:"OtherChannels"`
-	CombinedChannels           string `json:"CombinedChannels"`
+	Description                string      `json:"Description,omitempty"`
+	Alias                      string      `json:"Alias,omitempty"`
+	MACAddressPolicy           string      `json:"MACAddressPolicy,omitempty"`
+	MACAddress                 string      `json:"MACAddress,omitempty"`
+	NamePolicy                 string      `json:"NamePolicy,omitempty"`
+	Name                       string      `json:"Name,omitempty"`
+	MTUBytes                   string      `json:"MTUBytes,omitempty"`
+	BitsPerSecond              string      `json:"BitsPerSecond,omitempty"`
+	Duplex                     string      `json:"Duplex,omitempty"`
+	AutoNegotiation            string      `json:"AutoNegotiation,omitempty"`
+	WakeOnLan                  string      `json:"WakeOnLan,omitempty"`
+	Port                       string      `json:"Port,omitempty"`
+	TCPSegmentationOffload     string      `json:"TCPSegmentationOffload,omitempty"`
+	TCP6SegmentationOffload    string      `json:"TCP6SegmentationOffload,omitempty"`
+	GenericSegmentationOffload string      `json:"GenericSegmentationOffload,omitempty"`
+	GenericReceiveOffload      string      `json:"GenericReceiveOffload,omitempty"`
+	LargeReceiveOffload        string      `json:"LargeReceiveOffload,omitempty"`
+	RxChannels                 string      `json:"RxChannels,omitempty"`
+	TxChannels                 string      `json:"TxChannels,omitempty"`
+	OtherChannels              string      `json:"OtherChannels,omitempty"`
+	CombinedChannels           string      `json:"CombinedChannels,omitempty"`
 }
 
 func (link *Link) CreateLinkMatchSectionConfig() string {
 	conf := "[Match]\n"
 
-	if link.MAC != "" {
-		mac := fmt.Sprintf("MACAddress=%s\n", link.MAC)
-		conf += mac
+	switch v := link.Match.(type) {
+	case []interface{}:
+		for _, b := range v {
+			var mac string
+			var driver string
+			var name string
+
+			if b.(map[string]interface{})["MAC"] != nil {
+				mac = strings.TrimSpace(b.(map[string]interface{})["MAC"].(string))
+			}
+
+			if b.(map[string]interface{})["Driver"] != nil {
+				driver = strings.TrimSpace(b.(map[string]interface{})["Driver"].(string))
+			}
+
+			if b.(map[string]interface{})["Name"] != nil {
+				name = strings.TrimSpace(b.(map[string]interface{})["Name"].(string))
+			}
+
+
+			if mac != "" {
+				mac := fmt.Sprintf("MACAddress=%s\n", mac)
+				conf += mac
+			}
+
+			if driver != "" {
+				driver := fmt.Sprintf("Driver=%s\n", driver)
+				conf += driver
+			}
+
+			if name != "" {
+				if link.ConfFile == "" {
+					link.ConfFile = name
+				}
+
+				name := fmt.Sprintf("Name=%s\n", name)
+				conf += name
+			}
+		}
+		break
 	}
 
-	if link.Driver != "" {
-		driver := fmt.Sprintf("Driver=%s\n", link.Driver)
-		conf += driver
-	}
-
-	if link.MatchName != "" {
-		name := fmt.Sprintf("Name=%s\n", link.MatchName)
-		conf += name
-	}
-
+	fmt.Println(conf)
 	return conf
 }
 

@@ -11,6 +11,12 @@ const (
 	NetworkdUnitPath = "/etc/systemd/network"
 )
 
+type Match struct {
+	MAC    string `json:MAC",omitempty"`
+	Driver string `json:Driver",omitempty"`
+	Name   string `json:Name",omitempty"`
+}
+
 func InitNetworkd() (err error) {
 	r := share.CreateDirectory(NetworkdUnitPath, 0777)
 	if (r != nil) {
