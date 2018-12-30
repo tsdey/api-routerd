@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	NetworkdUnitPath = "/var/run/systemd/network"
+	NetworkdUnitPath = "/etc/systemd/network"
 )
 
 func InitNetworkd() (err error) {

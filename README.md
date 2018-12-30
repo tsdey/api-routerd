@@ -347,7 +347,7 @@ sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request D
 ```
 [sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request POST --data '{"Name":"eth0", "DHCP":"yes", "LLDP":"yes","Addresses": [{"Address":"192.168.1.2", "Label":"test1"},{"Address":"192.168.1.4", "Label":"test3", "Peer":"192.168.1.5"}], "Routes": [{"Gateway":"192.168.1.1",  "GatewayOnlink":"true"},{"Destination":"192.168.1.10","Table":"10"}]}' --header "X-Session-Token: aaaaa" http://localhost:8080/network/networkd/network
 
-[sus@Zeus api-router]$ cat /var/run/systemd/network/25-eth0.network
+[sus@Zeus api-router]$ cat /etc/systemd/network/25-eth0.network
 [Match]
 Name=eth0
 
@@ -380,7 +380,7 @@ networkd NetDev
 ```
 sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request POST --data '{"Name":"bond-test", "Description":"testing bond", "Kind":"bond", "Mode":"balance-rr"}' --header "X-Session-Token: aaaaa" http://localhost:8080/network/networkd/netdev
 
-[sus@Zeus log]# cat /var/run/systemd/network/25-bond-test.netdev
+[sus@Zeus log]# cat /etc/systemd/network/25-bond-test.netdev
 [NetDev]
 Name=bond-test
 Description=testing bond
@@ -391,11 +391,28 @@ Mode=balance-rr
 
 ```
 
+networkd Link
+```
+sus@Zeus api-routerd]$  curl --header "Content-Type: application/json" --request POST --data '{"MAC":"00:50:56:c0:00:08", "Name":"test","Description":"testing link", "WakeOnLan":"phy", "TCPSegmentationOffload":"yes"}' --header "X-Session-Token: aaaaa" http://localhost:8080/network/networkd/link
+
+[sus@Zeus network]# pwd
+/etc/systemd/network
+[sus@Zeus network]# cat 00-test.link
+[Match]
+MACAddress=00:50:56:c0:00:08
+
+[Link]
+Description=testing link
+Name=test
+WakeOnLan=phy
+TCPSegmentationOffload=yes
+```
+
 Bridge
 ```
 
 [sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request POST --data '{"Name":"bridge-test", "Description":"testing bridge", "Kind":"bridge", "HelloTimeSec":"30"}' --header "X-Session-Token: aaaaa" http://localhost:8080/network/networkd/netdev
-[sus@Zeus api-router]$ cat /var/run/systemd/network/25-bridge-test.netdev
+[sus@Zeus api-router]$ cat /etc/systemd/network/25-bridge-test.netdev
 [NetDev]
 Name=bridge-test
 Description=testing bridge
@@ -405,14 +422,12 @@ Kind=bridge
 HelloTimeSec =30
 
 [sus@Zeus api-router]$ curl --header "Content-Type: application/json" --request POST --data '{"Name":"eth0", "Description":"etho bridge enslave", "Bridge":"bridge-test"}' http://localhost:8080/network/networkd/network
-[sus@Zeus api-router]$ cat /var/run/systemd/network/25-eth0.network
+[sus@Zeus api-router]$ cat /etc/systemd/network/25-eth0.network
 [Match]
 Name=eth0
 
 [Network]
 Bridge=bridge-test
-
-
 ```
 
 ##### Hostname

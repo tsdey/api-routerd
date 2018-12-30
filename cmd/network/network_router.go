@@ -233,6 +233,14 @@ func NetworkdConfigureNetDev(rw http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func NetworkdConfigureLink(rw http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case "POST":
+		networkd.ConfigureLinkFile(rw, r)
+		break
+	}
+}
+
 func NetworkConfigureEthtool(rw http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	link := vars["link"]
@@ -335,6 +343,7 @@ func RegisterRouterNetwork(router *mux.Router) {
 	networkd.InitNetworkd()
 	n.HandleFunc("/networkd/network", NetworkdConfigureNetwork)
 	n.HandleFunc("/networkd/netdev",  NetworkdConfigureNetDev)
+	n.HandleFunc("/networkd/link",    NetworkdConfigureLink)
 
 	// ethtool
 	n.HandleFunc("/ethtool/{link}/{command}", NetworkConfigureEthtool)

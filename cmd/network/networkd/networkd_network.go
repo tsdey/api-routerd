@@ -57,7 +57,7 @@ type Network struct {
 	Tunnel  string
 }
 
-func (network *Network) CreateMatchSectionConfig() string {
+func (network *Network) CreateNetworkMatchSectionConfig() string {
 	conf := "[Match]\n"
 
 	if network.MAC != "" {
@@ -440,7 +440,7 @@ func NetworkdParseJsonFromHttpReq(req *http.Request) error {
 		}
 	}
 
-	matchConfig := network.CreateMatchSectionConfig()
+	matchConfig := network.CreateNetworkMatchSectionConfig()
 	networkConfig := network.CreateNetworkSectionConfig()
 	addressConfig := network.CreateAddressSectionConfig()
 	routeConfig := network.CreateRouteSectionConfig()
