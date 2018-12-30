@@ -79,7 +79,9 @@ func (netdev *NetDev) CreateNetDevSectionConfig() string {
 		conf += "MTUBytes=" + strings.TrimSpace(netdev.MTUBytes) + "\n"
 	}
 
-	if netdev.Kind == "bond" {
+	switch netdev.Kind {
+	case "bond":
+
 		conf += "\n[Bond]\n"
 
 		if netdev.Mode != "" {
@@ -89,17 +91,21 @@ func (netdev *NetDev) CreateNetDevSectionConfig() string {
 		if netdev.TransmitHashPolicy != "" {
 			conf += "TransmitHashPolicy=" + strings.TrimSpace(netdev.TransmitHashPolicy) + "\n"
 		}
-	}
 
-	if netdev.Kind == "vlan" {
+		break
+
+	case "vlan":
+
 		conf += "\n[VLAN]\n"
 
 		if netdev.VlanId != "" {
 			conf += "Id=" + strings.TrimSpace(netdev.VlanId) + "\n"
 		}
-	}
 
-	if netdev.Kind == "bridge" {
+		break
+
+	case "bridge":
+
 		conf += "\n[Bridge]\n"
 
 		if netdev.HelloTimeSec != "" {
@@ -113,9 +119,10 @@ func (netdev *NetDev) CreateNetDevSectionConfig() string {
 		if netdev.AgeingTimeSec != "" {
 			conf += "AgeingTimeSec=" + strings.TrimSpace(netdev.AgeingTimeSec) + "\n"
 		}
-	}
 
-	if netdev.Kind == "tunnel" {
+		break
+	case "tunnel":
+
 		conf += "\n[Tunnel]\n"
 
 		if netdev.Local != "" {
@@ -149,9 +156,10 @@ func (netdev *NetDev) CreateNetDevSectionConfig() string {
 		if netdev.Independent != "" {
 			conf += "Independent=" + strings.TrimSpace(netdev.Independent) + "\n"
 		}
-	}
 
-	if netdev.Kind == "veth" {
+		break
+	case "veth":
+
 		conf += "\n[Peer]\n"
 
 		if netdev.Peer != "" {
@@ -161,9 +169,38 @@ func (netdev *NetDev) CreateNetDevSectionConfig() string {
 		if netdev.PeerMACAddress != "" {
 			conf += "MACAddress=" + strings.TrimSpace(netdev.PeerMACAddress) + "\n"
 		}
-	}
 
-	if netdev.Kind == "vxlan" {
+		break
+
+	case "macvlan":
+
+		conf += "\n[MACVLAN]\n"
+
+		if netdev.Peer != "" {
+			conf += "Mode=" + strings.TrimSpace(netdev.Mode) + "\n"
+		}
+
+		break
+	case "macvtap":
+
+		conf += "\n[MACVTAP\n"
+
+		if netdev.Peer != "" {
+			conf += "Mode=" + strings.TrimSpace(netdev.Mode) + "\n"
+		}
+
+		break
+
+	case "ipvlan":
+
+		conf += "\n[IPVLAN]\n"
+
+		if netdev.Peer != "" {
+			conf += "Mode=" + strings.TrimSpace(netdev.Mode) + "\n"
+		}
+
+	case "vxlan":
+
 		conf += "\n[VXLAN]\n"
 
 		if netdev.Id != "" {
@@ -202,7 +239,6 @@ func (netdev *NetDev) CreateNetDevSectionConfig() string {
 			conf += "FlowLabel=" + strings.TrimSpace(netdev.FlowLabel) + "\n"
 		}
 	}
-
 
 	return conf
 }
