@@ -1,6 +1,6 @@
 package share
 
-import(
+import (
 	"errors"
 )
 

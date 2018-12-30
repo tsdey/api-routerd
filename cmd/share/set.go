@@ -3,18 +3,18 @@
 package share
 
 type Set struct {
-	m map[string]string
+	m map[string]bool
 }
 
 func NewSet() *Set {
 	s := &Set{}
-	s.m = make(map[string]string)
+	s.m = make(map[string]bool)
 
 	return s
 }
 
 func (s *Set) Add(value string) {
-	s.m[value] = value
+	s.m[value] = true
 }
 
 func (s *Set) Remove(value string) {
