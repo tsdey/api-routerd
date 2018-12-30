@@ -428,6 +428,22 @@ Name=eth0
 
 [Network]
 Bridge=bridge-test
+
+
+Tunnel
+[sus@Zeus api-routerd]$ curl --header "Content-Type: application/json" --request POST --data '{"Name":"tunnel-test", "Description":"testing tunnel", "Kind":"tunnel", "Local":"192.168.1.2", "Remote":"192.168.1.2", "Independent":"true"}' --header "X-Session-Token: aaaaa" http://localhost:8080/network/networkd/netdev
+[sus@Zeus api-routerd]$ cat /etc/systemd/network/
+00-.link               00-test.link           25-bond-test.netdev    25-tunnel-test.netdev
+[sus@Zeus api-routerd]$ cat /etc/systemd/network/25-tunnel-test.netdev
+[NetDev]
+Name=tunnel-test
+Description=testing tunnel
+Kind=tunnel
+
+[Tunnel]
+Local=192.168.1.2
+Remote=192.168.1.2
+Independent=true
 ```
 
 ##### Hostname

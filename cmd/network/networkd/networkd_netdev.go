@@ -15,23 +15,33 @@ import (
 
 // NetDev
 type NetDev struct {
-	Description string
-	MACAddress  string
-	MTUBytes    string
-	Name        string
-	Kind        string
+	Description         string `json:"Description"`
+	MACAddress          string `json:"MACAddress"`
+	MTUBytes            string `json:"MTUBytes"`
+	Name                string `json:"Name"`
+	Kind                string `json:"Kind"`
 
 	// Bond
-	Mode               string
-	TransmitHashPolicy string
+	Mode                string `json:"Mode"`
+	TransmitHashPolicy  string `json:"TransmitHashPolicy"`
 
 	// Vlan
-	VlanId string
+	VlanId              string `json:"VlanId"`
 
 	//Bridge
-	HelloTimeSec    string
-	ForwardDelaySec string
-	AgeingTimeSec   string
+	HelloTimeSec        string `json:"HelloTimeSec"`
+	ForwardDelaySec     string `json:"ForwardDelaySec"`
+	AgeingTimeSec       string `json:"AgeingTimeSec"`
+
+	//Tunnel
+	Local               string `json:"Local"`
+	Remote              string `json:"Remote"`
+	TTL                 string `json:"TTL"`
+	DiscoverPathMTU     string `json:"DiscoverPathMTU"`
+	IPv6FlowLabel       string `json:"IPv6FlowLabel"`
+	EncapsulationLimit  string `json:"EncapsulationLimit"`
+	Key                 string `json:"Key"`
+	Independent         string `json:"Independent"`
 }
 
 func (netdev *NetDev) CreateNetDevSectionConfig() string {
@@ -93,58 +103,54 @@ func (netdev *NetDev) CreateNetDevSectionConfig() string {
 		}
 	}
 
+	if netdev.Kind == "tunnel" {
+		conf += "\n[Tunnel]\n"
+
+		if netdev.Local != "" {
+			conf += "Local=" + strings.TrimSpace(netdev.Local) + "\n"
+		}
+
+		if netdev.Remote != "" {
+			conf += "Remote=" + strings.TrimSpace(netdev.Remote) + "\n"
+		}
+
+		if netdev.TTL != "" {
+			conf += "TTL=" + strings.TrimSpace(netdev.TTL) + "\n"
+		}
+
+		if netdev.DiscoverPathMTU != "" {
+			conf += "DiscoverPathMTU=" + strings.TrimSpace(netdev.DiscoverPathMTU) + "\n"
+		}
+
+		if netdev.IPv6FlowLabel != "" {
+			conf += "IPv6FlowLabel=" + strings.TrimSpace(netdev.IPv6FlowLabel) + "\n"
+		}
+
+		if netdev.EncapsulationLimit != "" {
+			conf += "EncapsulationLimit=" + strings.TrimSpace(netdev.EncapsulationLimit) + "\n"
+		}
+
+		if netdev.Key != "" {
+			conf += "Key=" + strings.TrimSpace(netdev.Key) + "\n"
+		}
+
+		if netdev.Independent != "" {
+			conf += "Independent=" + strings.TrimSpace(netdev.Independent) + "\n"
+		}
+	}
+
 	return conf
 }
 
 func NetdevdParseJsonFromHttpReq(req *http.Request) error {
-	var configs map[string]interface{}
-
 	body, err := ioutil.ReadAll(req.Body)
 	if err != nil {
 		log.Error("Failed to parse HTTP request: ", err)
 		return err
 	}
 
-	json.Unmarshal([]byte(body), &configs)
-
-	var netdev NetDev
-	for key, value := range configs {
-		switch key {
-		case "MACAddress":
-			netdev.MACAddress = value.(string)
-			break
-		case "Name":
-			netdev.Name = value.(string)
-			break
-		case "MTUBytes":
-			netdev.MTUBytes = value.(string)
-			break
-		case "Kind":
-			netdev.Kind = value.(string)
-			break
-		case "Description":
-			netdev.Description = value.(string)
-			break
-		case "Mode":
-			netdev.Mode = value.(string)
-			break
-		case "TransmitHashPolicy":
-			netdev.TransmitHashPolicy = value.(string)
-			break
-		case "VlanId":
-			netdev.VlanId = value.(string)
-			break
-		case "HelloTimeSec":
-			netdev.HelloTimeSec = value.(string)
-			break
-		case "ForwardDelaySec":
-			netdev.ForwardDelaySec = value.(string)
-			break
-		case "AgeingTimeSec":
-			netdev.AgeingTimeSec = value.(string)
-			break
-		}
-	}
+	netdev := new(NetDev)
+	json.Unmarshal([]byte(body), &netdev)
 
 	netdevConfig := netdev.CreateNetDevSectionConfig()
 	config := []string{netdevConfig}
