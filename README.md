@@ -533,3 +533,19 @@ Delete
 sus@Zeus cmd]$ curl --header "Content-Type: application/json" --request DELETE --data '{"servers":["192.168.225.3","192.168.225.2"]}' --header "X-Session-Token: aaaaa" http://localhost:8080/network/resolv/delete
 
 ```
+
+
+Configure systemd-resolved
+```
+To get
+http://localhost:8080/network/systemdresolved
+
+Add
+[sus@Zeus ~]$  curl --header "Content-Type: application/json" --request POST --data '{"dns":["192.168.1.131","192.168.1.132"], "fallback_dns":["hello","hello2"]}' --header "X-Session-Token: aaaaa" http://localhost:8080/network/systemdresolved/add
+{"dns":["10.68.5.26 10.64.63.6 192.168.225.1","192.168.1.131","192.168.1.132"],"fallback_dns":["8.8.8.8 8.8.4.4 2001:4860:4860::8888 2001:4860:4860::8844","hello","hello2"]}
+
+Delete
+[sus@Zeus ~]$  curl --header "Content-Type: application/json" --request DELETE --data '{"dns":["192.168.1.131"]}' --header "X-Session-Token: aaaaa" http://localhost:8080/network/systemdresolved/delete
+{"dns":["10.68.5.26","10.64.63.6","192.168.225.1"],"fallback_dns":["8.8.8.8","8.8.4.4","2001:4860:4860::8888","2001:4860:4860::8844"]}
+
+```
