@@ -428,9 +428,10 @@ Name=eth0
 
 [Network]
 Bridge=bridge-test
-
+```
 
 Tunnel
+```
 [sus@Zeus api-routerd]$ curl --header "Content-Type: application/json" --request POST --data '{"Name":"tunnel-test", "Description":"testing tunnel", "Kind":"tunnel", "Local":"192.168.1.2", "Remote":"192.168.1.2", "Independent":"true"}' --header "X-Session-Token: aaaaa" http://localhost:8080/network/networkd/netdev
 [sus@Zeus api-routerd]$ cat /etc/systemd/network/
 00-.link               00-test.link           25-bond-test.netdev    25-tunnel-test.netdev
@@ -444,6 +445,34 @@ Kind=tunnel
 Local=192.168.1.2
 Remote=192.168.1.2
 Independent=true
+```
+Vxlan
+```
+sus@Zeus ~]$ curl --header "Content-Type: application/json" --request POST --data '{"Name":"vxlan-test", "Description":"testing vxlan", "Kind":"vxlan", "Local":"192.168.1.2", "Remote":"192.168.1.2", "Id":"21"}' --header "X-Session-Token: aaaaa" http://localhost:8080/network/networkd/netdev
+
+[root@Zeus network]# cat 25-vxlan-test.netdev
+[NetDev]
+Name=vxlan-test
+Description=testing vxlan
+Kind=vxlan
+
+[VXLAN]
+Id=21
+Local=192.168.1.2
+Remote=192.168.1.2
+```
+
+Veth
+```
+[sus@Zeus ~]$ curl --header "Content-Type: application/json" --request POST --data '{"Name":"veth-test", "Description":"testing veth", "Kind":"veth", "Peer":"test"}' --header "X-Session-Token: aaaaa" http://localhost:8080/network/networkd/netdev
+[root@Zeus network]# cat 25-veth-test.netdev
+[NetDev]
+Name=veth-test
+Description=testing veth
+Kind=veth
+
+[Peer]
+Name=test
 ```
 
 ##### Hostname

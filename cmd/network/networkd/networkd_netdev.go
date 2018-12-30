@@ -42,6 +42,18 @@ type NetDev struct {
 	EncapsulationLimit  string `json:"EncapsulationLimit"`
 	Key                 string `json:"Key"`
 	Independent         string `json:"Independent"`
+
+	//VxLan
+	Id                  string `json:"Id"`
+	TOS                 string `json:"TOS"`
+	MacLearning         string `json:"MacLearning"`
+	DestinationPort     string `json:"DestinationPort"`
+	PortRange           string `json:"PortRange"`
+	FlowLabel           string `json:"FlowLabel"`
+
+	//Veth
+	Peer               string `json:"Peer"`
+	PeerMACAddress     string `json:"PeerMACAddress"`
 }
 
 func (netdev *NetDev) CreateNetDevSectionConfig() string {
@@ -138,6 +150,59 @@ func (netdev *NetDev) CreateNetDevSectionConfig() string {
 			conf += "Independent=" + strings.TrimSpace(netdev.Independent) + "\n"
 		}
 	}
+
+	if netdev.Kind == "veth" {
+		conf += "\n[Peer]\n"
+
+		if netdev.Peer != "" {
+			conf += "Name=" + strings.TrimSpace(netdev.Peer) + "\n"
+		}
+
+		if netdev.PeerMACAddress != "" {
+			conf += "MACAddress=" + strings.TrimSpace(netdev.PeerMACAddress) + "\n"
+		}
+	}
+
+	if netdev.Kind == "vxlan" {
+		conf += "\n[VXLAN]\n"
+
+		if netdev.Id != "" {
+			conf += "Id=" + strings.TrimSpace(netdev.Id) + "\n"
+		}
+
+		if netdev.Local != "" {
+			conf += "Local=" + strings.TrimSpace(netdev.Local) + "\n"
+		}
+
+		if netdev.Remote != "" {
+			conf += "Remote=" + strings.TrimSpace(netdev.Remote) + "\n"
+		}
+
+		if netdev.TOS != "" {
+			conf += "TOS=" + strings.TrimSpace(netdev.TOS) + "\n"
+		}
+
+		if netdev.TTL != "" {
+			conf += "TTL=" + strings.TrimSpace(netdev.TTL) + "\n"
+		}
+
+		if netdev.MacLearning != "" {
+			conf += "MacLearning=" + strings.TrimSpace(netdev.MacLearning) + "\n"
+		}
+
+		if netdev.DestinationPort != "" {
+			conf += "DestinationPort=" + strings.TrimSpace(netdev.DestinationPort) + "\n"
+		}
+
+		if netdev.PortRange != "" {
+			conf += "PortRange=" + strings.TrimSpace(netdev.PortRange) + "\n"
+		}
+
+		if netdev.FlowLabel != "" {
+			conf += "FlowLabel=" + strings.TrimSpace(netdev.FlowLabel) + "\n"
+		}
+	}
+
 
 	return conf
 }
