@@ -13,19 +13,21 @@ import (
 	"path"
 )
 
-// Version app version
-const Version = "0.1"
-const ConfPath = "/etc/api-routerd"
-const ConfFile = "api-routerd.conf"
-const TlsCert = "tls/server.crt"
-const TlsKey = "tls/server.key"
+// App Version
+const (
+	Version  = "0.1"
+	ConfPath = "/etc/api-routerd"
+	ConfFile = "api-routerd.conf"
+	TlsCert  = "tls/server.crt"
+	TlsKey   = "tls/server.key"
+)
 
 var ipFlag string
 var portFlag string
 
 func init() {
 	const (
-		defaultIP  = ""
+		defaultIP    = ""
 		defaultPort  = "8080"
 	)
 
