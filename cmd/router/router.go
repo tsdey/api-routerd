@@ -3,7 +3,7 @@
 package router
 
 import (
-	"api-routerd/cmd/hostname"
+	"api-routerd/cmd/system/hostname"
 	"api-routerd/cmd/network"
 	"api-routerd/cmd/proc"
 	"api-routerd/cmd/share"
