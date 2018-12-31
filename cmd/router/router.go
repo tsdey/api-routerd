@@ -9,6 +9,7 @@ import (
 	"api-routerd/cmd/share"
 	"api-routerd/cmd/systemd"
 	"api-routerd/cmd/system"
+	"api-routerd/cmd/config"
 	"crypto/tls"
 	"errors"
 	"github.com/gorilla/mux"
@@ -25,6 +26,7 @@ func StartRouter(ip string, port string, tlsCertPath string, tlsKeyPath string) 
 	proc.RegisterRouterProc(router)
 	systemd.RegisterRouterSystemd(router)
 	system.RegisterRouterSystem(router)
+	config.RegisterRouterConfig(router)
 
 	// Authenticate users
 	amw, r := InitAuthMiddleware()
