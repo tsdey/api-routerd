@@ -194,6 +194,22 @@ Send a signal to the service
 ```
 $curl --header "Content-Type: application/json" --request POST --data '{"action":"kill","unit":"sshd.service", "value":"9"}' --header "X-Session-Token: aaaaa" http://localhost:8080/service/systemd
 ```
+
+
+Manipulate system.conf /etc/systemd/system.conf
+```
+Get
+[sus@Zeus ~]$ curl --header "Content-Type: application/json" --request POST --data '{ "DefaultLimitNOFILE":"1024"}' --header "X-Session-Token: aaaaa" http://localhost:8080/service/systemd/conf
+{"CPUAffinity":"","CapabilityBoundingSe":"","CrashChangeVT":"","CrashReboot":"","CrashShell":"","CtrlAltDelBurstAction":"","DefaultBlockIOAccounting":"","DefaultCPUAccounting":"","DefaultEnvironment":"","DefaultIOAccounting":"","DefaultIPAccounting":"","DefaultLimitAS":"","DefaultLimitCORE":"","DefaultLimitCPU":"","DefaultLimitDATA":"","DefaultLimitFSIZE":"","DefaultLimitLOCKS":"","DefaultLimitMEMLOCK":"","DefaultLimitMSGQUEUE":"","DefaultLimitNICE":"","DefaultLimitNOFILE":"1024","DefaultLimitNPROC":"","DefaultLimitRSS":"","DefaultLimitRTPRIO":"","DefaultLimitRTTIME":"","DefaultLimitSIGPENDING":"","DefaultLimitSTACK":"","DefaultMemoryAccounting":"","DefaultRestartSec":"","DefaultStandardError":"","DefaultStandardOutput":"","DefaultStartLimitBurst":"","DefaultStartLimitIntervalSec":"","DefaultTasksAccounting":"","DefaultTasksMax":"","DefaultTimeoutStartSec":"","DefaultTimeoutStopSec":"","DefaultTimerAccuracySec":"","DumpCore":"","IPAddressAllow":"","IPAddressDeny":"","JoinControllers":"","LogColor":"","LogLevel":"","LogLocation":"","LogTarget":"","RuntimeWatchdogSec":"","ShowStatus":"","ShutdownWatchdogSec":"","SystemCallArchitectures":"","TimerSlackNSec":""}
+
+Set
+[sus@Zeus ~]$ curl --header "Content-Type: application/json" --request POST --data '{ "DefaultLimitNOFILE":"1024"}' --header "X-Session-Token: aaaaa" http://localhost:8080/service/systemd/conf/update
+
+Reset
+[sus@Zeus ~]$ curl --header "Content-Type: application/json" --request POST --data '{ "DefaultLimitNOFILE":""}' --header "X-Session-Token: aaaaa" http://localhost:8080/service/systemd/conf/update
+
+```
+
 Use case:
 * command: "GET"
   * netdev

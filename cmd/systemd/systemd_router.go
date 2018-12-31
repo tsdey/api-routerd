@@ -63,6 +63,24 @@ func RouterGetSystemdArchitecture(rw http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func RouterConfigureSystemdConf(rw http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case "GET":
+		err := GetSystemConf(rw)
+		if err != nil {
+			http.Error(rw, err.Error(), http.StatusInternalServerError)
+		}
+		break
+
+	case "POST":
+		err := UpdateSystemConf(rw, r)
+		if err != nil {
+			http.Error(rw, err.Error(), http.StatusInternalServerError)
+		}
+		break
+	}
+}
+
 func RouterConfigureUnit(rw http.ResponseWriter, r *http.Request) {
 	var err error
 
@@ -101,7 +119,7 @@ func RouterConfigureUnit(rw http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func RouterGetAllUnits(rw http.ResponseWriter, r *http.Request) {
+func RouterGetAllSystemdUnits(rw http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
 		err := ListUnits(rw)
@@ -171,16 +189,24 @@ func RouterConfigureUnitProperty(rw http.ResponseWriter, r *http.Request) {
 
 func RegisterRouterSystemd(router *mux.Router) {
 	n := router.PathPrefix("/service").Subrouter()
+
+	// property
 	n.HandleFunc("/systemd/state", RouterGetSystemdState)
 	n.HandleFunc("/systemd/version", RouterGetSystemdVersion)
 	n.HandleFunc("/systemd/features", RouterGetSystemdFeatures)
 	n.HandleFunc("/systemd/virtualization", RouterGetSystemdVirtualization)
 	n.HandleFunc("/systemd/architecture", RouterGetSystemdArchitecture)
-	n.HandleFunc("/systemd/units", RouterGetAllUnits)
+	n.HandleFunc("/systemd/units", RouterGetAllSystemdUnits)
 
+	// unit
 	n.HandleFunc("/systemd", RouterConfigureUnit)
 	n.HandleFunc("/systemd/{unit}/status", RouterGetUnitStatus)
 	n.HandleFunc("/systemd/{unit}/get", RouterGetUnitProperty)
 	n.HandleFunc("/systemd/{unit}/get/{property}", RouterGetUnitProperty)
 	n.HandleFunc("/systemd/{unit}/set/{property}", RouterConfigureUnitProperty)
+
+	// conf
+	n.HandleFunc("/systemd/conf", RouterConfigureSystemdConf)
+	n.HandleFunc("/systemd/conf/update", RouterConfigureSystemdConf)
+
 }
