@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
-package config
+package sshdconf
 
 import (
         "encoding/json"
@@ -10,31 +10,31 @@ import (
 
 //function to read sudoers rule
 func ReadConfigSudoers(rw http.ResponseWriter, req *http.Request) {
-        config := new(Config)
-        _= json.NewDecoder(req.Body).Decode(&config);
-        GetSudoers(rw, config.Property)
+        sshdconf := new(SSHdConf)
+        _ = json.NewDecoder(req.Body).Decode(&sshdconf)
+        GetSudoers(rw)
 }
 
 //function check if sshd configuration exists
 func ReadSSHConfigAvailable(rw http.ResponseWriter, req *http.Request) {
-        config := new(Config)
-        _= json.NewDecoder(req.Body).Decode(&config);
-        SSHConfigAvailable(rw, config.Property)
+        sshdconf := new(SSHdConf)
+        _ = json.NewDecoder(req.Body).Decode(&sshdconf)
+        SSHConfigAvailable(rw)
 }
 
 //function to read sshd configuration file
 func ReadSSHConfigRead(rw http.ResponseWriter, req *http.Request) {
-        config := new(Config)
-        _= json.NewDecoder(req.Body).Decode(&config);
+        sshdconf := new(SSHdConf)
+        _ = json.NewDecoder(req.Body).Decode(&sshdconf)
         SSHConfFileRead(rw)
 }
 
 //register router to read configuration files
 //for various services
-func RegisterRouterConfig(router *mux.Router) {
-        s := router.PathPrefix("/config").Subrouter()
-        s.HandleFunc("/sudoers", ReadConfigSudoers)
+func RegisterRouterSSHdConf(router *mux.Router) {
+        s := router.PathPrefix("/system").Subrouter().StrictSlash(false)
         s.HandleFunc("/sshd", ReadSSHConfigAvailable)
+        s.HandleFunc("/sshd/sudoers", ReadConfigSudoers)
         s.HandleFunc("/sshd/sshdconf", ReadSSHConfigRead)
 }
 
